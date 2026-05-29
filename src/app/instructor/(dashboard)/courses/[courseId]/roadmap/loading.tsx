@@ -1,0 +1,9 @@
+import { Loader } from "@/components/ui/loader";
+
+export default function RoadmapLoading() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <Loader variant="ring" label="Loading roadmap…" />
+    </div>
+  );
+}

@@ -1,0 +1,174 @@
+"use client";
+
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { Logo } from '@/components/Logo';
+import { motion, type Variants } from 'framer-motion';
+import { BookOpen, Video, Brain, FileSearch, Route, ClipboardCheck, ArrowRight, Sparkles, CheckCircle, LogIn, UserPlus } from 'lucide-react';
+
+const Ballpit = dynamic(() => import('@/components/Ballpit'), { ssr: false });
+
+const fadeUp: Variants = {
+  hidden: { y: 30, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0, opacity: 1,
+    transition: { delay: i * 0.1, ease: "easeOut", duration: 0.5 },
+  }),
+};
+
+const stagger: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, ease: "easeOut" },
+  },
+};
+
+const cardItem: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { ease: "easeOut", duration: 0.4 } },
+};
+
+const features = [
+  { icon: <Video className="w-6 h-6" />, title: "Live Classes", desc: "Real-time interactive video sessions with screen sharing and recording." },
+  { icon: <Brain className="w-6 h-6" />, title: "AI Chatbot", desc: "Smart assistant that answers course questions instantly." },
+  { icon: <FileSearch className="w-6 h-6" />, title: "Plagiarism Detection", desc: "Automatic similarity checking for student submissions." },
+  { icon: <BookOpen className="w-6 h-6" />, title: "Study Friend", desc: "Upload documents and get AI answers grounded in your materials." },
+  { icon: <Route className="w-6 h-6" />, title: "Learning Roadmaps", desc: "Structured curricula with progress tracking and milestones." },
+  { icon: <ClipboardCheck className="w-6 h-6" />, title: "Assignments", desc: "Create, submit, and grade assignments with rich feedback." },
+];
+
+const steps = [
+  { num: "01", title: "Enroll", desc: "Sign up and enroll in courses that match your learning goals." },
+  { num: "02", title: "Learn", desc: "Access live classes, materials, and AI-powered study tools." },
+  { num: "03", title: "Achieve", desc: "Complete assignments, earn certificates, and track your progress." },
+];
+
+export default function Home() {
+  return (
+    <div className="w-full relative overflow-hidden bg-white">
+      {/* ── Fixed Nav ── */}
+      <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center z-30 bg-white/80 backdrop-blur-lg border-b border-zinc-100">
+        <Logo />
+        <div className="flex items-center gap-3">
+          <Link href="/login" className="px-5 py-2.5 bg-zinc-900 text-white rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors shadow-sm">
+            <LogIn className="w-4 h-4 inline mr-1.5" /> Login
+          </Link>
+          <Link href="/login" className="px-5 py-2.5 border border-zinc-200 text-zinc-700 rounded-xl text-sm font-medium hover:bg-zinc-50 hover:border-zinc-300 transition-colors hidden sm:inline-flex items-center">
+            <UserPlus className="w-4 h-4 inline mr-1.5" /> Sign Up
+          </Link>
+        </div>
+      </nav>
+
+      {/* ── Hero ── */}
+      <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
+        {/* Ballpit background */}
+        <div className="absolute inset-0 z-0 opacity-30">
+          <Ballpit
+            count={30}
+            gravity={0.3}
+            friction={0.97}
+            wallBounce={0.6}
+            followCursor
+            colors={["#5227FF", "#7cff67", "#ff6b6b", "#e0e0e0"]}
+          />
+        </div>
+        <div className="relative z-10 text-center max-w-4xl mx-auto">
+          <motion.div initial="hidden" animate="visible" className="space-y-8">
+            <motion.div custom={0} variants={fadeUp}>
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-zinc-100 text-zinc-700 rounded-full text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-zinc-900" /> The Modern LMS for Institutions
+              </span>
+            </motion.div>
+            <motion.h1 custom={1} variants={fadeUp} className="text-5xl sm:text-6xl lg:text-7xl font-bold text-zinc-900 tracking-tight leading-[1.1]">
+              Focus. <span className="text-zinc-400">Learn.</span> Build.
+            </motion.h1>
+            <motion.p custom={2} variants={fadeUp} className="text-lg sm:text-xl text-zinc-500 max-w-2xl mx-auto leading-relaxed">
+              A high-performance learning environment with live classes, AI-powered study tools, and comprehensive course management.
+            </motion.p>
+            <motion.div custom={3} variants={fadeUp} className="flex items-center justify-center gap-4 pt-4">
+              <Link href="/student/login" className="px-8 py-3.5 bg-zinc-900 text-white rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors shadow-lg shadow-zinc-900/20 inline-flex items-center gap-2">
+                Student Login
+              </Link>
+              <Link href="/student/signup" className="px-8 py-3.5 border-2 border-zinc-200 text-zinc-700 rounded-xl text-sm font-medium hover:border-zinc-900 hover:text-zinc-900 transition-colors">
+                Create Account
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Tagline Bar ── */}
+      <section className="relative z-10 py-14 bg-zinc-50 border-y border-zinc-100">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xl sm:text-2xl font-medium text-zinc-700 leading-relaxed"
+          >
+            Empowering educators and students with AI-driven tools for a smarter learning experience.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* ── Features Grid ── */}
+      <section className="relative z-10 py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16 space-y-4">
+            <motion.h2 custom={0} variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-zinc-900">Everything you need</motion.h2>
+            <motion.p custom={1} variants={fadeUp} className="text-zinc-500 max-w-xl mx-auto">Powerful tools for instructors and students in one seamless platform.</motion.p>
+          </motion.div>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((f) => (
+              <motion.div key={f.title} variants={cardItem} whileHover={{ y: -4 }} className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+                <div className="w-12 h-12 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-900 mb-4">{f.icon}</div>
+                <h3 className="text-lg font-bold text-zinc-900 mb-2">{f.title}</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed">{f.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── How It Works ── */}
+      <section className="relative z-10 py-24 px-6 bg-zinc-50">
+        <div className="max-w-5xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16 space-y-4">
+            <motion.h2 custom={0} variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-zinc-900">How it works</motion.h2>
+            <motion.p custom={1} variants={fadeUp} className="text-zinc-500 max-w-xl mx-auto">Three simple steps to start your learning journey.</motion.p>
+          </motion.div>
+          <div className="grid sm:grid-cols-3 gap-8 relative">
+            {/* Connector line */}
+            <div className="hidden sm:block absolute top-16 left-[16.66%] right-[16.66%] h-0.5 bg-zinc-200" />
+            {steps.map((step, i) => (
+              <motion.div key={step.num} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }} className="text-center relative">
+                <div className="w-14 h-14 rounded-full bg-zinc-900 text-white flex items-center justify-center mx-auto mb-6 text-lg font-black relative z-10 shadow-md">
+                  {step.num}
+                </div>
+                <h3 className="text-xl font-bold text-zinc-900 mb-2">{step.title}</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="relative z-10 py-24 px-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-3xl mx-auto text-center bg-zinc-900 rounded-3xl p-12 sm:p-16 shadow-xl">
+          <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-6" />
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to get started?</h2>
+          <p className="text-zinc-400 mb-8 max-w-lg mx-auto">Join thousands of students and instructors already using our platform.</p>
+          <Link href="/login" className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-zinc-900 rounded-xl text-sm font-medium hover:bg-zinc-100 transition-colors shadow-lg">
+            Login to Your Account <ArrowRight className="w-4 h-4" />
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="relative z-10 py-8 px-6 border-t border-zinc-100 text-center text-xs text-zinc-400">
+        <p>&copy; {new Date().getFullYear()} OG LMS. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
