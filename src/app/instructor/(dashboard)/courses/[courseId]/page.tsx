@@ -590,9 +590,6 @@ export default async function CourseBuilderPage({
       <div className="max-w-6xl mx-auto p-8 space-y-6">
         
       <div className="flex justify-end gap-3 pb-6 border-b border-zinc-200">
-        <Link href={`/student/courses/${course.id}`} target="_blank">
-          <Button variant="outline" className="font-bold text-xs uppercase tracking-wider">Preview</Button>
-        </Link>
         <form action={togglePublish}>
           <input type="hidden" name="courseId" value={course.id} />
           <input type="hidden" name="isPublished" value={course.published.toString()} />
