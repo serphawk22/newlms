@@ -1,46 +1,81 @@
-import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import { generateKitToken } from "@/lib/zego-token";
+import crypto from "crypto";
 
-export const runtime = "nodejs";
+function generateKitTokenForTest(
+  appID: number,
+  serverSecret: string,
+  roomID: string,
+  userID: string,
+  userName: string,
+  expirationSeconds = 7200
+): string {
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    app_id: appID,
+    user_id: userID,
+    nonce: Math.floor(2147483647 * Math.random()),
+    ctime: now,
+    expire: now + expirationSeconds,
+  };
 
-function getSecret() {
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET environment variable is required");
-  }
-  return new TextEncoder().encode(process.env.JWT_SECRET);
+  const key = Buffer.from(serverSecret, "utf8");
+  let iv = Math.random().toString().substring(2, 18);
+  if (iv.length < 16) iv += iv.substring(0, 16 - iv.length);
+
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, Buffer.from(iv, "utf8"));
+  let encrypted = cipher.update(JSON.stringify(payload), "utf8", "base64");
+  encrypted += cipher.final("base64");
+
+  const cipherBytes = Buffer.from(encrypted, "base64");
+  const cipherLen = cipherBytes.length;
+  const tokenBuffer = Buffer.alloc(28 + cipherLen);
+
+  tokenBuffer.writeUInt32BE(0, 0);
+  tokenBuffer.writeUInt32BE(payload.expire, 4);
+  tokenBuffer.writeUInt16BE(iv.length, 8);
+  tokenBuffer.write(iv, 10, iv.length, "utf8");
+  tokenBuffer.writeUInt16BE(cipherLen, 26);
+  cipherBytes.copy(tokenBuffer, 28);
+
+  const binaryPart = "04" + tokenBuffer.toString("base64");
+  const metadataPart = Buffer.from(
+    JSON.stringify({
+      userID,
+      roomID,
+      userName: encodeURIComponent(userName),
+      appID,
+    })
+  ).toString("base64");
+
+  return binaryPart + "#" + metadataPart;
 }
 
-export async function GET(request: NextRequest) {
-  // ── Auth guard — only authenticated users may join a room ──────────────────
-  const token = request.cookies.get("token")?.value;
-  if (!token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: { "Cache-Control": "no-cache" } });
-  }
+export async function POST(req: Request) {
   try {
-    await jwtVerify(token, getSecret());
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: { "Cache-Control": "no-cache" } });
+    const { roomId, userId, userName } = await req.json();
+
+    if (!roomId || !userId || !userName) {
+      return Response.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const appId = parseInt(process.env.NEXT_PUBLIC_ZEGO_APP_ID!, 10);
+    const serverSecret = process.env.ZEGO_SERVER_SECRET!;
+
+    if (!appId || !serverSecret) {
+      return Response.json({ error: "Missing ZEGO credentials" }, { status: 500 });
+    }
+
+    const token = generateKitTokenForTest(
+      appId,
+      serverSecret,
+      roomId,
+      userId,
+      userName,
+      3600
+    );
+
+    return Response.json({ token });
+  } catch (error) {
+    console.error("Zego token error:", error);
+    return Response.json({ error: String(error) }, { status: 500 });
   }
-
-  const { searchParams } = new URL(request.url);
-  const roomId   = searchParams.get("roomId")   ?? "";
-  const userId   = searchParams.get("userId")   ?? "";
-  const userName = searchParams.get("userName") ?? "User";
-
-  if (!roomId || !userId) {
-    return NextResponse.json({ error: "Missing params" }, { status: 400, headers: { "Cache-Control": "no-cache" } });
-  }
-
-  const appId        = parseInt(process.env.NEXT_PUBLIC_ZEGO_APP_ID ?? "0", 10);
-  const serverSecret = process.env.ZEGO_SERVER_SECRET ?? "";
-
-  if (!appId || !serverSecret) {
-    return NextResponse.json({ error: "ZEGOCLOUD not configured" }, { status: 500, headers: { "Cache-Control": "no-cache" } });
-  }
-
-  // Generate the kit token entirely on the server — serverSecret never reaches the browser.
-  const kitToken = generateKitToken(appId, serverSecret, userId, roomId, userName);
-
-  return NextResponse.json({ kitToken, appId }, { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=60" } });
 }

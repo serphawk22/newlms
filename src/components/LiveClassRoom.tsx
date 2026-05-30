@@ -5,7 +5,7 @@ import {
   Video, AlertCircle, Circle, Square,
   Minimize2, Maximize2, GripVertical, CameraOff,
   MonitorOff, MicOff, Mic, X, CheckCircle, RefreshCw,
-  ExternalLink, Monitor,
+  ExternalLink, Power,
 } from "lucide-react";
 import { uploadVideoToCloudinary } from "@/lib/cloudinary";
 import { Loader } from "@/components/ui/loader";
@@ -334,6 +334,7 @@ export default function LiveClassRoom({
 }: LiveClassRoomProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const zpRef        = useRef<any>(null);
+  const coreRef      = useRef<any>(null);
 
   const [status, setStatus]               = useState<"loading"|"ready"|"error">("loading");
   const [error, setError]                 = useState("");
@@ -345,8 +346,7 @@ export default function LiveClassRoom({
   const [recordingTime, setRecordingTime] = useState(0);
   const [isUploading, setIsUploading]     = useState(false);
   const [uploadDone, setUploadDone]       = useState(false);
-  const [cameraOn, setCameraOn]           = useState(false);
-  const [micOn, setMicOn]                 = useState(false);
+
 
   const facecamRef       = useRef<MediaStream | null>(null);
   const screenActiveRef  = useRef(false);
@@ -502,16 +502,10 @@ export default function LiveClassRoom({
   const handleMicToggle = useCallback(() => {
     setIsMicMuted((m) => {
       const next = !m;
-      if (zpRef.current) {
-        try {
-          if (!next) {
-            zpRef.current.turnMicrophoneOn();
-          } else {
-            zpRef.current.turnMicrophoneOff();
-          }
-        } catch (err) {
-          console.error("[LiveClassRoom] Error toggling mic via ZEGOCLOUD:", err);
-        }
+      try {
+        coreRef.current?.muteMicrophone(next);
+      } catch (err) {
+        console.error("[LiveClassRoom] Error toggling mic via ZEGOCLOUD:", err);
       }
       if (rawWebcamStreamRef.current) {
         rawWebcamStreamRef.current.getAudioTracks().forEach((t) => { t.enabled = !next; });
@@ -520,54 +514,20 @@ export default function LiveClassRoom({
     });
   }, []);
 
-  // ── Stop screen sharing programmatically ───────────────────────────────────
+  // ── Stop screen share (FacecamOverlay X button) ─────────────────────────
+  // ZEGOCLOUD now owns the screen share stream via its native button.
+  // When the host presses X in the FacecamOverlay, we signal the SDK to stop,
+  // then immediately update our own state. ZEGOCLOUD will also fire
+  // onScreenSharingStreamUpdated('closed') → onShareStopped, which is idempotent.
   const handleStopSharing = useCallback(() => {
-    try { zpRef.current?.stopScreenSharing?.(); } catch {}
+    try {
+      coreRef.current?.eventEmitter?.emit('stopScreenSharing');
+    } catch (e) {
+      console.warn("[LiveClassRoom] Could not signal ZEGOCLOUD to stop screen share:", e);
+    }
     onShareStopped();
   }, [onShareStopped]);
 
-  // ── Screen share toggle ──────────────────────────────────────────────────
-  const handleScreenShareToggle = useCallback(() => {
-    if (isScreenSharing) {
-      handleStopSharing();
-    } else {
-      try { zpRef.current?.startScreenSharing?.(); } catch {}
-    }
-  }, [isScreenSharing, handleStopSharing]);
-
-  // ── Camera toggle via ZEGOCLOUD ──────────────────────────────────────────
-  const handleCameraToggle = useCallback(() => {
-    setCameraOn((prev) => {
-      const next = !prev;
-      try {
-        if (next) {
-          zpRef.current?.turnCameraOn?.();
-        } else {
-          zpRef.current?.turnCameraOff?.();
-        }
-      } catch (err) {
-        console.error("[LiveClassRoom] Error toggling camera:", err);
-      }
-      return next;
-    });
-  }, []);
-
-  // ── Mic toggle via ZEGOCLOUD ─────────────────────────────────────────────
-  const handleMicToggleNew = useCallback(() => {
-    setMicOn((prev) => {
-      const next = !prev;
-      try {
-        if (next) {
-          zpRef.current?.turnMicrophoneOn?.();
-        } else {
-          zpRef.current?.turnMicrophoneOff?.();
-        }
-      } catch (err) {
-        console.error("[LiveClassRoom] Error toggling mic:", err);
-      }
-      return next;
-    });
-  }, []);
 
   // ── MediaSession Action Handlers for PiP ───────────────────────────────────
   useEffect(() => {
@@ -794,14 +754,54 @@ export default function LiveClassRoom({
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
   }, []);
 
+  const handleEndClass = useCallback(async () => {
+    if (window.confirm("Are you sure you want to end this live class? This will stop any active recordings and remove you from the room.")) {
+      if (isRecording) stopRecording();
+      
+      try {
+        await fetch(`/api/live-session/by-room/${roomId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "COMPLETED" })
+        });
+      } catch (err) {
+        console.error("[LiveClassRoom] Failed to mark class as completed:", err);
+      }
+      
+      // Clean up ZEGOCLOUD
+      if (zpRef.current) {
+        try { 
+          zpRef.current.destroy(); 
+          (window as any)._zegoDestroyed = true;
+        } catch {}
+        zpRef.current = null;
+      }
+      
+      // Redirect to course page or dashboard
+      if (courseId) {
+        window.location.href = `/instructor/courses/${courseId}`;
+      } else {
+        window.location.href = "/instructor/dashboard";
+      }
+    }
+  }, [isRecording, stopRecording, courseId, roomId]);
+
   // ── ZEGOCLOUD init ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!containerRef.current) return;
     mountedRef.current = true;
-    let rafId: number;
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const initZego = async () => {
+      // If ZEGOCLOUD was previously destroyed in this SPA session, its internal
+      // singletons (like `Ct` telemetry) are permanently torn down. Calling create()
+      // again will cause an uncatchable async crash. We must force a clean page reload.
+      if ((window as any)._zegoDestroyed) {
+        console.warn("[LiveClassRoom] ZEGOCLOUD was previously destroyed in this session. Forcing clean reload to prevent SDK crash.");
+        window.location.reload();
+        return;
+      }
+
       try {
         if (zpRef.current) return;
 
@@ -812,12 +812,24 @@ export default function LiveClassRoom({
         if (!el || !document.body.contains(el)) return;
         if (!mountedRef.current) return;
 
-        const res = await fetch(
-          `/api/zego-token?roomId=${encodeURIComponent(roomId)}&userId=${encodeURIComponent(userId)}&userName=${encodeURIComponent(userName)}`
-        );
-        if (!res.ok) throw new Error("Token fetch failed");
-        // kitToken is generated server-side — serverSecret never reaches the browser
-        const { kitToken } = await res.json();
+        const res = await fetch("/api/zego-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId, userId, userName }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          console.error("Token API error:", err);
+          throw new Error(err.error || "Token fetch failed");
+        }
+
+        const data = await res.json();
+        if (!data.token) {
+          throw new Error("No token in response");
+        }
+
+        const token = data.token;
 
         // Re-check after async gap
         if (!mountedRef.current || !containerRef.current) return;
@@ -831,7 +843,8 @@ export default function LiveClassRoom({
 
         let zp: any;
         try {
-          zp = ZegoUIKitPrebuilt.create(kitToken);
+          zp = ZegoUIKitPrebuilt.create(token);
+          coreRef.current = (ZegoUIKitPrebuilt as any).core;
         } catch (createErr) {
           console.error("[LiveClassRoom] ZegoUIKitPrebuilt.create failed:", createErr);
           if (mountedRef.current) {
@@ -856,19 +869,23 @@ export default function LiveClassRoom({
             showTurnOffRemoteCameraButton: isHost,
             showTurnOffRemoteMicrophoneButton: isHost,
             showRemoveUserButton: isHost,
-            turnOnCameraWhenJoining: false,
+            // Start camera ON so ZEGOCLOUD creates core.localStream immediately
+            // and the user's tile is visible (like Google Meet / Zoom).
+            // Our custom Camera button then calls enableVideoCaptureDevice() on
+            // that stream to toggle it on/off.
+            turnOnCameraWhenJoining: true,
             turnOnMicrophoneWhenJoining: false,
             showPreJoinView: false,
             showMyCameraToggleButton: true,
             showMyMicrophoneToggleButton: true,
-            showAudioVideoSettingsButton: true,
+            showAudioVideoSettingsButton: false,
             showScreenSharingButton: true,
             showTextChat: true,
             showUserList: true,
             showUserName: false,
             showRoomTimer: true,
             maxUsers: 50,
-            layout: "Auto",
+            layout: "Sidebar",
             showLayoutButton: true,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             screenSharingConfig: { resolution: "1080p" as any },
@@ -916,29 +933,44 @@ export default function LiveClassRoom({
       }
     };
 
-    // Two rAF passes give React time to fully commit the container div to the DOM
-    rafId = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        timeoutId = setTimeout(initZego, 150);
-      });
-    });
+    const handlePageHide = () => {
+      screenActiveRef.current = false;
+      setIsScreenSharing(false);
+      if (isHost) releaseFacecam();
+      if (zpRef.current) {
+        try { 
+          zpRef.current.destroy(); 
+          (window as any)._zegoDestroyed = true;
+        } catch {}
+        zpRef.current = null;
+      }
+    };
+
+
+    window.addEventListener('pagehide', handlePageHide);
+
+
+    timeoutId = setTimeout(initZego, 500);
 
     return () => {
       mountedRef.current = false;
-      cancelAnimationFrame(rafId);
       clearTimeout(timeoutId);
+      window.removeEventListener('pagehide', handlePageHide);
       if (scanTimerRef.current) clearTimeout(scanTimerRef.current);
       screenActiveRef.current = false;
       if (isHost) releaseFacecam();
       if (zpRef.current) {
-        try { zpRef.current.destroy(); } catch {}
+        try { 
+          zpRef.current.destroy(); 
+          (window as any)._zegoDestroyed = true;
+        } catch {}
         zpRef.current = null;
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, userId, userName, isHost]);
 
-  // ── Cleanup timers on unmount ─────────────────────────────────────────────
+  // ── Cleanup timers and local stream on unmount ─────────────────────────────
   useEffect(() => () => {
     if (timerRef.current) clearInterval(timerRef.current);
     recordStreamRef.current?.getTracks().forEach((t) => t.stop());
@@ -964,7 +996,7 @@ export default function LiveClassRoom({
     );
 
   return (
-    <div className="relative w-full h-full bg-slate-950">
+    <div className="fixed inset-0 bg-slate-950 overflow-hidden">
       {/* Loading overlay */}
       {status === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-950">
@@ -1024,71 +1056,43 @@ export default function LiveClassRoom({
         </div>
       )}
 
-      {/* ZEGOCLOUD room container */}
-      <div ref={containerRef} className="w-full h-full" />
+      {/* ZEGOCLOUD room container — fills full available space */}
+      <div
+        ref={containerRef}
+        id="zego-container"
+        className="absolute inset-0"
+        style={{ paddingBottom: 80 }}
+        {...{ allow: "camera; microphone; display-capture; fullscreen" } as any}
+      />
+
 
       {/* ── Bottom Control Bar ───────────────────────────────────────────── */}
       {status === "ready" && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-slate-900/90 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700/50 shadow-2xl">
-          {/* Camera toggle */}
-          <button
-            onClick={handleCameraToggle}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95 ${
-              cameraOn
-                ? "bg-slate-700 text-white hover:bg-slate-600"
-                : "bg-red-600 text-white hover:bg-red-700"
-            }`}
-            title={cameraOn ? "Turn off camera" : "Turn on camera"}
-          >
-            {cameraOn ? <Video className={iconClass} /> : <CameraOff className={iconClass} />}
-            <span className="hidden sm:inline">Camera</span>
-          </button>
-
-          {/* Microphone toggle */}
-          <button
-            onClick={handleMicToggleNew}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95 ${
-              micOn
-                ? "bg-slate-700 text-white hover:bg-slate-600"
-                : "bg-red-600 text-white hover:bg-red-700"
-            }`}
-            title={micOn ? "Mute microphone" : "Unmute microphone"}
-          >
-            {micOn ? <Mic className={iconClass} /> : <MicOff className={iconClass} />}
-            <span className="hidden sm:inline">Mic</span>
-          </button>
-
-          <div className="w-px h-8 bg-slate-700" />
-
-          {/* Screen share — host only */}
-          {isHost && (
-            <button
-              onClick={handleScreenShareToggle}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95 ${
-                isScreenSharing
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-slate-700 text-white hover:bg-slate-600"
-              }`}
-              title={isScreenSharing ? "Stop sharing" : "Share screen"}
-            >
-              <Monitor className={iconClass} />
-              <span className="hidden sm:inline">{isScreenSharing ? "Stop Share" : "Share"}</span>
-            </button>
-          )}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-zinc-900/90 backdrop-blur px-4 py-3 rounded-2xl border border-zinc-700 z-50">
 
           {/* Record — host only */}
           {isHost && (
             <button
               onClick={isRecording ? stopRecording : startRecording}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 isRecording
-                  ? "bg-red-600 text-white hover:bg-red-700 animate-pulse"
-                  : "bg-slate-700 text-white hover:bg-slate-600"
+                  ? "bg-red-600 text-white"
+                  : "bg-zinc-800 text-white hover:bg-zinc-700"
               }`}
-              title={isRecording ? "Stop recording" : "Start recording"}
             >
-              {isRecording ? <Square className="w-4 h-4 fill-white" /> : <Circle className="w-4 h-4 fill-red-500 text-red-500" />}
-              <span className="hidden sm:inline">{isRecording ? "Stop" : "Record"}</span>
+              <span className={`w-2 h-2 rounded-full ${isRecording ? "bg-white animate-pulse" : "bg-red-500"}`} />
+              {isRecording ? "Stop Recording" : "Record"}
+            </button>
+          )}
+
+          {/* End Class — host only */}
+          {isHost && (
+            <button
+              onClick={handleEndClass}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-red-600/90 hover:bg-red-600 text-white transition-all shadow-lg border border-red-500/50"
+            >
+              <Power size={16} className="text-white" />
+              End Class
             </button>
           )}
         </div>
@@ -1107,8 +1111,6 @@ export default function LiveClassRoom({
         isMicMuted={isMicMuted}
       />
 
-      {/* Mic icon import usage (prevent unused import warning) */}
-      <span className="hidden"><Mic /><MicOff /></span>
     </div>
   );
 }

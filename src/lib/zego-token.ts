@@ -30,10 +30,10 @@ import crypto from "crypto";
 export function generateToken04(
   appId: number,
   serverSecret: string,
-  userId: string,
   roomId: string,
+  userId: string,
   userName: string,
-  effectiveTimeInSeconds = 7200
+  effectiveTimeInSeconds = 3600
 ): string {
   const currentTime = Math.floor(Date.now() / 1000);
   const expiredTs   = currentTime + effectiveTimeInSeconds;

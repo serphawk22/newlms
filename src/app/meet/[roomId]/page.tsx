@@ -5,9 +5,18 @@ import { jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Video, BookOpen, PhoneOff } from "lucide-react";
+import type { Metadata } from "next";
 // LiveClassRoomClient is a "use client" wrapper that does dynamic(ssr:false)
 // internally — ssr:false is only legal inside Client Components.
 import LiveClassRoomClient from "@/components/LiveClassRoomClient";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    other: {
+      "Permissions-Policy": "camera=*, microphone=*, display-capture=*, fullscreen=*",
+    },
+  };
+}
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET || "default_secret");
 

@@ -145,41 +145,8 @@ export function CompactSidebar({
         {renderNavLinks()}
       </nav>
 
-      {/* Bottom Profile / Logout */}
+      {/* Bottom Logout */}
       <div className="border-t border-zinc-800 py-3 flex flex-col gap-1.5 px-3">
-        <Link href={role === "STUDENT" ? "/student/profile" : "/instructor/profile"} className="w-full relative group">
-          <motion.div
-            variants={navItemVariants}
-            initial={isOpen ? "expanded" : "collapsed"}
-            animate={isOpen ? "expanded" : "collapsed"}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className={cn(
-              "flex items-center h-10 rounded-lg hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-zinc-100 mx-auto",
-              isOpen ? "px-3" : ""
-            )}
-          >
-            <span className="shrink-0 flex items-center justify-center"><User className="w-5 h-5" /></span>
-            <AnimatePresence>
-              {isOpen && (
-                <motion.span
-                  variants={textVariants}
-                  initial="collapsed"
-                  animate="expanded"
-                  exit="collapsed"
-                  className="ml-3 text-sm font-medium whitespace-nowrap"
-                >
-                  My Profile
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.div>
-          {!isOpen && (
-            <div className="hidden lg:block absolute left-full ml-3 px-2.5 py-1.5 top-1/2 -translate-y-1/2 bg-zinc-900 text-white text-xs font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl border border-zinc-800 pointer-events-none">
-              Profile
-            </div>
-          )}
-        </Link>
-
         <button onClick={handleLogout} className="w-full relative group">
           <motion.div
             variants={navItemVariants}
@@ -297,10 +264,6 @@ function CompactSidebarContent({ items, role, isActive, handleLogout, onCloseMob
         })}
       </nav>
       <div className="border-t border-zinc-800 py-3 flex flex-col gap-1.5 px-3">
-        <Link href={role === "STUDENT" ? "/student/profile" : "/instructor/profile"} onClick={onCloseMobile} className="flex items-center h-10 px-3 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
-          <span className="shrink-0 flex items-center justify-center"><User className="w-5 h-5" /></span>
-          <span className="ml-3 text-sm font-medium">My Profile</span>
-        </Link>
         <button onClick={handleLogout} className="flex items-center h-10 px-3 rounded-lg text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
           <span className="shrink-0 flex items-center justify-center"><LogOut className="w-5 h-5" /></span>
           <span className="ml-3 text-sm font-medium">Logout</span>

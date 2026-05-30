@@ -41,6 +41,15 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/meet/:path*',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=*, microphone=*, display-capture=*, fullscreen=*',
+          },
+        ],
+      },
     ];
   },
 };

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import {
-  Users, BookOpen, HelpCircle, ClipboardList, TrendingUp, Bell, Search,
+  Users, BookOpen, HelpCircle, ClipboardList, TrendingUp,
   CalendarDays, ChevronRight, PlusCircle, ArrowRight,
   Clock, Video, ChevronLeft,
 } from "lucide-react";
@@ -142,22 +142,8 @@ export function InstructorDashboardClient({
           </h1>
           <p className="text-sm text-zinc-500 mt-0.5">Here&apos;s what&apos;s happening with your courses today.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-48 lg:w-64 pl-9 pr-4 py-2 bg-zinc-100 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
-            />
-          </div>
-          <button className="relative p-2 rounded-xl hover:bg-zinc-100 transition-colors">
-            <Bell className="w-5 h-5 text-zinc-500" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
-          </button>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white text-xs font-medium">
-            {userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
-          </div>
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white text-xs font-medium">
+          {userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
         </div>
       </motion.div>
 

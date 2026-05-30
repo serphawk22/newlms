@@ -22,6 +22,7 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
+import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
 
 // --- SERVER ACTIONS ---
 
@@ -227,7 +228,7 @@ async function createLiveSession(_state: LiveSessionActionState, formData: FormD
   const scheduledAtRaw = formData.get("scheduledAt") as string;
   const moduleId = formData.get("moduleId") as string | null;
 
-  if (!title) {
+  if (!title || title.toLowerCase() === "null") {
     return { error: "Please enter a session title" };
   }
 
@@ -706,11 +707,7 @@ export default async function CourseBuilderPage({
                                       <span className={`text-xs font-bold uppercase tracking-widest px-2 py-1 rounded ${l.status === "ONGOING" ? "bg-red-100 text-red-700" : l.status === "COMPLETED" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
                                         {l.status}
                                       </span>
-                                      <form action={deleteLiveSession}>
-                                        <input type="hidden" name="id" value={l.id} />
-                                        <input type="hidden" name="courseId" value={courseId} />
-                                        <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 hover:text-red-600 h-8">Delete</Button>
-                                      </form>
+                                      <DeleteLiveSessionButton sessionId={l.id} />
                                     </div>
                                   </div>
                                   {l.status !== "COMPLETED" && (
@@ -740,7 +737,12 @@ export default async function CourseBuilderPage({
                             <div className="p-3 pt-0 space-y-2 bg-white">
                               {mod.recordedClasses.map(l => (
                                 <div key={l.id} className="flex items-center justify-between text-sm border-b border-slate-100 pb-2 last:border-0 last:pb-0">
-                                  <span className="text-slate-700">{l.title}</span>
+                                  <VideoPlayerModal videoUrl={l.videoUrl} title={l.title} duration={l.duration}>
+                                    <span className="flex items-center gap-2 text-slate-700 hover:text-indigo-600 transition-colors cursor-pointer">
+                                      <PlayCircle className="w-4 h-4 text-indigo-400" />
+                                      {l.title}
+                                    </span>
+                                  </VideoPlayerModal>
                                   <form action={deleteRecordedClass}>
                                     <input type="hidden" name="id" value={l.id} />
                                     <input type="hidden" name="courseId" value={courseId} />

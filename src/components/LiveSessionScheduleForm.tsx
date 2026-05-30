@@ -39,7 +39,7 @@ export function LiveSessionScheduleForm({
 
         const titleInput = formRef.current?.elements.namedItem("title") as HTMLInputElement | null;
         const title = titleInput?.value.trim() ?? "";
-        if (!title) {
+        if (!title || title.toLowerCase() === "null") {
           setError("Please enter a session title");
           titleInput?.focus();
           return;
