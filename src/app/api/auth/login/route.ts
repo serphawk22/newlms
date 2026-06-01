@@ -46,7 +46,11 @@ export async function POST(req: Request) {
     // ── 2. Look up the user ────────────────────────────────────────────────
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { memberships: true },
+      include: { 
+        memberships: {
+          include: { organization: true }
+        }
+      },
     });
 
     // ── 3. Validate password ───────────────────────────────────────────────
@@ -77,10 +81,7 @@ export async function POST(req: Request) {
 
     // Also allow the organization's role-specific codes as login codes
     if (!codeValid) {
-      const org = await prisma.organization.findUnique({
-        where: { id: primaryMembership.organizationId },
-        select: { joinCode: true, instructorCode: true, adminCode: true },
-      });
+      const org = primaryMembership.organization;
       const orgCodeValid =
         org &&
         (loginCode.trim().toUpperCase() === org.joinCode ||
@@ -91,36 +92,32 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 6. Track daily login streak (after successful auth) ───────────────
+    // ── 6. Track daily login streak & Update Session ──────────────────────
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const existingLogin = await prisma.notification.findFirst({
-      where: { userId: user.id, type: "LOGIN", createdAt: { gte: today } },
-    });
-
-    if (!existingLogin) {
-      await prisma.notification.create({
-        data: { userId: user.id, message: "Daily Login", type: "LOGIN" },
-      });
-    }
-
-    // Reuse an existing session token so signing into another role does not
-    // invalidate a role session that is already open in this browser.
     const sessionToken = user.sessionToken ?? crypto.randomUUID();
 
-    if (!user.sessionToken) {
-      await prisma.user.update({
+    await Promise.all([
+      // Check/create daily login streak
+      prisma.notification.findFirst({
+        where: { userId: user.id, type: "LOGIN", createdAt: { gte: today } },
+      }).then(existingLogin => {
+        if (!existingLogin) {
+          return prisma.notification.create({
+            data: { userId: user.id, message: "Daily Login", type: "LOGIN" },
+          });
+        }
+      }),
+      // Update session token if it was missing
+      !user.sessionToken ? prisma.user.update({
         where: { id: user.id },
         data: { sessionToken },
-      });
-    }
+      }) : Promise.resolve(),
+    ]);
 
     // ── 8. Issue JWT (with sessionToken embedded in payload) ───────────────
-    const org = await prisma.organization.findUnique({
-      where: { id: primaryMembership.organizationId },
-      select: { name: true },
-    });
+    const org = primaryMembership.organization;
 
     const token = await new SignJWT({
       userId: user.id,

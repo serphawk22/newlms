@@ -25,7 +25,7 @@ export default async function StudentProgressPage() {
   const userId = payload.userId ?? "";
   if (!userId) redirect("/login");
 
-  // ── Enrollments ───────────────────────────────────────────────────────────────
+  // ── Sequential Queries to avoid Neon connection spike ──────────────────────
   const enrollments = await prisma.enrollment.findMany({
     where: { userId, status: "ACTIVE" },
     include: {
@@ -39,6 +39,24 @@ export default async function StudentProgressPage() {
       },
     },
     orderBy: { enrolledAt: "desc" },
+  });
+
+  const assignmentSubmissions = await prisma.assignmentSubmission.findMany({
+    where: { studentId: userId },
+    select: { submittedAt: true },
+    orderBy: { submittedAt: "asc" },
+  });
+
+  const quizSubmissions = await prisma.quizSubmission.findMany({
+    where: { studentId: userId },
+    select: { submittedAt: true, obtainedMarks: true },
+    orderBy: { submittedAt: "asc" },
+  });
+
+  const loginNotifications = await prisma.notification.findMany({
+    where: { userId, type: "LOGIN" },
+    select: { createdAt: true },
+    orderBy: { createdAt: "asc" },
   });
 
   const activeEnrollments = enrollments.filter((e) => e.course.published);
@@ -62,23 +80,11 @@ export default async function StudentProgressPage() {
     moduleCount: e.course._count.modules,
   }));
 
-  // ── Assignment submissions ────────────────────────────────────────────────────
-  const assignmentSubmissions = await prisma.assignmentSubmission.findMany({
-    where: { studentId: userId },
-    select: { submittedAt: true },
-    orderBy: { submittedAt: "asc" },
-  });
   const completedAssignments = assignmentSubmissions.length;
   const assignmentDates = assignmentSubmissions.map((s) =>
     s.submittedAt.toISOString()
   );
 
-  // ── Quiz submissions ──────────────────────────────────────────────────────────
-  const quizSubmissions = await prisma.quizSubmission.findMany({
-    where: { studentId: userId },
-    select: { submittedAt: true, obtainedMarks: true },
-    orderBy: { submittedAt: "asc" },
-  });
   const completedQuizzes = quizSubmissions.length;
   const quizDates = quizSubmissions.map((s) => s.submittedAt.toISOString());
 
@@ -86,12 +92,6 @@ export default async function StudentProgressPage() {
   const points = quizSubmissions.reduce((sum, s) => sum + (s.obtainedMarks ?? 0), 0);
   const level = Math.floor(points / 50) + 1; // 1 level per 50 points, starting at 1
 
-  // ── Login activity (from notifications) ───────────────────────────────────────
-  const loginNotifications = await prisma.notification.findMany({
-    where: { userId, type: "LOGIN" },
-    select: { createdAt: true },
-    orderBy: { createdAt: "asc" },
-  });
   const loginDates = loginNotifications.map((n) => n.createdAt.toISOString());
 
   return (

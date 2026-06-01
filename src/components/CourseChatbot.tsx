@@ -82,8 +82,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
   const [isListening, setIsListening]           = useState(false);
   const [speechSupported, setSpeechSupported]   = useState(false);
   const [interimTranscript, setInterimTranscript] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
 
   // ── Text-to-Speech ──────────────────────────────────────────────────────────
   const [speakingMsgIdx, setSpeakingMsgIdx] = useState<number | null>(null);
@@ -124,9 +123,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
   // ── Check Web Speech API support (runs once on mount) ─────────────────────
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const w = window as any;
-      setSpeechSupported(!!(w.SpeechRecognition || w.webkitSpeechRecognition));
+      setSpeechSupported(!!(window.SpeechRecognition ?? window.webkitSpeechRecognition));
       setTtsSupported(!!("speechSynthesis" in window));
     }
   }, []);
@@ -134,7 +131,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
   // ── Cleanup recognition on component unmount ───────────────────────────────
   useEffect(() => {
     return () => {
-      recognitionRef.current?.abort?.();
+      recognitionRef.current?.abort();
       if (typeof window !== "undefined") window.speechSynthesis?.cancel();
     };
   }, []);
@@ -289,7 +286,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
 
     // ── Stop if already listening ──────────────────────────────────────────
     if (isListening) {
-      recognitionRef.current?.stop?.();
+      recognitionRef.current?.stop();
       setIsListening(false);
       setInterimTranscript("");
       return;
@@ -297,16 +294,14 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
 
     // ── Start recognition ─────────────────────────────────────────────────
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const w = window as any;
-      const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+      const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition;
       if (!SR) {
         setSpeechSupported(false);
         setError("Speech recognition is not supported in this browser.");
         return;
       }
 
-      const recognition = new SR() as SpeechRecognition;
+      const recognition: ISpeechRecognition = new SR();
       recognition.continuous     = true;
       recognition.interimResults = true;
       recognition.lang           = "en-US";
@@ -316,7 +311,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
         setError(null);
       };
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event: ISpeechRecognitionEvent) => {
         let interim   = "";
         let finalText = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -333,7 +328,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
         setInterimTranscript(interim);
       };
 
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
         setIsListening(false);
         setInterimTranscript("");
         const code = event.error;
