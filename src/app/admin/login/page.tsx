@@ -61,12 +61,18 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [adminExists, setAdminExists] = useState(true); // default true = hide link until confirmed
 
   // Clear stale error params from URL on mount
   useEffect(() => {
     if (window.location.search) {
       window.history.replaceState({}, "", window.location.pathname);
     }
+    // Check if any admin exists — show first-time setup link if not
+    fetch("/api/auth/check-admin")
+      .then((r) => r.json())
+      .then((d) => setAdminExists(!!d.adminExists))
+      .catch(() => { /* silent — keep adminExists=true so the link stays hidden */ });
   }, []);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -157,7 +163,7 @@ export default function AdminLoginPage() {
               <p className="text-zinc-400 text-sm mt-1.5">Manage your organization</p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleLogin} className="space-y-5" suppressHydrationWarning>
               {error && (
                 <motion.div
                   initial={{ opacity: 0, y: -10, height: 0 }}
@@ -190,7 +196,7 @@ export default function AdminLoginPage() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="admin-password" className="text-sm font-medium text-zinc-700">Password</Label>
-                  <button type="button" className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors">
+                  <button type="button" className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors" suppressHydrationWarning>
                     Forgot?
                   </button>
                 </div>
@@ -244,6 +250,7 @@ export default function AdminLoginPage() {
 
               <Button
                 type="submit"
+                suppressHydrationWarning
                 className="w-full h-12 bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 rounded-xl font-medium text-sm transition-all duration-200 shadow-lg shadow-red-900/10 hover:shadow-red-900/20 active:scale-[0.98]"
                 disabled={loading}
               >
@@ -253,9 +260,9 @@ export default function AdminLoginPage() {
             </form>
 
             <p className="mt-8 text-center text-sm text-zinc-500">
-              Not an administrator?{" "}
-              <Link href="/login" className="font-medium text-zinc-900 hover:text-zinc-700 transition-colors underline underline-offset-2 decoration-zinc-300 hover:decoration-zinc-700">
-                Choose your role
+              Don&apos;t have an account?{" "}
+              <Link href="/admin/signup" className="font-medium text-red-600 hover:text-red-700 transition-colors underline underline-offset-2 decoration-red-300 hover:decoration-red-600">
+                Create an account
               </Link>
             </p>
           </div>

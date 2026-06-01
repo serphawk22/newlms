@@ -4,7 +4,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import {
   MessageCircle, X, Send, Bot, User, Loader2, AlertCircle,
   Sparkles, PlusCircle, Paperclip, FileText, ImageIcon, Trash2,
-  ChevronLeft, ChevronRight, MessageSquare,
+  ChevronLeft, ChevronRight, MessageSquare, Mic, MicOff,
+  Volume2, VolumeX,
 } from "lucide-react";
 
 // ---------- Types ----------
@@ -77,6 +78,17 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // ── Voice input ────────────────────────────────────────────────────────────
+  const [isListening, setIsListening]           = useState(false);
+  const [speechSupported, setSpeechSupported]   = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+
+  // ── Text-to-Speech ──────────────────────────────────────────────────────────
+  const [speakingMsgIdx, setSpeakingMsgIdx] = useState<number | null>(null);
+  const [ttsSupported, setTtsSupported]     = useState(false);
+
   // ---- Fetch chat list ----
   const fetchChatList = useCallback(async () => {
     try {
@@ -108,6 +120,24 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
   useEffect(() => {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 150);
   }, [isOpen]);
+
+  // ── Check Web Speech API support (runs once on mount) ─────────────────────
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const w = window as any;
+      setSpeechSupported(!!(w.SpeechRecognition || w.webkitSpeechRecognition));
+      setTtsSupported(!!("speechSynthesis" in window));
+    }
+  }, []);
+
+  // ── Cleanup recognition on component unmount ───────────────────────────────
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.abort?.();
+      if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    };
+  }, []);
 
   // ---- Load a previous chat ----
   const loadChat = async (id: string) => {
@@ -225,6 +255,17 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
       }
 
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      // Auto-read the new AI response (fires after state update via idx = prev.length)
+      if (ttsSupported) {
+        // Use setTimeout to let React flush state before we read messages.length
+        setTimeout(() => {
+          setMessages((prev) => {
+            const newIdx = prev.length - 1;
+            speakMessage(data.reply, newIdx);
+            return prev; // no-op state update — we only need the current length
+          });
+        }, 0);
+      }
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
@@ -238,6 +279,140 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
       sendMessage();
     }
   };
+
+  // ---- Voice input toggle ----
+  const toggleListening = useCallback(() => {
+    if (!speechSupported) {
+      setError("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+
+    // ── Stop if already listening ──────────────────────────────────────────
+    if (isListening) {
+      recognitionRef.current?.stop?.();
+      setIsListening(false);
+      setInterimTranscript("");
+      return;
+    }
+
+    // ── Start recognition ─────────────────────────────────────────────────
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const w = window as any;
+      const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+      if (!SR) {
+        setSpeechSupported(false);
+        setError("Speech recognition is not supported in this browser.");
+        return;
+      }
+
+      const recognition = new SR() as SpeechRecognition;
+      recognition.continuous     = true;
+      recognition.interimResults = true;
+      recognition.lang           = "en-US";
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setError(null);
+      };
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let interim   = "";
+        let finalText = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const t = event.results[i][0].transcript;
+          if (event.results[i].isFinal) { finalText += t; }
+          else { interim += t; }
+        }
+        if (finalText) {
+          setInput((prev) => {
+            const base = prev.trimEnd();
+            return base ? base + " " + finalText : finalText;
+          });
+        }
+        setInterimTranscript(interim);
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        setIsListening(false);
+        setInterimTranscript("");
+        const code = event.error;
+        if (code === "not-allowed" || code === "permission-denied") {
+          setError("Microphone permission denied. Please allow access in your browser and try again.");
+        } else if (code === "no-speech") {
+          setError("No speech detected. Please speak closer to the microphone.");
+        } else if (code === "network") {
+          setError("Network error during speech recognition. Please check your connection.");
+        } else if (code === "audio-capture") {
+          setError("No microphone found. Please connect a microphone and try again.");
+        } else if (code !== "aborted") {
+          setError("Unable to recognize speech. Please try again.");
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        setInterimTranscript("");
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      setError("Failed to start speech recognition. Please try again.");
+    }
+  }, [isListening, speechSupported]);
+
+  // ── Text-to-Speech helpers ─────────────────────────────────────────────────
+  /** Strip markdown bold markers so they are not read aloud */
+  const stripMarkdown = (text: string) =>
+    text.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\*/g, "");
+
+  const stopSpeaking = useCallback(() => {
+    if (typeof window !== "undefined") window.speechSynthesis.cancel();
+    setSpeakingMsgIdx(null);
+  }, []);
+
+  const speakMessage = useCallback((text: string, idx: number) => {
+    if (!ttsSupported) return;
+    // Stop anything currently playing first
+    window.speechSynthesis.cancel();
+    setSpeakingMsgIdx(null);
+
+    const plain = stripMarkdown(text);
+    if (!plain.trim()) return;
+
+    try {
+      const utterance = new SpeechSynthesisUtterance(plain);
+      utterance.lang  = "en-US";
+      utterance.rate  = 1.0;
+      utterance.pitch = 1.0;
+
+      utterance.onstart = () => setSpeakingMsgIdx(idx);
+      utterance.onend   = () => setSpeakingMsgIdx(null);
+      utterance.onerror = (e) => {
+        setSpeakingMsgIdx(null);
+        // "interrupted" fires when .cancel() is called intentionally — not a real error
+        if (e.error !== "interrupted" && e.error !== "canceled") {
+          setError("Unable to read the response aloud. Please try again.");
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      setSpeakingMsgIdx(null);
+      setError("Text-to-speech failed. Your browser may not support this feature.");
+    }
+  }, [ttsSupported]);
+
+  /** Toggle: if already speaking this message → stop; otherwise start */
+  const toggleSpeak = useCallback((text: string, idx: number) => {
+    if (speakingMsgIdx === idx) {
+      stopSpeaking();
+    } else {
+      speakMessage(text, idx);
+    }
+  }, [speakingMsgIdx, speakMessage, stopSpeaking]);
 
   // ---- Simple bold renderer ----
   const renderContent = (content: string) =>
@@ -366,7 +541,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                   </div>
 
                   {/* Bubble */}
-                  <div className={`max-w-[80%] rounded-2xl text-sm leading-relaxed space-y-2 ${
+                  <div className={`relative max-w-[80%] rounded-2xl text-sm leading-relaxed space-y-2 group/bubble ${
                     msg.role === "user"
                       ? "bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-tr-sm px-3 py-2"
                       : "bg-white/10 text-white/90 border border-white/10 rounded-tl-sm px-3 py-2"
@@ -387,6 +562,24 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                     )}
                     {/* Text content */}
                     {msg.content && <p className="whitespace-pre-wrap">{renderContent(msg.content)}</p>}
+
+                    {/* Speaker button — AI messages only */}
+                    {msg.role === "assistant" && ttsSupported && msg.content && (
+                      <button
+                        onClick={() => toggleSpeak(msg.content, idx)}
+                        aria-label={speakingMsgIdx === idx ? "Stop reading AI response" : "Read AI response aloud"}
+                        title={speakingMsgIdx === idx ? "Stop reading" : "Read aloud"}
+                        className={`absolute -bottom-2 right-2 flex items-center justify-center w-5 h-5 rounded-full transition-all duration-200 opacity-0 group-hover/bubble:opacity-100 focus:opacity-100 ${
+                          speakingMsgIdx === idx
+                            ? "bg-violet-500 text-white shadow-lg shadow-violet-500/40"
+                            : "bg-white/15 text-white/50 hover:bg-white/25 hover:text-white"
+                        }`}
+                      >
+                        {speakingMsgIdx === idx
+                          ? <VolumeX className="w-2.5 h-2.5" />
+                          : <Volume2 className="w-2.5 h-2.5" />}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -437,13 +630,36 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                 </div>
               )}
 
+              {/* Listening indicator + interim transcript */}
+              {isListening && (
+                <div className="flex items-center gap-2 px-2.5 py-1.5 bg-red-500/15 border border-red-500/30 rounded-lg">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                  </span>
+                  <span className="text-red-300 text-[11px] font-medium shrink-0">Listening…</span>
+                  {interimTranscript && (
+                    <span className="text-white/40 text-[11px] italic truncate flex-1">
+                      {interimTranscript}
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Text input row */}
-              <div className="flex gap-2 items-end bg-white/10 rounded-xl border border-white/15 px-3 py-2 focus-within:border-violet-400/60 transition-colors">
+              <div
+                className={`flex gap-2 items-end rounded-xl border px-3 py-2 transition-all duration-200 ${
+                  isListening
+                    ? "bg-red-500/10 border-red-500/40 focus-within:border-red-400/60"
+                    : "bg-white/10 border-white/15 focus-within:border-violet-400/60"
+                }`}
+              >
                 {/* File attach button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="text-white/40 hover:text-violet-300 transition-colors mb-0.5 shrink-0"
                   title="Attach file"
+                  aria-label="Attach file"
                 >
                   <Paperclip className="w-4 h-4" />
                 </button>
@@ -460,16 +676,37 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask a doubt about this course…"
+                  placeholder={isListening ? "Speak now… or type here" : "Ask a doubt about this course…"}
                   disabled={isLoading}
                   rows={1}
+                  aria-label="Chat message input"
                   className="flex-1 bg-transparent text-white text-sm placeholder-white/30 resize-none outline-none max-h-24 min-h-[20px] leading-5"
                   style={{ scrollbarWidth: "none" }}
                 />
 
+                {/* Mic toggle button */}
+                {speechSupported && (
+                  <button
+                    onClick={toggleListening}
+                    disabled={isLoading}
+                    aria-label={isListening ? "Stop voice input" : "Start voice input"}
+                    title={isListening ? "Stop listening" : "Voice input"}
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ${
+                      isListening
+                        ? "bg-red-500 hover:bg-red-400 mic-pulse"
+                        : "text-white/40 hover:text-violet-300 hover:bg-white/10"
+                    }`}
+                  >
+                    {isListening
+                      ? <MicOff className="w-3.5 h-3.5 text-white" />
+                      : <Mic   className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+
                 <button
                   onClick={sendMessage}
                   disabled={isLoading || (!input.trim() && !attachedFile)}
+                  aria-label="Send message"
                   className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed hover:from-violet-400 hover:to-indigo-400 transition-all"
                 >
                   <Send className="w-3 h-3 text-white" />
@@ -477,7 +714,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
               </div>
 
               <p className="text-white/20 text-[10px] text-center">
-                Enter to send · Shift+Enter for new line · 📎 supports images, PDF, text
+                Enter to send · Shift+Enter for new line · 🎤 voice input · 📎 images, PDF, text
               </p>
             </div>
           </div>
@@ -489,6 +726,11 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
           from { opacity: 0; transform: scale(0.92) translateY(12px); }
           to   { opacity: 1; transform: scale(1)    translateY(0);    }
         }
+        @keyframes micPulse {
+          0%, 100% { box-shadow: 0 0 0 0   rgba(239,68,68,0.6); }
+          50%       { box-shadow: 0 0 0 7px rgba(239,68,68,0);   }
+        }
+        .mic-pulse { animation: micPulse 1.4s ease-in-out infinite; }
       `}</style>
     </>
   );
