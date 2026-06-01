@@ -65,6 +65,9 @@ export default async function AdminProfilePage() {
       userName={user.name ?? "Admin"}
       userEmail={user.email}
       userAvatarSeed={user.name ?? "Admin"}
+      userAvatar={user.avatar}
+      userCoverImage={user.coverImage}
+      userBio={user.bio}
       orgName={org.name}
       isAdmin={true}
       courses={courses.map((c) => ({ id: c.id, title: c.title, published: c.published }))}

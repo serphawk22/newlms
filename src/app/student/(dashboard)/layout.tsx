@@ -34,10 +34,11 @@ export default async function StudentLayout({
   };
 
   const navItems: CompactNavItem[] = [
-    { label: "Available Courses", href: "/student/courses",   icon: <BookOpen className="w-4 h-4" /> },
-    { label: "Live Classes",      href: "/student/live",       icon: <Video className="w-4 h-4" /> },
+    { label: "Dashboard",         href: "/student",              icon: <LayoutDashboard className="w-4 h-4" /> },
+    { label: "Available Courses", href: "/student/courses",      icon: <BookOpen className="w-4 h-4" /> },
+    { label: "Live Classes",      href: "/student/live",         icon: <Video className="w-4 h-4" /> },
     { label: "Study Friend",      href: "/student/study-friend", icon: <Brain className="w-4 h-4" /> },
-    { label: "My Profile",        href: "/student/profile",    icon: <UserCircle className="w-4 h-4" /> },
+    { label: "My Profile",        href: "/student/profile",      icon: <UserCircle className="w-4 h-4" /> },
   ];
 
   return (

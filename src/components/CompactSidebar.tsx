@@ -44,6 +44,7 @@ export function CompactSidebar({
   const isActive = useCallback(
     (href: string) => {
       if (href.includes("?") || href.includes("#")) return false;
+      // Exact match for dashboard roots so /student doesn't match /student/courses etc.
       if (href === "/instructor" || href === "/student") return pathname === href;
       return pathname.startsWith(href);
     },

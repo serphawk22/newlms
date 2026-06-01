@@ -69,9 +69,7 @@ export function SidebarLayoutWrapper({
           mounted ? (isOpen ? "lg:ml-[240px]" : "lg:ml-[64px]") : "lg:ml-[64px]"
         )}
       >
-        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-          {children}
-        </div>
+        {children}
       </main>
     </div>
   );

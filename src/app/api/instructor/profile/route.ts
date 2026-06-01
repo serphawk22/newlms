@@ -30,6 +30,7 @@ export async function GET() {
       bio: user.bio || "",
       expertise: user.expertise || [],
       avatar: user.avatar || "",
+      coverImage: user.coverImage || "",
     }, {
       headers: { "Cache-Control": "private, no-store" },
     });
@@ -49,7 +50,7 @@ export async function PUT(req: NextRequest) {
     const userId = payload.userId as string;
 
     const body = await req.json();
-    const { name, bio, expertise, avatar } = body;
+    const { name, bio, expertise, avatar, coverImage } = body;
 
     if (!name?.trim()) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -62,6 +63,7 @@ export async function PUT(req: NextRequest) {
         ...(bio !== undefined && { bio: bio.trim() }),
         ...(expertise !== undefined && { expertise }),
         ...(avatar !== undefined && { avatar }),
+        ...(coverImage !== undefined && { coverImage }),
       },
     });
 
@@ -72,6 +74,7 @@ export async function PUT(req: NextRequest) {
       bio: updated.bio || "",
       expertise: updated.expertise || [],
       avatar: updated.avatar || "",
+      coverImage: updated.coverImage || "",
       message: "Profile updated successfully",
     });
   } catch (err) {

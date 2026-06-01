@@ -8,10 +8,18 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, name, code } = await req.json();
+    let { email, password, name, code } = await req.json();
 
-    if (!email || !password || !code) {
-      return NextResponse.json({ error: "Email, password, and registration code are required" }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+    }
+
+    if (!code) {
+      const firstOrg = await prisma.organization.findFirst();
+      if (!firstOrg) {
+        return NextResponse.json({ error: "No organization found in database to join" }, { status: 400 });
+      }
+      code = firstOrg.joinCode;
     }
 
     // Validate password strength

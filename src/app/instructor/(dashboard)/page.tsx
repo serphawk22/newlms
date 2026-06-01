@@ -152,11 +152,16 @@ async function InstructorDashboardContent() {
 
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekAgo);
     d.setDate(d.getDate() + i);
     return d.toISOString().slice(0, 10);
   });
+  const monthLabels = Array.from({ length: 4 }, (_, i) => `Week ${i + 1}`);
+
+  console.log("[Dashboard] Weekly Range:", weekAgo);
+  console.log("[Dashboard] Monthly Range:", monthAgo);
 
   // Fire all queries in parallel to avoid waterfalls
   const [
@@ -166,6 +171,7 @@ async function InstructorDashboardContent() {
     allLiveSessions,
     pendingAssignments,
     weeklyEnrollments,
+    monthlyEnrollments,
   ] = await Promise.all([
     getCachedInstructorData(ctx.orgId, ctx.userId),
     isFounder ? getCachedAdminAnalytics(ctx.orgId) : Promise.resolve(null),
@@ -210,6 +216,16 @@ async function InstructorDashboardContent() {
       },
       select: { enrolledAt: true },
     }),
+    prisma.enrollment.findMany({
+      where: {
+        course: {
+          organizationId: ctx.orgId,
+          ...(isFounder ? {} : { creatorId: ctx.userId }),
+        },
+        enrolledAt: { gte: monthAgo },
+      },
+      select: { enrolledAt: true },
+    }),
   ]);
 
   const { courses, myCoursesCount, myStudentsCount } = instructorData;
@@ -233,6 +249,17 @@ async function InstructorDashboardContent() {
     weeklyEnrollments.filter(e => e.enrolledAt.toISOString().slice(0, 10) === day).length
   );
 
+  const monthCounts = monthLabels.map((_, weekIdx) => {
+    const weekStart = new Date(monthAgo.getTime() + weekIdx * 7 * 24 * 60 * 60 * 1000);
+    const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return monthlyEnrollments.filter(e => e.enrolledAt >= weekStart && e.enrolledAt < weekEnd).length;
+  });
+
+  console.log("[Dashboard] Week Days:", weekDays);
+  console.log("[Dashboard] Weekly Data:", enrollCounts);
+  console.log("[Dashboard] Monthly Labels:", monthLabels);
+  console.log("[Dashboard] Monthly Data:", monthCounts);
+
   return (
     <>
       {/* Dashboard interactive section (client) */}
@@ -252,6 +279,8 @@ async function InstructorDashboardContent() {
         }))}
         enrollCounts={enrollCounts}
         weekDays={weekDays}
+        monthLabels={monthLabels}
+        monthCounts={monthCounts}
       />
 
       {/* Admin section (server rendered) */}

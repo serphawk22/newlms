@@ -259,6 +259,8 @@ export async function GET() {
         avatarSeed: user.name ?? user.email,
         avatar: user.avatar,
         coverImage: user.coverImage,
+        bio: user.bio,
+        expertise: user.expertise,
       },
       org: {
         id: org.id,
@@ -282,5 +284,41 @@ export async function GET() {
   } catch (err) {
     console.error("[GET /api/student/profile]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    let payload;
+    try {
+      const verified = await jwtVerify(token, secret);
+      payload = verified.payload;
+    } catch {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = payload.userId as string;
+    const body = await req.json();
+    const { name, bio, avatar, coverImage, expertise } = body;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: name !== undefined ? name : undefined,
+        bio: bio !== undefined ? bio : null,
+        avatar: avatar !== undefined ? avatar : undefined,
+        coverImage: coverImage !== undefined ? coverImage : null,
+        expertise: expertise !== undefined ? expertise : undefined,
+      },
+    });
+
+    return NextResponse.json({ success: true, user: updatedUser });
+  } catch (error) {
+    console.error("[POST /api/student/profile] Error:", error);
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }

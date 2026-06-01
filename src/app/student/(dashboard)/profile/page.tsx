@@ -136,7 +136,7 @@ export default async function StudentProfilePage() {
   }));
 
   const profileData = {
-    user: { id: user.id, name: user.name ?? "Student", email: user.email, avatarSeed: user.name ?? user.email, avatar: user.avatar, coverImage: user.coverImage },
+    user: { id: user.id, name: user.name ?? "Student", email: user.email, avatarSeed: user.name ?? user.email, avatar: user.avatar, coverImage: user.coverImage, bio: user.bio, expertise: user.expertise ?? [] },
     org: { id: org.id, name: org.name },
     stats: { enrollmentCount, completedCourses, learningHours, xp, level, rank, streak },
     achievements,

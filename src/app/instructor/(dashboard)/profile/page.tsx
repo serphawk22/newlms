@@ -64,6 +64,9 @@ export default async function InstructorProfile() {
       userName={user.name ?? "Instructor"}
       userEmail={user.email}
       userAvatarSeed={user.name ?? "Prof"}
+      userAvatar={user.avatar}
+      userCoverImage={user.coverImage}
+      userBio={user.bio}
       orgName={org.name}
       isAdmin={isAdmin}
       courses={courses.map((c) => ({ id: c.id, title: c.title, published: c.published }))}

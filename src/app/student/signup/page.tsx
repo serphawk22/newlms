@@ -195,14 +195,7 @@ export default function StudentSignupPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="student-signup-code">Student Join Code</Label>
-                <div className="relative">
-                  <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <Input id="student-signup-code" name="code" required className="pl-9 h-11 bg-white border-zinc-200 focus:border-zinc-900 rounded-lg" placeholder="e.g. SRINDU2024" />
-                </div>
-                <p className="text-xs text-zinc-400">Ask your instructor for the student join code.</p>
-              </div>
+
 
               <div className="flex items-start gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2.5">
                 <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />

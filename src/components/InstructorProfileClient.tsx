@@ -1,49 +1,47 @@
 "use client";
 
 import { motion, useMotionValue, useTransform, useSpring, useMotionValueEvent, type Variants } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowLeft, BookOpen, Users, Star, PlayCircle,
-  Building2, Mail, Edit, Plus, Camera, GraduationCap,
-  X, CheckCircle2, AlertCircle, Save,
+  Building2, Mail, MapPin, Settings, Camera, Award, Loader, X, Plus, GraduationCap
 } from "lucide-react";
-import { Loader } from "@/components/ui/loader";
-import { ExpertiseEditor } from "@/components/ExpertiseEditor";
 
 interface CourseItem {
-  id: string; title: string; published: boolean;
+  id: string;
+  title: string;
+  published: boolean;
 }
 
 interface ReviewItem {
-  id: string; studentName: string; studentInitial: string;
-  courseTitle: string; rating: number; comment: string;
+  id: string;
+  studentName: string;
+  studentInitial: string;
+  courseTitle: string;
+  rating: number;
+  comment: string;
 }
 
 interface InstructorProfileClientProps {
-  userName: string; userEmail: string; userAvatarSeed: string;
-  orgName: string; isAdmin: boolean;
-  courses: CourseItem[]; totalStudents: number;
-  avgRating: number | null; expertise: string[];
+  userName: string;
+  userEmail: string;
+  userAvatarSeed: string;
+  userAvatar?: string | null;
+  userCoverImage?: string | null;
+  userBio?: string | null;
+  orgName: string;
+  isAdmin: boolean;
+  courses: CourseItem[];
+  totalStudents: number;
+  avgRating: number | null;
+  expertise: string[];
   reviews: ReviewItem[];
 }
-
-const skillColors = [
-  "bg-blue-100 text-blue-700 border-blue-200",
-  "bg-green-100 text-green-700 border-green-200",
-  "bg-purple-100 text-purple-700 border-purple-200",
-  "bg-amber-100 text-amber-700 border-amber-200",
-  "bg-rose-100 text-rose-700 border-rose-200",
-  "bg-cyan-100 text-cyan-700 border-cyan-200",
-  "bg-indigo-100 text-indigo-700 border-indigo-200",
-  "bg-emerald-100 text-emerald-700 border-emerald-200",
-];
 
 function AnimatedNumber({ value }: { value: number }) {
   const motionValue = useMotionValue(0);
@@ -96,124 +94,190 @@ const staggerItem: Variants = {
 };
 
 export function InstructorProfileClient({
-  userName, userEmail, userAvatarSeed,
-  orgName, isAdmin,
-  courses, totalStudents, avgRating,
-  expertise, reviews,
+  userName: initialName,
+  userEmail,
+  userAvatarSeed,
+  userAvatar,
+  userCoverImage,
+  userBio,
+  orgName,
+  isAdmin,
+  courses,
+  totalStudents,
+  avgRating,
+  expertise: initialExpertise,
+  reviews,
 }: InstructorProfileClientProps) {
   const role = isAdmin ? "ADMIN" : "INSTRUCTOR";
+  const dashboardLink = isAdmin ? "/admin" : "/instructor";
 
-  // Edit profile state
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editName, setEditName] = useState(userName);
-  const [editBio, setEditBio] = useState("");
-  const [editExpertise, setEditExpertise] = useState<string[]>(expertise);
-  const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-  const [editError, setEditError] = useState<string | null>(null);
+  // Real-time Page display state
+  const [userName, setUserName] = useState(initialName);
+  const [bio, setBio] = useState(userBio || "");
+  const [avatar, setAvatar] = useState(userAvatar || "");
+  const [coverImage, setCoverImage] = useState(userCoverImage || "");
+  const [skills, setSkills] = useState<string[]>(initialExpertise || []);
 
-  // Load current bio from server on modal open
-  useEffect(() => {
-    if (showEditModal) {
-      fetch("/api/instructor/profile")
-        .then((r) => r.json())
-        .then((data) => {
-          setEditName(data.name || userName);
-          setEditBio(data.bio || "");
-          setEditExpertise(data.expertise || expertise);
-        })
-        .catch(() => {});
-    }
-  }, [showEditModal, userName, expertise]);
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalName, setModalName] = useState(userName);
+  const [modalBio, setModalBio] = useState(bio);
+  const [modalAvatar, setModalAvatar] = useState(avatar);
+  const [modalCover, setModalCover] = useState(coverImage);
+  const [modalSkills, setModalSkills] = useState<string[]>(skills);
+  const [newSkill, setNewSkill] = useState("");
 
-  const handleSaveProfile = async () => {
-    if (!editName.trim()) {
-      setEditError("Name is required");
-      return;
-    }
-    setSaving(true);
-    setEditError(null);
+  // Upload Loaders
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync state when modal opens
+  const openModal = () => {
+    setModalName(userName);
+    setModalBio(bio);
+    setModalAvatar(avatar);
+    setModalCover(coverImage);
+    setModalSkills([...skills]);
+    setIsModalOpen(true);
+  };
+
+  // Upload handler for Cloudinary
+  async function handleCloudinaryUpload(type: "avatar" | "cover", file: File) {
+    const setLoading = type === "avatar" ? setUploadingAvatar : setUploadingCover;
+    setLoading(true);
     try {
-      const res = await fetch("/api/instructor/profile", {
+      const configRes = await fetch("/api/config");
+      const config = await configRes.json();
+      if (!config.cloudinaryCloudName || !config.cloudinaryUploadPreset) {
+        console.error("Missing Cloudinary config");
+        return;
+      }
+      const { uploadToCloudinaryDirect } = await import("@/lib/uploads");
+      const result = await uploadToCloudinaryDirect(file, {
+        preset: config.cloudinaryUploadPreset,
+        cloudName: config.cloudinaryCloudName,
+      });
+
+      if (type === "avatar") {
+        setModalAvatar(result.secure_url);
+      } else {
+        setModalCover(result.secure_url);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Save changes
+  async function handleSaveChanges() {
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/instructor/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: editName.trim(),
-          bio: editBio.trim(),
-          expertise: editExpertise,
+          name: modalName,
+          bio: modalBio,
+          avatar: modalAvatar,
+          coverImage: modalCover,
+          expertise: modalSkills,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setEditError(data.error || "Failed to save profile");
-        return;
+
+      if (response.ok) {
+        // Instantly update page layout without refresh
+        setUserName(modalName);
+        setBio(modalBio);
+        setAvatar(modalAvatar);
+        setCoverImage(modalCover);
+        setSkills(modalSkills);
+        setIsModalOpen(false);
+      } else {
+        console.error("Failed to save profile changes");
       }
-      setToast({ message: "Profile updated successfully", type: "success" });
-      setTimeout(() => setToast(null), 3000);
-      setShowEditModal(false);
-    } catch {
-      setEditError("Network error. Please try again.");
+    } catch (err) {
+      console.error("Save error:", err);
     } finally {
-      setSaving(false);
+      setIsSaving(false);
+    }
+  }
+
+  // Tag list handling
+  const addSkill = () => {
+    if (newSkill.trim() && !modalSkills.includes(newSkill.trim())) {
+      setModalSkills([...modalSkills, newSkill.trim()]);
+      setNewSkill("");
     }
   };
 
-  return (
-    <div className="container-page space-y-8">
-      {/* Toast notification */}
-      {toast && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg border bg-white border-emerald-200 animate-in slide-in-from-top-2 fade-in">
-          {toast.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-red-500" />
-          )}
-          <span className="text-sm font-bold text-zinc-800">{toast.message}</span>
-        </div>
-      )}
+  const removeSkill = (tagToRemove: string) => {
+    setModalSkills(modalSkills.filter((s) => s !== tagToRemove));
+  };
 
+  return (
+    <div className="space-y-8 max-w-5xl mx-auto px-4 sm:px-6">
       {/* Back link */}
       <motion.div initial="hidden" animate="visible" variants={fadeTop}>
-        <Link href="/instructor">
-          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 px-0">
+        <Link href={dashboardLink}>
+          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 px-0 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </Button>
         </Link>
       </motion.div>
 
-      {/* Banner + Avatar */}
+      {/* Profile Header */}
       <motion.div initial="hidden" animate="visible" variants={fadeTop} className="relative">
-        <Card className="border border-zinc-200 shadow-sm bg-white overflow-hidden rounded-xl">
-          <div className="h-28 w-full bg-gradient-to-r from-zinc-900 to-zinc-800" />
+        <Card className="border border-zinc-100 shadow-sm bg-white overflow-hidden rounded-2xl">
+          {/* Cover Photo */}
+          <div
+            className="h-44 w-full bg-cover bg-center relative"
+            style={coverImage ? { backgroundImage: `url(${coverImage})` } : {}}
+          >
+            {!coverImage && <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 to-zinc-700" />}
+          </div>
 
-          <CardContent className="px-8 pb-8 pt-0 relative">
-            <div className="flex flex-col sm:flex-row items-start gap-6">
-              {/* Avatar — overlaps banner by 50% */}
-              <div className="relative -mt-14 shrink-0">
-                <div className="w-24 h-24 sm:w-24 sm:h-24 rounded-full ring-4 ring-white shadow-lg overflow-hidden bg-zinc-100">
-                  <img
-                    src={`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(userAvatarSeed)}&backgroundColor=transparent`}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
+          <CardContent className="px-6 sm:px-8 pb-8 pt-0 relative">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 mb-4">
+              {/* Profile Picture */}
+              <div className="relative shrink-0 z-10">
+                <div className="w-32 h-32 rounded-full ring-4 ring-white shadow-md overflow-hidden bg-zinc-50 flex items-center justify-center">
+                  {avatar ? (
+                    <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <img
+                      src={`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(userName || userEmail)}&backgroundColor=transparent`}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </div>
 
-              {/* Info */}
-              <div className="flex-1 min-w-0 pt-2 sm:pt-4">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-zinc-900 truncate">{userName}</h2>
-                  <Badge variant="default" className="w-fit text-[10px] tracking-wider uppercase">
+              {/* Identity & Basic details */}
+              <div className="flex-1 min-w-0 text-center md:text-left pt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-3 mb-2">
+                  <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">{userName}</h2>
+                  <Badge variant="default" className="w-fit mx-auto sm:mx-0 text-[10px] bg-zinc-900 text-white font-semibold tracking-wider uppercase py-1 px-2.5 rounded-full border border-zinc-800">
                     {role}
                   </Badge>
                 </div>
 
-                <div className="space-y-1.5 text-sm text-zinc-500">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm text-zinc-500">
+                  <div className="flex items-center gap-1.5">
                     <Mail className="w-4 h-4 text-zinc-400 shrink-0" />
                     <span className="truncate">{userEmail}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-zinc-400 shrink-0" />
+                    <span>Campus Location</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
                     <Building2 className="w-4 h-4 text-zinc-400 shrink-0" />
                     <span>{orgName}</span>
                   </div>
@@ -221,16 +285,40 @@ export function InstructorProfileClient({
               </div>
 
               {/* Edit button */}
-              <div className="shrink-0 pt-2 sm:pt-4 self-start">
+              <div className="shrink-0 self-center md:self-end">
                 <Button
-                  variant="default"
-                  onClick={() => setShowEditModal(true)}
-                  className="bg-zinc-900 hover:bg-zinc-800 text-white shadow-sm font-bold text-xs uppercase tracking-wider"
+                  onClick={openModal}
+                  variant="outline"
+                  className="bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200 shadow-sm font-semibold text-xs py-2 px-4 rounded-xl transition-all"
                 >
-                  <Edit className="w-3.5 h-3.5 mr-2" /> Edit Profile
+                  <Settings className="w-3.5 h-3.5 mr-2" /> Account Settings
                 </Button>
               </div>
             </div>
+
+            {/* Bio & Skills Section inside header wrapper */}
+            {(bio || skills.length > 0) && (
+              <div className="mt-6 pt-6 border-t border-zinc-100 flex flex-col gap-4 text-center md:text-left">
+                {bio && (
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">About Me</h4>
+                    <p className="text-zinc-600 text-sm leading-relaxed max-w-2xl mx-auto md:mx-0">{bio}</p>
+                  </div>
+                )}
+                {skills.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Expertise & Skills</h4>
+                    <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                      {skills.map((skill, idx) => (
+                        <Badge key={idx} variant="secondary" className="bg-blue-50/50 hover:bg-blue-50 text-blue-700 border border-blue-100/80 px-3 py-1 text-xs rounded-full font-medium transition-colors">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
@@ -243,48 +331,48 @@ export function InstructorProfileClient({
         className="grid grid-cols-1 sm:grid-cols-3 gap-6"
       >
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-          <Card className="border border-zinc-200 shadow-sm bg-white p-6 transition-shadow hover:shadow-md">
+          <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50/50 flex items-center justify-center shrink-0">
                 <PlayCircle className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <p className="text-2xl font-black text-zinc-900">
                   <AnimatedNumber value={courses.length} />
                 </p>
-                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mt-0.5">My Courses</p>
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">My Courses</p>
               </div>
             </div>
           </Card>
         </motion.div>
 
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-          <Card className="border border-zinc-200 shadow-sm bg-white p-6 transition-shadow hover:shadow-md">
+          <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50/50 flex items-center justify-center shrink-0">
                 <Star className="w-6 h-6 text-amber-600" />
               </div>
               <div>
                 <p className="text-2xl font-black text-zinc-900">
                   {avgRating !== null ? avgRating.toFixed(1) : "N/A"}
                 </p>
-                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mt-0.5">Average Rating</p>
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Average Rating</p>
               </div>
             </div>
           </Card>
         </motion.div>
 
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-          <Card className="border border-zinc-200 shadow-sm bg-white p-6 transition-shadow hover:shadow-md">
+          <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50/50 flex items-center justify-center shrink-0">
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
               <div>
                 <p className="text-2xl font-black text-zinc-900">
                   <AnimatedNumber value={totalStudents} />
                 </p>
-                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mt-0.5">Total Students</p>
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Total Students</p>
               </div>
             </div>
           </Card>
@@ -296,22 +384,23 @@ export function InstructorProfileClient({
         initial="hidden"
         animate="visible"
         variants={fadeBottom}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in duration-300"
       >
-        {/* Left 2/3 — Courses */}
+        {/* Left Column (2/3 width) - Published Courses */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border border-zinc-200 shadow-sm bg-white">
-            <CardHeader className="border-b border-zinc-100 pb-4">
+          <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+            <CardHeader className="pb-4">
               <CardTitle className="text-lg font-bold text-zinc-900">My Published Courses</CardTitle>
             </CardHeader>
+            <Separator className="bg-zinc-100" />
             <CardContent className="p-0">
               {courses.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 px-8">
+                <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
                   <BookOpen className="w-12 h-12 text-zinc-300 mb-4" />
                   <p className="text-zinc-500 font-semibold mb-1">No courses yet</p>
                   <p className="text-sm text-zinc-400 mb-6">Create your first course to get started.</p>
-                  <Link href="/instructor">
-                    <Button variant="default" className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider">
+                  <Link href={dashboardLink}>
+                    <Button variant="default" className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider py-2 px-4 rounded-xl">
                       <Plus className="w-3.5 h-3.5 mr-2" /> Create Course
                     </Button>
                   </Link>
@@ -319,17 +408,17 @@ export function InstructorProfileClient({
               ) : (
                 <div className="divide-y divide-zinc-100">
                   {courses.map((course) => (
-                    <div key={course.id} className="p-5 flex items-center gap-4 hover:bg-zinc-50 transition-colors">
-                      <div className="w-14 h-14 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0 overflow-hidden">
+                    <div key={course.id} className="p-5 flex items-center gap-4 hover:bg-zinc-50/50 transition-colors">
+                      <div className="w-12 h-12 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0 shadow-sm">
                         {course.published ? (
-                          <PlayCircle className="w-7 h-7 text-zinc-400" />
+                          <PlayCircle className="w-6 h-6 text-zinc-400" />
                         ) : (
-                          <BookOpen className="w-7 h-7 text-zinc-400" />
+                          <BookOpen className="w-6 h-6 text-zinc-400" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <Link
-                          href={`/instructor/courses/${course.id}`}
+                          href={`${dashboardLink}/courses/${course.id}`}
                           className="font-semibold text-zinc-900 hover:text-blue-600 transition-colors"
                         >
                           {course.title}
@@ -337,14 +426,14 @@ export function InstructorProfileClient({
                         <div className="flex items-center gap-3 mt-1">
                           <Badge
                             variant={course.published ? "secondary" : "outline"}
-                            className="text-[10px] font-bold tracking-wider"
+                            className="text-[10px] font-bold tracking-wider rounded-full px-2 py-0.5"
                           >
                             {course.published ? "PUBLISHED" : "DRAFT"}
                           </Badge>
                         </div>
                       </div>
-                      <Link href={`/instructor/courses/${course.id}`}>
-                        <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-blue-600">
+                      <Link href={`${dashboardLink}/courses/${course.id}`}>
+                        <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-blue-600 font-semibold">
                           Manage
                         </Button>
                       </Link>
@@ -356,44 +445,13 @@ export function InstructorProfileClient({
           </Card>
         </div>
 
-        {/* Right 1/3 — Expertise + Reviews */}
+        {/* Right Column (1/3 width) - Recent Feedback */}
         <div className="space-y-6">
-          {/* Expertise */}
-          <Card className="border border-zinc-200 shadow-sm bg-white">
-            <CardHeader className="border-b border-zinc-100 pb-4">
-              <CardTitle className="text-lg font-bold text-zinc-900">Expertise</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {expertise.length === 0 ? (
-                <div>
-                  <p className="text-sm text-zinc-400 italic mb-4">No skills added yet.</p>
-                </div>
-              ) : (
-                <ExpertiseEditor initialSkills={expertise} />
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Bio */}
-          <Card className="border border-zinc-200 shadow-sm bg-white">
-            <CardHeader className="border-b border-zinc-100 pb-4 flex flex-row items-center justify-between">
-              <CardTitle className="text-lg font-bold text-zinc-900">About</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <p className="text-sm text-zinc-500 leading-relaxed">
-                Educator passionate about creating engaging learning experiences.
-                Dedicated to helping students achieve their goals through well-structured courses and personalized mentorship.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Separator className="bg-zinc-200" />
-
-          {/* Recent Reviews */}
-          <Card className="border border-zinc-200 shadow-sm bg-white">
-            <CardHeader className="border-b border-zinc-100 pb-4">
+          <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+            <CardHeader className="pb-4">
               <CardTitle className="text-lg font-bold text-zinc-900">Recent Feedback</CardTitle>
             </CardHeader>
+            <Separator className="bg-zinc-100" />
             <CardContent className="p-6 space-y-5">
               {reviews.length === 0 ? (
                 <div className="text-center py-4 text-zinc-400 text-sm">
@@ -404,18 +462,18 @@ export function InstructorProfileClient({
                 reviews.map((review, i) => (
                   <div key={review.id}>
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                      <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-sm border border-blue-100">
                         {review.studentInitial}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <div>
-                            <span className="text-sm font-bold text-zinc-800">{review.studentName}</span>
-                            <span className="ml-2 text-xs text-zinc-400">{review.courseTitle}</span>
+                            <span className="text-sm font-bold text-zinc-800 truncate block max-w-[120px]">{review.studentName}</span>
+                            <span className="text-[10px] text-zinc-400 truncate block max-w-[120px]">{review.courseTitle}</span>
                           </div>
                           <StarRating rating={review.rating} />
                         </div>
-                        <p className="text-xs text-zinc-500 italic mt-1.5 bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                        <p className="text-xs text-zinc-500 italic mt-2 bg-zinc-50/50 p-3 rounded-xl border border-zinc-100">
                           &ldquo;{review.comment}&rdquo;
                         </p>
                       </div>
@@ -429,108 +487,203 @@ export function InstructorProfileClient({
         </div>
       </motion.div>
 
-      {/* ── Edit Profile Modal ── */}
-      {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      {/* Unified Account Settings / Edit Profile Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-sm transition-opacity animate-in fade-in">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-2xl border border-zinc-200 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-zinc-100 flex flex-col max-h-[90vh] overflow-hidden"
           >
+            {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-              <h3 className="text-lg font-bold text-zinc-900">Edit Profile</h3>
+              <h3 className="text-base font-bold text-zinc-900">Edit Profile</h3>
               <button
-                onClick={() => setShowEditModal(false)}
-                className="p-2 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+                onClick={() => setIsModalOpen(false)}
+                className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-50 transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
-              {/* Name */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Full Name</label>
-                <Input
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  placeholder="Your full name"
-                  className="bg-zinc-50 border-zinc-200"
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Cover Photo Upload */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Cover Photo</label>
+                <div
+                  className="h-28 w-full bg-cover bg-center rounded-2xl relative border border-zinc-200 overflow-hidden bg-zinc-800"
+                  style={modalCover ? { backgroundImage: `url(${modalCover})` } : {}}
+                >
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    disabled={uploadingCover}
+                    className="absolute bottom-3 right-3 bg-white/95 text-zinc-700 shadow-sm border border-zinc-200 hover:bg-white px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {uploadingCover ? <Loader className="w-3.5 h-3.5 animate-spin text-zinc-500" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                    Upload cover image
+                  </button>
+                </div>
+              </div>
+
+              {/* Profile Photo Upload */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Profile Photo</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-zinc-50 border border-zinc-200 shrink-0 shadow-sm">
+                    {modalAvatar ? (
+                      <img src={modalAvatar} alt="Preview Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <img
+                        src={`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(modalName || userEmail)}&backgroundColor=transparent`}
+                        alt="Preview Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      disabled={uploadingAvatar}
+                      className="bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200 px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    >
+                      {uploadingAvatar ? <Loader className="w-3.5 h-3.5 animate-spin text-zinc-500" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                      Upload profile photo
+                    </button>
+                    {modalAvatar && (
+                      <button
+                        type="button"
+                        onClick={() => setModalAvatar("")}
+                        className="text-red-500 hover:text-red-600 font-semibold text-xs px-2.5 py-1.5 rounded-xl hover:bg-red-50/50 transition-colors"
+                      >
+                        Remove photo
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Full Name</label>
+                <input
+                  type="text"
+                  value={modalName}
+                  onChange={(e) => setModalName(e.target.value)}
+                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all font-medium"
+                  placeholder="Enter your name"
                 />
               </div>
 
               {/* Bio */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Bio</label>
-                <Textarea
-                  value={editBio}
-                  onChange={(e) => setEditBio(e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  rows={4}
-                  className="bg-zinc-50 border-zinc-200 resize-none"
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Bio</label>
+                <textarea
+                  value={modalBio}
+                  onChange={(e) => setModalBio(e.target.value)}
+                  rows={3}
+                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all font-medium resize-none"
+                  placeholder="Tell us about yourself"
                 />
               </div>
 
-              {/* Expertise */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Expertise (comma separated)</label>
-                <Input
-                  value={editExpertise.join(", ")}
-                  onChange={(e) => setEditExpertise(e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
-                  placeholder="e.g. JavaScript, Python, Machine Learning"
-                  className="bg-zinc-50 border-zinc-200"
-                />
-                {editExpertise.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {editExpertise.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Error */}
-              {editError && (
-                <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                  <p className="text-xs font-medium text-red-700">{editError}</p>
+              {/* Interests / Skills */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Interests / Skills</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addSkill();
+                      }
+                    }}
+                    className="flex-1 bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all"
+                    placeholder="Add a skill or interest"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addSkill}
+                    className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl px-3 border border-zinc-200 shadow-sm transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
-              )}
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 border-zinc-200"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSaveProfile}
-                  disabled={saving || !editName.trim()}
-                  className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white"
-                >
-                  {saving ? (
-                    <>
-                      <Loader size="sm" variant="bars" /> Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" /> Save Changes
-                    </>
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {modalSkills.map((skill, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="bg-blue-50/70 text-blue-700 border border-blue-100 px-2.5 py-1 text-xs rounded-full font-medium flex items-center gap-1.5 shadow-sm"
+                    >
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => removeSkill(skill)}
+                        className="hover:bg-blue-100 p-0.5 rounded-full text-blue-500 hover:text-blue-700 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {modalSkills.length === 0 && (
+                    <span className="text-xs text-zinc-400">No skills or interests added yet.</span>
                   )}
-                </Button>
+                </div>
               </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-zinc-100 bg-zinc-50/50 flex justify-end gap-3 shrink-0">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsModalOpen(false)}
+                className="text-zinc-600 hover:bg-zinc-100 border border-zinc-200 px-4 py-2 rounded-xl text-xs font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSaveChanges}
+                disabled={isSaving}
+                className="bg-zinc-900 hover:bg-zinc-800 text-white px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
+              >
+                {isSaving && <Loader className="w-3.5 h-3.5 animate-spin" />}
+                Save Changes
+              </Button>
             </div>
           </motion.div>
         </div>
       )}
+
+      {/* Hidden File Inputs */}
+      <input
+        type="file"
+        ref={avatarInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleCloudinaryUpload("avatar", file);
+        }}
+      />
+      <input
+        type="file"
+        ref={coverInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleCloudinaryUpload("cover", file);
+        }}
+      />
     </div>
   );
 }

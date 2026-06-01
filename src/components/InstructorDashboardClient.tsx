@@ -109,12 +109,14 @@ interface Props {
   allLiveSessions: { id: string; title: string; scheduledAt: string; status: string; roomId: string; courseTitle: string }[];
   enrollCounts: number[];
   weekDays: string[];
+  monthLabels: string[];
+  monthCounts: number[];
 }
 
 export function InstructorDashboardClient({
   greeting, userName, totalCourses, totalStudents,
   activeQuizzes, pendingAssignments,
-  allQuizzes, allLiveSessions, enrollCounts, weekDays,
+  allQuizzes, allLiveSessions, enrollCounts, weekDays, monthLabels, monthCounts,
 }: Props) {
   const [chartView, setChartView] = useState<"weekly" | "monthly">("weekly");
 
@@ -125,10 +127,15 @@ export function InstructorDashboardClient({
     { label: "Pending Assignments", value: pendingAssignments, suffix: "", icon: ClipboardList, color: "bg-purple-100 text-purple-600" },
   ];
 
-  const chartData = weekDays.map((day, i) => ({
-    day: format(new Date(day), "EEE"),
-    Enrollments: enrollCounts[i],
-  }));
+  const chartData = chartView === "weekly"
+    ? weekDays.map((day, i) => ({
+        day: format(new Date(day), "EEE"),
+        Enrollments: enrollCounts[i],
+      }))
+    : monthLabels.map((label, i) => ({
+        day: label,
+        Enrollments: monthCounts[i],
+      }));
 
   const sessionDates = allLiveSessions.map((s) => s.scheduledAt);
 
@@ -141,9 +148,6 @@ export function InstructorDashboardClient({
             {greeting}, {userName}
           </h1>
           <p className="text-sm text-zinc-500 mt-0.5">Here&apos;s what&apos;s happening with your courses today.</p>
-        </div>
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white text-xs font-medium">
-          {userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
         </div>
       </motion.div>
 
@@ -222,11 +226,11 @@ export function InstructorDashboardClient({
                     <YAxis tick={{ fontSize: 11, fill: "#a1a1aa" }} axisLine={false} tickLine={false} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#fff",
-                        border: "1px solid #e4e4e7",
-                        borderRadius: "12px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                        fontSize: "12px",
+                          backgroundColor: "#fff",
+                          border: "1px solid #e4e4e7",
+                          borderRadius: "12px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          fontSize: "12px",
                       }}
                     />
                     <Line
@@ -245,30 +249,6 @@ export function InstructorDashboardClient({
           </Card>
         </motion.div>
       </div>
-
-      {/* Promotional Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35, ease: "easeOut", duration: 0.4 }}
-      >
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-r from-zinc-900 to-zinc-800 text-white">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-blue-400 blur-3xl translate-x-1/3 -translate-y-1/3" />
-          </div>
-          <CardContent className="p-6 sm:p-8 relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg sm:text-xl font-medium mb-1">Manage Your Courses with Ease!</h3>
-              <p className="text-sm text-zinc-400">Create, organize, and track all your courses from one place.</p>
-            </div>
-            <Link href="/instructor#courses">
-              <Button className="bg-white text-zinc-900 hover:bg-zinc-100 font-medium text-xs uppercase tracking-wider shadow-lg shrink-0">
-                <PlusCircle className="w-4 h-4 mr-2" /> Create New Course
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </motion.div>
 
       {/* Bottom Two Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
