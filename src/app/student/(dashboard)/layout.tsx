@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 import { SidebarLayoutWrapper } from "@/components/SidebarLayoutWrapper";
 import { CompactNavItem } from "@/components/CompactSidebar";
 import {
-  LayoutDashboard, BookOpen, Video, Brain, UserCircle,
+  LayoutDashboard, BookOpen, Video, Brain, UserCircle, BarChart3,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +38,7 @@ export default async function StudentLayout({
     { label: "Available Courses", href: "/student/courses",      icon: <BookOpen className="w-4 h-4" /> },
     { label: "Live Classes",      href: "/student/live",         icon: <Video className="w-4 h-4" /> },
     { label: "Study Friend",      href: "/student/study-friend", icon: <Brain className="w-4 h-4" /> },
+    { label: "My Progress",       href: "/student/progress",     icon: <BarChart3 className="w-4 h-4" /> },
     { label: "My Profile",        href: "/student/profile",      icon: <UserCircle className="w-4 h-4" /> },
   ];
 
