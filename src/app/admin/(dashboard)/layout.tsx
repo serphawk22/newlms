@@ -1,6 +1,7 @@
 import { SidebarLayoutWrapper } from "@/components/SidebarLayoutWrapper";
 import { CompactNavItem } from "@/components/CompactSidebar";
 import { getAdminContext } from "./_lib";
+import { LMSAssistantWrapper } from "@/components/LMSAssistantWrapper";
 import {
   LayoutDashboard,
   Users,
@@ -9,6 +10,7 @@ import {
   PanelTop,
   Settings,
   FolderKanban,
+  Award,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +27,7 @@ export default async function AdminLayout({
     { label: "Users", href: "/admin/users", icon: <Users className="w-5 h-5" /> },
     { label: "All Courses", href: "/admin/all-courses", icon: <FolderKanban className="w-5 h-5" /> },
     { label: "Reports", href: "/admin/reports", icon: <BarChart2 className="w-5 h-5" /> },
+    { label: "Certificates", href: "/admin/certificates", icon: <Award className="w-5 h-5" /> },
     { label: "Admin Panel", href: "/admin/admin-panel", icon: <PanelTop className="w-5 h-5" /> },
     { label: "Organization Settings", href: "/admin/settings", icon: <Settings className="w-5 h-5" /> },
     { label: "My Profile", href: "/admin/profile", icon: <UserCircle className="w-5 h-5" /> },
@@ -33,6 +36,8 @@ export default async function AdminLayout({
   return (
     <SidebarLayoutWrapper items={navItems} role="ADMIN" userName={userName} userEmail={userEmail}>
       {children}
+      {/* Global LMS Assistant — separate from the AI Course Tutor on course pages */}
+      <LMSAssistantWrapper userRole="ADMIN" userName={userName ?? undefined} />
     </SidebarLayoutWrapper>
   );
 }

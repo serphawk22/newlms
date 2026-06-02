@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
 import { SidebarLayoutWrapper } from "@/components/SidebarLayoutWrapper";
 import { CompactNavItem } from "@/components/CompactSidebar";
+import { LMSAssistantWrapper } from "@/components/LMSAssistantWrapper";
 import {
-  LayoutDashboard, BookOpen, Video, Brain, UserCircle, BarChart3,
+  LayoutDashboard, BookOpen, Video, Brain, UserCircle, BarChart3, Award,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -34,12 +35,13 @@ export default async function StudentLayout({
   };
 
   const navItems: CompactNavItem[] = [
-    { label: "Dashboard",         href: "/student",              icon: <LayoutDashboard className="w-4 h-4" /> },
-    { label: "Available Courses", href: "/student/courses",      icon: <BookOpen className="w-4 h-4" /> },
-    { label: "Live Classes",      href: "/student/live",         icon: <Video className="w-4 h-4" /> },
-    { label: "Study Friend",      href: "/student/study-friend", icon: <Brain className="w-4 h-4" /> },
-    { label: "My Progress",       href: "/student/progress",     icon: <BarChart3 className="w-4 h-4" /> },
-    { label: "My Profile",        href: "/student/profile",      icon: <UserCircle className="w-4 h-4" /> },
+    { label: "Dashboard",         href: "/student",                 icon: <LayoutDashboard className="w-4 h-4" /> },
+    { label: "Available Courses", href: "/student/courses",         icon: <BookOpen className="w-4 h-4" /> },
+    { label: "Live Classes",      href: "/student/live",            icon: <Video className="w-4 h-4" /> },
+    { label: "Study Friend",      href: "/student/study-friend",    icon: <Brain className="w-4 h-4" /> },
+    { label: "My Progress",       href: "/student/progress",        icon: <BarChart3 className="w-4 h-4" /> },
+    { label: "My Certificates",   href: "/student/certificates",    icon: <Award className="w-4 h-4" /> },
+    { label: "My Profile",        href: "/student/profile",         icon: <UserCircle className="w-4 h-4" /> },
   ];
 
   return (
@@ -50,6 +52,8 @@ export default async function StudentLayout({
       userEmail={email}
     >
       {children}
+      {/* Global LMS Assistant — separate from the AI Course Tutor on course pages */}
+      <LMSAssistantWrapper userRole="STUDENT" userName={name ?? undefined} />
     </SidebarLayoutWrapper>
   );
 }

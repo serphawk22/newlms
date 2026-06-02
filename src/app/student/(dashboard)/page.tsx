@@ -42,7 +42,13 @@ export default async function StudentDashboardPage() {
     where: { userId },
     include: {
       course: {
-        select: { id: true, title: true, published: true, creator: { select: { name: true } }, _count: { select: { modules: true, enrollments: true } } },
+        select: {
+          id: true,
+          title: true,
+          published: true,
+          creator: { select: { name: true } },
+          _count: { select: { modules: true, enrollments: true, assignments: true, quizzes: true, readingMaterials: true } },
+        },
       },
     },
     orderBy: { enrolledAt: "desc" },
@@ -50,7 +56,24 @@ export default async function StudentDashboardPage() {
 
   const assignmentSubmissions = await prisma.assignmentSubmission.findMany({
     where: { studentId: userId },
-    select: { submittedAt: true },
+    select: { submittedAt: true, assignment: { select: { courseId: true } } },
+  });
+
+  // Track daily login for today
+  const todayStr = new Date().toISOString().split("T")[0];
+  try {
+    await prisma.dailyLogin.upsert({
+      where: { userId_dateStr: { userId, dateStr: todayStr } },
+      update: {},
+      create: { userId, dateStr: todayStr },
+    });
+  } catch (err) {
+    // ignore constraint errors if concurrent
+  }
+
+  const dailyLogins = await prisma.dailyLogin.findMany({
+    where: { userId },
+    select: { createdAt: true },
   });
 
   const allOrgCourses = await prisma.course.findMany({
@@ -64,20 +87,65 @@ export default async function StudentDashboardPage() {
 
   const quizSubmissions = await prisma.quizSubmission.findMany({
     where: { studentId: userId },
-    select: { submittedAt: true },
+    select: { submittedAt: true, quiz: { select: { courseId: true } } },
   });
 
   // ── Derive values from fetched data to save queries ────────────────────────
   const enrollments = allEnrollments.filter(e => e.status === "ACTIVE");
   const completedAssignments = assignmentSubmissions.length;
-  const enrollmentDates = allEnrollments; // We already have enrolledAt in allEnrollments
+  const enrollmentDates = allEnrollments;
+
+  const activeEnrolledCourseIds = enrollments
+    .filter((e) => e.course.published)
+    .map((e) => e.course.id);
+
+  // Fetch material views for real progress calculation
+  const materialViews = activeEnrolledCourseIds.length > 0
+    ? await prisma.materialView.findMany({
+        where: { studentId: userId, material: { courseId: { in: activeEnrolledCourseIds } } },
+        select: { materialId: true, material: { select: { courseId: true } } },
+      })
+    : [];
+
+  // Build per-course activity maps for real progress
+  const asgByCourse = new Map<string, number>();
+  for (const s of assignmentSubmissions) {
+    const cid = s.assignment.courseId;
+    asgByCourse.set(cid, (asgByCourse.get(cid) ?? 0) + 1);
+  }
+  const qzByCourse = new Map<string, number>();
+  for (const s of quizSubmissions) {
+    const cid = s.quiz.courseId;
+    qzByCourse.set(cid, (qzByCourse.get(cid) ?? 0) + 1);
+  }
+  const matByCourse = new Map<string, Set<string>>();
+  for (const v of materialViews) {
+    const cid = v.material.courseId;
+    if (!matByCourse.has(cid)) matByCourse.set(cid, new Set());
+    matByCourse.get(cid)!.add(v.materialId);
+  }
+
+  function getDashboardProgress(courseId: string, totalAsg: number, totalQz: number, totalMat: number): number {
+    const total = totalAsg + totalQz + totalMat;
+    if (total === 0) return 0;
+    const done =
+      (asgByCourse.get(courseId) ?? 0) +
+      (qzByCourse.get(courseId) ?? 0) +
+      (matByCourse.get(courseId)?.size ?? 0);
+    return Math.min(Math.round((done / total) * 100), 100);
+  }
 
   const enrolledCourses = enrollments
     .filter((e) => e.course.published)
     .map((e) => ({
       id: e.course.id,
       title: e.course.title,
-      progress: Math.round(e.progress),
+      progress: getDashboardProgress(
+        e.course.id,
+        e.course._count.assignments,
+        e.course._count.quizzes,
+        e.course._count.readingMaterials,
+      ),
       instructorName: e.course.creator.name ?? "Instructor",
       modulesCount: e.course._count.modules,
       enrollmentsCount: e.course._count.enrollments,
@@ -156,6 +224,7 @@ export default async function StudentDashboardPage() {
 
   quizSubmissions.forEach((q) => activityDates.push(q.submittedAt));
   assignmentSubmissions.forEach((a) => activityDates.push(a.submittedAt));
+  dailyLogins.forEach((d: { createdAt: Date }) => activityDates.push(d.createdAt));
 
   // Compute unique active days this month
   const now = new Date();

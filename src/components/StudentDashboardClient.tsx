@@ -550,17 +550,11 @@ export function StudentDashboardClient({
           <p className="text-[11px] text-zinc-400 mb-4">Stay active every day</p>
 
           {/* Streak Stats */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {[
-              { label: "Current",     value: currentStreak },
-              { label: "Best",        value: bestStreak },
-              { label: "Active Days", value: activeDays },
-            ].map((s) => (
-              <div key={s.label} className="text-center bg-zinc-50 rounded-xl py-2.5 px-1">
-                <p className="text-xl font-bold text-zinc-900">{s.value}</p>
-                <p className="text-[10px] text-zinc-400 mt-0.5 leading-tight">{s.label}</p>
-              </div>
-            ))}
+          <div className="flex justify-center mb-4">
+            <div className="text-center bg-zinc-50 rounded-xl py-4 px-8 w-full max-w-[200px]">
+              <p className="text-3xl font-bold text-orange-500">{currentStreak}</p>
+              <p className="text-xs text-zinc-500 mt-1 font-medium">Current Streak</p>
+            </div>
           </div>
 
           {/* Calendar */}
