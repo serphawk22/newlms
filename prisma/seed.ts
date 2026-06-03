@@ -1,21 +1,41 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../src/lib/prisma";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
 
 async function main() {
-
   console.log("\n🌱 Starting database seed...\n");
 
-  // 1. Create organization with all codes
+  // Cleanup existing records in reverse dependency order to prevent FK violations
+  console.log("🧹 Cleaning up database...");
+  await prisma.certificate.deleteMany({});
+  await prisma.materialView.deleteMany({});
+  await prisma.recordedClass.deleteMany({});
+  await prisma.review.deleteMany({});
+  await prisma.chatMessage.deleteMany({});
+  await prisma.chat.deleteMany({});
+  await prisma.liveSession.deleteMany({});
+  await prisma.plagiarismResult.deleteMany({});
+  await prisma.assignmentSubmission.deleteMany({});
+  await prisma.assignment.deleteMany({});
+  await prisma.dailyBite.deleteMany({});
+  await prisma.lesson.deleteMany({});
+  await prisma.module.deleteMany({});
+  await prisma.enrollment.deleteMany({});
+  await prisma.organizationMember.deleteMany({});
+  await prisma.course.deleteMany({});
+  await prisma.user.deleteMany({});
+  await prisma.organization.deleteMany({});
+  console.log("✅ Database cleaned.\n");
+
+  // 1. Create organization with Ally Tech Services codes
   const org = await prisma.organization.create({
     data: {
-      name: "Sri Indu College",
-      slug: "sri-indu",
-      joinCode: "SRINDU2024",
-      instructorCode: "INST2024",
-      adminCode: "ADMIN2024",
+      name: "Ally Tech Services",
+      slug: "ally-tech-services",
+      joinCode: "ALLY2026",
+      instructorCode: "INST2026",
+      adminCode: "ADMIN2026",
     },
   });
   console.log(`✅ Created organization: ${org.name}`);
@@ -24,12 +44,13 @@ async function main() {
   console.log(`   Admin Code: ${org.adminCode}\n`);
 
   // 2. Create Admin user
-  const adminPassword = await bcrypt.hash("Admin@123", 10);
+  const adminPassword = await bcrypt.hash("Admin@2026", 10);
   const admin = await prisma.user.create({
     data: {
-      email: "admin@srindu.edu",
+      email: "admin@allytech.edu",
       password: adminPassword,
-      name: "Admin",
+      name: "System Admin",
+      status: "ACTIVE",
       loginCode: "ADM" + Math.floor(1000 + Math.random() * 9000),
       memberships: {
         create: {
@@ -40,63 +61,9 @@ async function main() {
     },
   });
   console.log(`✅ Created admin user:`);
-  console.log(`   Email: admin@srindu.edu`);
-  console.log(`   Password: Admin@123`);
+  console.log(`   Email: admin@allytech.edu`);
+  console.log(`   Password: Admin@2026`);
   console.log(`   Login Code: ${admin.loginCode}\n`);
-
-  // 3. Create Instructor user
-  const instructorPassword = await bcrypt.hash("Instructor@123", 10);
-  const instructor = await prisma.user.create({
-    data: {
-      email: "instructor@srindu.edu",
-      password: instructorPassword,
-      name: "Test Instructor",
-      loginCode: "INS" + Math.floor(1000 + Math.random() * 9000),
-      memberships: {
-        create: {
-          organizationId: org.id,
-          role: "INSTRUCTOR",
-        },
-      },
-    },
-  });
-  console.log(`✅ Created instructor user:`);
-  console.log(`   Email: instructor@srindu.edu`);
-  console.log(`   Password: Instructor@123`);
-  console.log(`   Login Code: ${instructor.loginCode}\n`);
-
-  // 4. Create Student user
-  const studentPassword = await bcrypt.hash("Student@123", 10);
-  const student = await prisma.user.create({
-    data: {
-      email: "student@srindu.edu",
-      password: studentPassword,
-      name: "Test Student",
-      loginCode: "STU" + Math.floor(1000 + Math.random() * 9000),
-      memberships: {
-        create: {
-          organizationId: org.id,
-          role: "STUDENT",
-        },
-      },
-    },
-  });
-  console.log(`✅ Created student user:`);
-  console.log(`   Email: student@srindu.edu`);
-  console.log(`   Password: Student@123`);
-  console.log(`   Login Code: ${student.loginCode}\n`);
-
-  // 5. Create sample course
-  const course = await prisma.course.create({
-    data: {
-      title: "Introduction to Computer Science",
-      description: "Learn the fundamentals of computer science, including programming, algorithms, and data structures.",
-      published: true,
-      organizationId: org.id,
-      creatorId: instructor.id,
-    },
-  });
-  console.log(`✅ Created course: ${course.title}\n`);
 
   console.log("✨ Seed completed successfully!\n");
   console.log("📋 Quick Reference:");
@@ -108,17 +75,9 @@ async function main() {
   console.log(`   Admin Code: ${org.adminCode}`);
   console.log("\n👤 LOGIN CREDENTIALS");
   console.log("   Admin:");
-  console.log("   • Email: admin@srindu.edu");
-  console.log("   • Password: Admin@123");
+  console.log("   • Email: admin@allytech.edu");
+  console.log("   • Password: Admin@2026");
   console.log("   • URL: http://localhost:3000/admin/login");
-  console.log("\n   Instructor:");
-  console.log("   • Email: instructor@srindu.edu");
-  console.log("   • Password: Instructor@123");
-  console.log("   • URL: http://localhost:3000/instructor/login");
-  console.log("\n   Student:");
-  console.log("   • Email: student@srindu.edu");
-  console.log("   • Password: Student@123");
-  console.log("   • URL: http://localhost:3000/student/login");
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
   await prisma.$disconnect();

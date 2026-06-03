@@ -62,6 +62,7 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [adminExists, setAdminExists] = useState(true); // default true = hide link until confirmed
+  const [showOtherRoles, setShowOtherRoles] = useState(false);
 
   // Clear stale error params from URL on mount
   useEffect(() => {
@@ -225,8 +226,8 @@ export default function AdminLoginPage() {
 
               <div className="space-y-1.5">
                 <Label htmlFor="admin-loginCode" className="text-sm font-medium text-zinc-700">
-                  Login Code
-                  <span className="ml-1.5 text-xs text-zinc-400 font-normal">(e.g. ADM1234)</span>
+                  Admin Organization Code
+                  <span className="ml-1.5 text-xs text-zinc-400 font-normal">(e.g. ADMIN2026)</span>
                 </Label>
                 <div className="relative">
                   <Hash className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-200 ${focusedField === "loginCode" ? "text-zinc-900" : "text-zinc-400"}`} />
@@ -234,7 +235,7 @@ export default function AdminLoginPage() {
                     id="admin-loginCode"
                     name="loginCode"
                     type="text"
-                    placeholder="ADM1234"
+                    placeholder="ADMIN2026"
                     required
                     maxLength={10}
                     onFocus={() => setFocusedField("loginCode")}
@@ -244,7 +245,7 @@ export default function AdminLoginPage() {
                 </div>
                 <p className="text-xs text-zinc-400 flex items-center gap-1.5">
                   <span className="inline-block w-1 h-1 rounded-full bg-zinc-300" />
-                  Administrator access only
+                  Use your organization admin code to sign in
                 </p>
               </div>
 
@@ -259,12 +260,42 @@ export default function AdminLoginPage() {
               </Button>
             </form>
 
-            <p className="mt-8 text-center text-sm text-zinc-500">
-              Don&apos;t have an account?{" "}
-              <Link href="/admin/signup" className="font-medium text-red-600 hover:text-red-700 transition-colors underline underline-offset-2 decoration-red-300 hover:decoration-red-600">
-                Create an account
-              </Link>
-            </p>
+            {!showOtherRoles ? (
+              <p className="mt-8 text-center text-sm text-zinc-500">
+                <button
+                  type="button"
+                  onClick={() => setShowOtherRoles(true)}
+                  className="font-medium text-red-600 hover:text-red-700 transition-colors underline underline-offset-2 decoration-red-300 hover:decoration-red-600 cursor-pointer"
+                >
+                  Sign In To Another Account
+                </button>
+              </p>
+            ) : (
+              <div className="mt-8 text-center space-y-3">
+                <p className="text-xs text-zinc-400 font-medium">Select your role to sign in:</p>
+                <div className="flex justify-center gap-4">
+                  <Link
+                    href="/student/login"
+                    className="px-4 py-2 text-xs font-semibold text-zinc-700 bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900 rounded-xl transition-all duration-200"
+                  >
+                    Student Login
+                  </Link>
+                  <Link
+                    href="/instructor/login"
+                    className="px-4 py-2 text-xs font-semibold text-zinc-700 bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900 rounded-xl transition-all duration-200"
+                  >
+                    Instructor Login
+                  </Link>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowOtherRoles(false)}
+                  className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors underline underline-offset-2"
+                >
+                  Back to Admin Login
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
@@ -294,7 +325,7 @@ export default function AdminLoginPage() {
               <Shield className="w-7 h-7 text-red-400" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-medium text-white mb-3 tracking-tight">Admin Dashboard</h2>
-            <p className="text-zinc-500 text-sm">Administrator Portal — SERP LMS</p>
+            <p className="text-zinc-500 text-sm">Administrator Portal — Ally Tech Services</p>
           </motion.div>
 
           <div className="space-y-4">

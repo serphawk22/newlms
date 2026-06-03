@@ -13,6 +13,13 @@ enum Role {
   ADMIN
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+
+
 enum EnrollmentStatus {
   PENDING
   ACTIVE
@@ -38,6 +45,8 @@ model User {
   email                    String                   @unique
   password                 String // ADDED for custom JWT auth
   name                     String?
+  status                   UserStatus               @default(PENDING)
+
   avatar                   String?
   coverImage               String?
   loginCode                String?                  @unique // role-prefixed unique code e.g. STU4839

@@ -13,6 +13,7 @@ export interface StudentRow {
   completedCourses: number;
   lastLogin: string;
   joinedDate: string;
+  status: string;
 }
 
 export interface InstructorRow {
@@ -43,7 +44,7 @@ export default async function AdminUsersPage() {
       include: {
         user: {
           select: {
-            id: true, name: true, email: true, sessionToken: true,
+            id: true, name: true, email: true, sessionToken: true, status: true,
             enrollments: { select: { progress: true, enrolledAt: true, course: { select: { organizationId: true } } } },
           },
         },
@@ -55,7 +56,7 @@ export default async function AdminUsersPage() {
       include: {
         user: {
           select: {
-            id: true, name: true, email: true,
+            id: true, name: true, email: true, status: true,
             coursesCreated: {
               where: { organizationId: ctx.orgId },
               include: { _count: { select: { enrollments: true } } },
@@ -84,6 +85,7 @@ export default async function AdminUsersPage() {
       joinedDate: orgEnrollments.length > 0
         ? orgEnrollments.sort((a, b) => a.enrolledAt.getTime() - b.enrolledAt.getTime())[0].enrolledAt.toISOString().slice(0, 10)
         : "N/A",
+      status: m.user.status,
     };
   });
 
@@ -102,7 +104,7 @@ export default async function AdminUsersPage() {
     totalStudents: enrollmentsByCreator.get(m.user.id) || 0,
     joinedDate: "N/A",
     lastLogin: "N/A",
-    status: "Active",
+    status: m.user.status,
   }));
 
   const data: UsersData = {

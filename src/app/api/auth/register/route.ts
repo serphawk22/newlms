@@ -95,6 +95,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         name,
         loginCode,
+        status: assignedRole === "ADMIN" ? "ACTIVE" : "PENDING",
         memberships: {
           create: {
             organizationId: org.id,

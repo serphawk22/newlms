@@ -58,6 +58,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    if (user.status === "PENDING") {
+      return NextResponse.json({ error: "Your account is awaiting administrator approval." }, { status: 403 });
+    }
+
+    if (user.status === "REJECTED") {
+      return NextResponse.json({ error: "Your account has been rejected." }, { status: 403 });
+    }
+
+
     // ── 4. Check organisation membership ──────────────────────────────────
     const primaryMembership =
       (expectedRole ? user.memberships.find((membership) => membership.role === expectedRole) : null) ??
