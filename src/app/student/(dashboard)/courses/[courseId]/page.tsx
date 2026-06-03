@@ -56,21 +56,21 @@ export default async function StudentCourseView({
   const course = await prisma.course.findUnique({
     where: { id: courseId },
     include: {
-      modules: {
+      modules: tab === "modules" ? {
         orderBy: { id: "asc" },
         include: {
           lessons: { orderBy: { id: "asc" } },
           liveSessions: { orderBy: { createdAt: "desc" } },
           recordedClasses: { orderBy: { createdAt: "desc" } },
         },
-      },
-      readingMaterials: {
+      } : false,
+      readingMaterials: tab === "reading" ? {
         orderBy: { createdAt: "desc" },
         include: { file: true },
-      },
-      assignments: { orderBy: { createdAt: "desc" } },
-      quizzes: { include: { questions: true } },
-      liveSessions: { orderBy: { createdAt: "desc" } },
+      } : false,
+      assignments: tab === "assignments" ? { orderBy: { createdAt: "desc" } } : false,
+      quizzes: tab === "quizzes" ? { include: { questions: true } } : false,
+      liveSessions: tab === "live" ? { orderBy: { createdAt: "desc" } } : false,
     },
   });
 
@@ -149,28 +149,30 @@ export default async function StudentCourseView({
     submittedAt: Date;
   };
 
-  // Run both submission queries in parallel — they are fully independent of each other.
-  const [rawSubs, rawQuizSubs] = await Promise.all([
-    prisma.assignmentSubmission.findMany({
+  // Run submission queries sequentially to prevent Neon connection spikes
+  let rawSubs: any[] = [];
+  let rawQuizSubs: any[] = [];
+
+  if (tab === "assignments" && course.assignments && course.assignments.length > 0) {
+    rawSubs = await prisma.assignmentSubmission.findMany({
       where: {
         studentId: studentId!,
         assignmentId: { in: course.assignments.map((a) => a.id) },
       },
       select: {
         id: true, assignmentId: true, driveLink: true,
-        // Legacy fields (backward compat)
         fileUrl: true, publicId: true,
         fileType: true, mimeType: true,
         fileSize: true, originalFileName: true,
-        // New normalized relation
-        fileId: true,
-        file: true,
+        fileId: true, file: true,
         grade: true, maxGrade: true, feedback: true,
         submittedAt: true, gradedAt: true,
       },
-    }).catch(() => [] as SubmissionRow[]),
+    }).catch(() => [] as SubmissionRow[]);
+  }
 
-    prisma.quizSubmission.findMany({
+  if (tab === "quizzes" && course.quizzes && course.quizzes.length > 0) {
+    rawQuizSubs = await prisma.quizSubmission.findMany({
       where: {
         studentId: studentId!,
         quizId: { in: course.quizzes.map((q) => q.id) },
@@ -182,8 +184,8 @@ export default async function StudentCourseView({
         answers: true,
         submittedAt: true,
       },
-    }).catch(() => []),
-  ]);
+    }).catch(() => []);
+  }
 
   const submissionMap = new Map<string, SubmissionRow>();
   for (const s of rawSubs) submissionMap.set(s.assignmentId, s);
@@ -306,7 +308,7 @@ export default async function StudentCourseView({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {course.modules.map((module, index) => (
+                    {(course.modules as any[]).map((module, index) => (
                       <Card key={module.id} className="border-slate-200 shadow-sm overflow-hidden bg-white hover:border-blue-200 transition-colors">
                         <CardHeader className="bg-slate-50 border-b border-slate-100 py-4">
                           <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -318,10 +320,10 @@ export default async function StudentCourseView({
 
                           {/* ── Lessons ── */}
                           <div className="divide-y divide-slate-100">
-                            {module.lessons.length === 0 ? (
+                            {module.lessons?.length === 0 ? (
                               <div className="p-6 text-sm text-slate-400 text-center bg-slate-50/50">No lessons posted yet.</div>
                             ) : (
-                              module.lessons.map((lesson, lessonIndex) => (
+                              (module.lessons || []).map((lesson: any, lessonIndex: number) => (
                                 <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-blue-50/50 transition-colors">
                                   <div className="flex items-center gap-4">
                                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
@@ -356,13 +358,13 @@ export default async function StudentCourseView({
                           </div>
 
                           {/* ── Live Classes ── */}
-                          {module.liveSessions.length > 0 && (
+                          {module.liveSessions && module.liveSessions.length > 0 && (
                             <div className="border-t border-slate-100 px-4 py-3">
                               <p className="text-xs font-bold uppercase tracking-wider text-red-400 mb-2 flex items-center gap-1.5">
                                 <Radio className="w-3.5 h-3.5" /> Live Classes
                               </p>
                               <div className="space-y-2">
-                                {module.liveSessions.map((session) => {
+                                {(module.liveSessions || []).map((session: any) => {
                                   const isLive = session.status === "ONGOING";
                                   const isScheduled = session.status === "SCHEDULED";
                                   const isCompleted = session.status === "COMPLETED";
@@ -418,13 +420,13 @@ export default async function StudentCourseView({
                           )}
 
                           {/* ── Recorded Videos ── */}
-                          {module.recordedClasses.length > 0 && (
+                          {module.recordedClasses && module.recordedClasses.length > 0 && (
                             <div className="border-t border-slate-100 px-4 py-3">
                               <p className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2 flex items-center gap-1.5">
                                 <MonitorPlay className="w-3.5 h-3.5" /> Recorded Videos
                               </p>
                               <div className="space-y-2">
-                                {module.recordedClasses.map((rec) => (
+                                {(module.recordedClasses || []).map((rec: any) => (
                                   <div key={rec.id} className="flex items-center justify-between p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
                                     <div className="flex items-center gap-3 min-w-0">
                                       <MonitorPlay className="w-4 h-4 text-indigo-500 shrink-0" />
@@ -466,13 +468,13 @@ export default async function StudentCourseView({
                   <h3 className="text-2xl font-bold text-slate-800">Reading Materials</h3>
                 </div>
 
-                {course.readingMaterials.length === 0 ? (
+                {(!course.readingMaterials || course.readingMaterials.length === 0) ? (
                   <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
                     No reading materials available yet.
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {course.readingMaterials.map((rm) => {
+                    {(course.readingMaterials as any[]).map((rm) => {
                       // Resolve file info: prefer normalized UploadedFile relation, fall back to legacy fields
                       const rmAny = rm as unknown as {
                         file?: { url: string; originalName: string; mimeType: string; size: number; extension: string } | null;
@@ -567,13 +569,13 @@ export default async function StudentCourseView({
                   <h3 className="text-2xl font-bold text-slate-800">Assignments</h3>
                 </div>
 
-                {course.assignments.length === 0 ? (
+                {(!course.assignments || course.assignments.length === 0) ? (
                   <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
                     No assignments currently due.
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {course.assignments.map((asgn) => {
+                    {(course.assignments as any[]).map((asgn) => {
                       const existingSub = submissionMap.get(asgn.id) ?? null;
                       return (
                         <Card key={asgn.id} className="border-slate-200 shadow-sm hover:border-amber-300 transition-all bg-white overflow-hidden">
@@ -640,13 +642,13 @@ export default async function StudentCourseView({
                   <h3 className="text-2xl font-bold text-slate-800">Quizzes & Tests</h3>
                 </div>
 
-                {course.quizzes.length === 0 ? (
+                {(!course.quizzes || course.quizzes.length === 0) ? (
                   <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
                     No quizzes available.
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {course.quizzes.map((quiz) => {
+                    {(course.quizzes as any[]).map((quiz) => {
                       const existingSub = quizSubmissionMap.get(quiz.id) ?? null;
                       return (
                         <Card key={quiz.id} className="border-slate-200 shadow-sm hover:border-emerald-300 transition-all bg-white overflow-hidden">
@@ -672,7 +674,7 @@ export default async function StudentCourseView({
                                 id: quiz.id,
                                 title: quiz.title,
                                 retryEnabled: quiz.retryEnabled,
-                                questions: quiz.questions.map((q) => ({
+                                questions: (quiz.questions || []).map((q: any) => ({
                                   id: q.id,
                                   text: q.text,
                                   options: q.options,

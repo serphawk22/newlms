@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getAdminContext } from "../_lib";
 import { Card } from "@/components/ui/card";
 import { FolderKanban } from "lucide-react";
+import { CoursesClient } from "./courses-client";
 
 export const dynamic = "force-dynamic";
 
@@ -27,35 +28,8 @@ export default async function AdminAllCoursesPage() {
         </span>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-zinc-100 bg-zinc-50">
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Course</th>
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Instructor</th>
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Enrolled</th>
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courses.map((c) => (
-                <tr key={c.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-zinc-900">{c.title}</td>
-                  <td className="px-4 py-3 text-sm text-zinc-500">{c.creator?.name || "Unknown"}</td>
-                  <td className="px-4 py-3 text-sm text-zinc-700">{c._count.enrollments}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
-                      c.published ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-                    }`}>
-                      {c.published ? "Published" : "Draft"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <Card className="border-zinc-200 shadow-sm overflow-hidden bg-white">
+        <CoursesClient courses={courses} />
         {courses.length === 0 && (
           <div className="text-center py-12 text-zinc-400 text-sm">No courses found.</div>
         )}

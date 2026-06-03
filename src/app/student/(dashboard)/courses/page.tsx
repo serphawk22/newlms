@@ -35,35 +35,22 @@ export default async function StudentCoursesPage() {
   if (!user || user.memberships.length === 0) redirect("/login");
   const orgId = user.memberships[0].organizationId;
 
-  // Fetch all published courses in the organization
+  // Fetch all published courses in the organization sequentially
   const allCourses = await prisma.course.findMany({
     where: {
       organizationId: orgId,
       published: true,
     },
     include: {
-      creator: {
-        select: {
-          name: true,
-        }
-      },
-      _count: {
-        select: {
-          modules: true,
-          enrollments: true,
-        }
-      }
+      creator: { select: { name: true } },
+      _count: { select: { modules: true, enrollments: true } }
     },
-    orderBy: {
-      id: "desc"
-    }
+    orderBy: { id: "desc" }
   });
 
   // Fetch student's enrollments with status
   const enrollments = await prisma.enrollment.findMany({
-    where: {
-      userId: user.id,
-    },
+    where: { userId: user.id },
     include: {
       course: {
         select: {

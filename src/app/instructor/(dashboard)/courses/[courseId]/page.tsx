@@ -415,6 +415,70 @@ async function markSessionOngoing(formData: FormData) {
   redirect(`/meet/${roomId}`);
 }
 
+async function issueCertificate(formData: FormData) {
+  "use server";
+  const studentId = formData.get("studentId") as string;
+  const courseId = formData.get("courseId") as string;
+  if (!studentId || !courseId) return;
+
+  const year = new Date().getFullYear();
+  const count = await prisma.certificate.count();
+  const certNumber = `CERT-${year}-${String(count + 1).padStart(6, "0")}`;
+  const verificationToken = `${certNumber}-${Math.random().toString(36).slice(2, 10)}`;
+
+  const recordedClasses = await prisma.recordedClass.findMany({
+    where: { courseId },
+    select: { duration: true },
+  });
+  const totalSecs = recordedClasses.reduce((s, r) => s + (r.duration ?? 0), 0);
+  const hrs = Math.floor(totalSecs / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+  const courseDuration = totalSecs > 0 ? `${hrs}hrs ${mins}min ${secs}sec` : "—";
+
+  await prisma.certificate.upsert({
+    where: { studentId_courseId: { studentId, courseId } },
+    update: { status: "ISSUED" },
+    create: {
+      studentId,
+      courseId,
+      certificateNumber: certNumber,
+      verificationToken,
+      completionDate: new Date(),
+      courseDuration,
+      status: "ISSUED"
+    }
+  });
+  revalidatePath(`/instructor/courses/${courseId}`);
+}
+
+async function denyCertificate(formData: FormData) {
+  "use server";
+  const studentId = formData.get("studentId") as string;
+  const courseId = formData.get("courseId") as string;
+  if (!studentId || !courseId) return;
+
+  const year = new Date().getFullYear();
+  const count = await prisma.certificate.count();
+  const certNumber = `CERT-${year}-${String(count + 1).padStart(6, "0")}`;
+  const verificationToken = `${certNumber}-${Math.random().toString(36).slice(2, 10)}`;
+
+  await prisma.certificate.upsert({
+    where: { studentId_courseId: { studentId, courseId } },
+    update: { status: "DENIED" },
+    create: {
+      studentId,
+      courseId,
+      certificateNumber: certNumber,
+      verificationToken,
+      completionDate: new Date(),
+      courseDuration: "—",
+      status: "DENIED"
+    }
+  });
+  revalidatePath(`/instructor/courses/${courseId}`);
+}
+
 // --- PAGE COMPONENT ---
 
 export default async function CourseBuilderPage({ 
@@ -504,6 +568,12 @@ export default async function CourseBuilderPage({
     include: { user: { select: { id: true, name: true, email: true } } },
     orderBy: { enrolledAt: "desc" },
   });
+
+  // Fetch certificates for this course to show status in Students Info
+  const courseCertificates = await prisma.certificate.findMany({
+    where: { courseId },
+  });
+  const certMap = new Map(courseCertificates.map(c => [c.studentId, c.status]));
 
   // Fetch org students NOT enrolled in this course (for instructor to add)
   const enrolledIds = [...enrollments.map((e) => e.userId), ...pendingEnrollments.map((e) => e.userId)];
@@ -1129,8 +1199,8 @@ export default async function CourseBuilderPage({
                     <p className="text-sm mt-1">Students will appear here once they enrol in this course.</p>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-sm">
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+                    <table className="w-full text-sm min-w-[1000px]">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
                           <th className="text-left px-5 py-3 font-semibold text-slate-600">#</th>
@@ -1140,6 +1210,7 @@ export default async function CourseBuilderPage({
                           <th className="text-center px-5 py-3 font-semibold text-slate-600">Quizzes</th>
                           <th className="text-center px-5 py-3 font-semibold text-slate-600">Materials</th>
                           <th className="text-left px-5 py-3 font-semibold text-slate-600">Progress</th>
+                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Certificate Status</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -1193,6 +1264,38 @@ export default async function CourseBuilderPage({
                                   </div>
                                   <span className="text-xs text-slate-600 font-bold w-8">{pct}%</span>
                                 </div>
+                              </td>
+                              <td className="px-5 py-3 text-center">
+                                {(() => {
+                                  const explicitStatus = certMap.get(enr.userId);
+                                  const effectiveStatus = explicitStatus ?? (pct === 100 ? "ELIGIBLE" : "NOT_ELIGIBLE");
+                                  
+                                  if (effectiveStatus === "NOT_ELIGIBLE") {
+                                    return <span className="text-xs text-slate-400 font-semibold bg-slate-100 px-2 py-1 rounded-full">Not Eligible</span>;
+                                  } else if (effectiveStatus === "ELIGIBLE") {
+                                    return (
+                                      <div className="flex flex-col gap-1 items-center">
+                                        <span className="text-xs text-amber-600 font-semibold bg-amber-100 px-2 py-1 rounded-full mb-1">Eligible</span>
+                                        <div className="flex gap-1">
+                                          <form action={issueCertificate}>
+                                            <input type="hidden" name="studentId" value={enr.userId} />
+                                            <input type="hidden" name="courseId" value={courseId} />
+                                            <button type="submit" className="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2 rounded transition-colors">Issue</button>
+                                          </form>
+                                          <form action={denyCertificate}>
+                                            <input type="hidden" name="studentId" value={enr.userId} />
+                                            <input type="hidden" name="courseId" value={courseId} />
+                                            <button type="submit" className="text-[10px] bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition-colors">Deny</button>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    );
+                                  } else if (effectiveStatus === "ISSUED") {
+                                    return <span className="text-xs text-emerald-700 font-semibold bg-emerald-100 px-2 py-1 rounded-full">Issued</span>;
+                                  } else if (effectiveStatus === "DENIED") {
+                                    return <span className="text-xs text-red-700 font-semibold bg-red-100 px-2 py-1 rounded-full">Denied</span>;
+                                  }
+                                })()}
                               </td>
                             </tr>
                           );

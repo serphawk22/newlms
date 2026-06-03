@@ -37,89 +37,45 @@ export default async function StudentDashboardPage() {
   if (!user || user.memberships.length === 0) redirect("/login");
   const orgId = user.memberships[0].organizationId;
 
-  // ── Enrolled courses (ACTIVE) ──────────────────────────────────────────────
-  const enrollments = await prisma.enrollment.findMany({
-    where: { userId, status: "ACTIVE" },
+  // ── 1. Fetch initial user data sequentially to prevent Neon connection spike ──
+  const allEnrollments = await prisma.enrollment.findMany({
+    where: { userId },
     include: {
       course: {
-        select: { id: true, title: true, published: true, creator: { select: { name: true } }, _count: { select: { modules: true, enrollments: true } } },
+        select: {
+          id: true,
+          title: true,
+          published: true,
+          creator: { select: { name: true } },
+          _count: { select: { modules: true, enrollments: true, assignments: true, quizzes: true, readingMaterials: true } },
+        },
       },
     },
     orderBy: { enrolledAt: "desc" },
   });
 
-  const enrolledCourses = enrollments
-    .filter((e) => e.course.published)
-    .map((e) => ({
-      id: e.course.id,
-      title: e.course.title,
-      progress: Math.round(e.progress),
-      instructorName: e.course.creator.name ?? "Instructor",
-      modulesCount: e.course._count.modules,
-      enrollmentsCount: e.course._count.enrollments,
-    }));
-
-  // ── Continue learning — course with lowest non-zero progress (most active) ──
-  const continueLearningCourse = enrolledCourses.find((c) => c.progress < 100) ?? enrolledCourses[0] ?? null;
-
-  // ── Completed assignments ──────────────────────────────────────────────────
-  const completedAssignments = await prisma.assignmentSubmission.count({
+  const assignmentSubmissions = await prisma.assignmentSubmission.findMany({
     where: { studentId: userId },
+    select: { submittedAt: true, assignment: { select: { courseId: true } } },
   });
 
-  // ── Pending quizzes (quizzes in enrolled courses with no submission yet) ───
-  const enrolledCourseIds = enrolledCourses.map((c) => c.id);
+  // Track daily login for today
+  const todayStr = new Date().toISOString().split("T")[0];
+  try {
+    await prisma.dailyLogin.upsert({
+      where: { userId_dateStr: { userId, dateStr: todayStr } },
+      update: {},
+      create: { userId, dateStr: todayStr },
+    });
+  } catch (err) {
+    // ignore constraint errors if concurrent
+  }
 
-  const pendingQuizzes =
-    enrolledCourseIds.length > 0
-      ? await prisma.quiz.findMany({
-          where: {
-            courseId: { in: enrolledCourseIds },
-            submissions: { none: { studentId: userId } },
-          },
-          select: { id: true, title: true, courseId: true, questions: { select: { id: true } } },
-        })
-      : [];
+  const dailyLogins = await prisma.dailyLogin.findMany({
+    where: { userId },
+    select: { createdAt: true },
+  });
 
-  // ── Pending assignments (in enrolled courses with no submission yet) ───────
-  const pendingAssignments =
-    enrolledCourseIds.length > 0
-      ? await prisma.assignment.findMany({
-          where: {
-            courseId: { in: enrolledCourseIds },
-            submissions: { none: { studentId: userId } },
-          },
-          select: { id: true, title: true, courseId: true },
-        })
-      : [];
-
-  // ── Study sessions (completed live sessions in enrolled courses) ──────────
-  const studySessions =
-    enrolledCourseIds.length > 0
-      ? await prisma.liveSession.count({
-          where: {
-            courseId: { in: enrolledCourseIds },
-            status: "COMPLETED",
-          },
-        })
-      : 0;
-
-  // ── Live sessions ─────────────────────────────────────────────────────────
-  const liveSessions =
-    enrolledCourseIds.length > 0
-      ? await prisma.liveSession.findMany({
-          where: {
-            courseId: { in: enrolledCourseIds },
-            status: { in: ["SCHEDULED", "ONGOING"] },
-          },
-          include: { course: { select: { title: true } } },
-          orderBy: { scheduledAt: "asc" },
-        })
-      : [];
-
-  const ongoingSession = liveSessions.find((s) => s.status === "ONGOING") ?? null;
-
-  // ── Trending / All published courses in org ───────────────────────────────
   const allOrgCourses = await prisma.course.findMany({
     where: { organizationId: orgId, published: true },
     include: {
@@ -129,11 +85,120 @@ export default async function StudentDashboardPage() {
     orderBy: { id: "desc" },
   });
 
-  // Create enrollment status map
-  const allEnrollments = await prisma.enrollment.findMany({
-    where: { userId },
-    select: { courseId: true, status: true, progress: true },
+  const quizSubmissions = await prisma.quizSubmission.findMany({
+    where: { studentId: userId },
+    select: { submittedAt: true, quiz: { select: { courseId: true } } },
   });
+
+  // ── Derive values from fetched data to save queries ────────────────────────
+  const enrollments = allEnrollments.filter(e => e.status === "ACTIVE");
+  const completedAssignments = assignmentSubmissions.length;
+  const enrollmentDates = allEnrollments;
+
+  const activeEnrolledCourseIds = enrollments
+    .filter((e) => e.course.published)
+    .map((e) => e.course.id);
+
+  // Fetch material views for real progress calculation
+  const materialViews = activeEnrolledCourseIds.length > 0
+    ? await prisma.materialView.findMany({
+        where: { studentId: userId, material: { courseId: { in: activeEnrolledCourseIds } } },
+        select: { materialId: true, material: { select: { courseId: true } } },
+      })
+    : [];
+
+  // Build per-course activity maps for real progress
+  const asgByCourse = new Map<string, number>();
+  for (const s of assignmentSubmissions) {
+    const cid = s.assignment.courseId;
+    asgByCourse.set(cid, (asgByCourse.get(cid) ?? 0) + 1);
+  }
+  const qzByCourse = new Map<string, number>();
+  for (const s of quizSubmissions) {
+    const cid = s.quiz.courseId;
+    qzByCourse.set(cid, (qzByCourse.get(cid) ?? 0) + 1);
+  }
+  const matByCourse = new Map<string, Set<string>>();
+  for (const v of materialViews) {
+    const cid = v.material.courseId;
+    if (!matByCourse.has(cid)) matByCourse.set(cid, new Set());
+    matByCourse.get(cid)!.add(v.materialId);
+  }
+
+  function getDashboardProgress(courseId: string, totalAsg: number, totalQz: number, totalMat: number): number {
+    const total = totalAsg + totalQz + totalMat;
+    if (total === 0) return 0;
+    const done =
+      (asgByCourse.get(courseId) ?? 0) +
+      (qzByCourse.get(courseId) ?? 0) +
+      (matByCourse.get(courseId)?.size ?? 0);
+    return Math.min(Math.round((done / total) * 100), 100);
+  }
+
+  const enrolledCourses = enrollments
+    .filter((e) => e.course.published)
+    .map((e) => ({
+      id: e.course.id,
+      title: e.course.title,
+      progress: getDashboardProgress(
+        e.course.id,
+        e.course._count.assignments,
+        e.course._count.quizzes,
+        e.course._count.readingMaterials,
+      ),
+      instructorName: e.course.creator.name ?? "Instructor",
+      modulesCount: e.course._count.modules,
+      enrollmentsCount: e.course._count.enrollments,
+    }));
+
+  const enrolledCourseIds = enrolledCourses.map((c) => c.id);
+
+  // ── 2. Sequential secondary queries ──
+  let pendingQuizzes: any[] = [];
+  let pendingAssignments: any[] = [];
+  let studySessions = 0;
+  let liveSessions: any[] = [];
+
+  if (enrolledCourseIds.length > 0) {
+    pendingQuizzes = await prisma.quiz.findMany({
+      where: {
+        courseId: { in: enrolledCourseIds },
+        submissions: { none: { studentId: userId } },
+      },
+      select: { id: true, title: true, courseId: true, questions: { select: { id: true } } },
+    });
+
+    pendingAssignments = await prisma.assignment.findMany({
+      where: {
+        courseId: { in: enrolledCourseIds },
+        submissions: { none: { studentId: userId } },
+      },
+      select: { id: true, title: true, courseId: true },
+    });
+
+    studySessions = await prisma.liveSession.count({
+      where: {
+        courseId: { in: enrolledCourseIds },
+        status: "COMPLETED",
+      },
+    });
+
+    liveSessions = await prisma.liveSession.findMany({
+      where: {
+        courseId: { in: enrolledCourseIds },
+        status: { in: ["SCHEDULED", "ONGOING"] },
+      },
+      include: { course: { select: { title: true } } },
+      orderBy: { scheduledAt: "asc" },
+    });
+  }
+
+  // ── Continue learning — course with lowest non-zero progress (most active) ──
+  const continueLearningCourse = enrolledCourses.find((c) => c.progress < 100) ?? enrolledCourses[0] ?? null;
+
+  const ongoingSession = liveSessions.find((s) => s.status === "ONGOING") ?? null;
+
+  // Create enrollment status map
   const enrollmentMap = new Map(allEnrollments.map((e) => [e.courseId, e]));
 
   const trendingCourses = allOrgCourses.map((c) => {
@@ -157,19 +222,9 @@ export default async function StudentDashboardPage() {
     // We use the enrollment data we already have; dates not available here
   });
 
-  // Get quiz submission dates
-  const quizSubmissions = await prisma.quizSubmission.findMany({
-    where: { studentId: userId },
-    select: { submittedAt: true },
-  });
   quizSubmissions.forEach((q) => activityDates.push(q.submittedAt));
-
-  // Get assignment submission dates
-  const assignmentSubmissions = await prisma.assignmentSubmission.findMany({
-    where: { studentId: userId },
-    select: { submittedAt: true },
-  });
   assignmentSubmissions.forEach((a) => activityDates.push(a.submittedAt));
+  dailyLogins.forEach((d: { createdAt: Date }) => activityDates.push(d.createdAt));
 
   // Compute unique active days this month
   const now = new Date();
@@ -184,10 +239,6 @@ export default async function StudentDashboardPage() {
   });
 
   // Also count enrollment dates as active days (if this month)
-  const enrollmentDates = await prisma.enrollment.findMany({
-    where: { userId },
-    select: { enrolledAt: true },
-  });
   enrollmentDates.forEach((e) => {
     const d = new Date(e.enrolledAt);
     if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {

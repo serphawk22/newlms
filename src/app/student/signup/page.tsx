@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { User, Mail, Lock, Key, AlertCircle, CheckCircle, Copy, Check, ArrowLeft } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, Copy, Check, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ export default function StudentSignupPage() {
   const [error, setError] = useState("");
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -183,7 +185,10 @@ export default function StudentSignupPage() {
                 <Label htmlFor="student-signup-password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <Input id="student-signup-password" name="password" type="password" required className="pl-9 h-11 bg-white border-zinc-200 focus:border-zinc-900 rounded-lg" autoComplete="new-password" />
+                  <Input id="student-signup-password" name="password" type={showPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 bg-white border-zinc-200 focus:border-zinc-900 rounded-lg" autoComplete="new-password" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors" tabIndex={-1}>
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -191,7 +196,10 @@ export default function StudentSignupPage() {
                 <Label htmlFor="student-signup-confirm">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <Input id="student-signup-confirm" name="confirmPassword" type="password" required className="pl-9 h-11 bg-white border-zinc-200 focus:border-zinc-900 rounded-lg" />
+                  <Input id="student-signup-confirm" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 bg-white border-zinc-200 focus:border-zinc-900 rounded-lg" />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors" tabIndex={-1}>
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 

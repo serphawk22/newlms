@@ -8,18 +8,25 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
-    let { email, password, name, code } = await req.json();
+    let { email, password, name, code, requestedRole } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
+    // If no code was provided, auto-select based on requestedRole
     if (!code) {
       const firstOrg = await prisma.organization.findFirst();
       if (!firstOrg) {
         return NextResponse.json({ error: "No organization found in database to join" }, { status: 400 });
       }
-      code = firstOrg.joinCode;
+      if (requestedRole === "INSTRUCTOR") {
+        code = firstOrg.instructorCode;
+      } else if (requestedRole === "ADMIN") {
+        code = firstOrg.adminCode;
+      } else {
+        code = firstOrg.joinCode;
+      }
     }
 
     // Validate password strength
@@ -88,6 +95,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         name,
         loginCode,
+        status: assignedRole === "ADMIN" ? "ACTIVE" : "PENDING",
         memberships: {
           create: {
             organizationId: org.id,
