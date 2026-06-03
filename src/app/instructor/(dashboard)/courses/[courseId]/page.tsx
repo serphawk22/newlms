@@ -23,6 +23,7 @@ import { jwtVerify } from "jose";
 import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
 import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
+import { QuizPdfImporter } from "@/components/QuizPdfImporter";
 
 // --- SERVER ACTIONS ---
 
@@ -993,6 +994,14 @@ export default async function CourseBuilderPage({
                             )}
                           </div>
                         ))}
+                      </div>
+
+                      {/* PDF Import */}
+                      <div className="pt-6 border-t border-slate-100">
+                        <QuizPdfImporter
+                          quizId={quiz.id}
+                          courseId={courseId}
+                        />
                       </div>
 
                       {/* Add Question Form */}
