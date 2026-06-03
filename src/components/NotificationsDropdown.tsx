@@ -156,10 +156,10 @@ export function NotificationsDropdown() {
       <button
         id="notifications-btn"
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-full hover:bg-zinc-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="relative p-2 rounded-full text-zinc-300 lg:text-zinc-600 hover:bg-white/10 lg:hover:bg-zinc-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 text-zinc-600" />
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
             {unreadCount > 99 ? "99+" : unreadCount}
