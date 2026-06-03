@@ -263,9 +263,6 @@ export function InstructorDashboardClient({
               <HelpCircle className="w-4 h-4 text-zinc-500" />
               <h3 className="text-xs font-medium text-zinc-700 uppercase tracking-wider">Active Quizzes</h3>
             </div>
-            <Link href="/instructor#courses" className="text-xs font-medium text-blue-600 hover:text-blue-700">
-              See All &rarr;
-            </Link>
           </div>
           <Card className="border-zinc-200 shadow-sm">
             <CardContent className="p-0 divide-y divide-zinc-100">
@@ -303,9 +300,6 @@ export function InstructorDashboardClient({
               <Video className="w-4 h-4 text-zinc-500" />
               <h3 className="text-xs font-medium text-zinc-700 uppercase tracking-wider">Upcoming Live Classes</h3>
             </div>
-            <Link href="/instructor#courses" className="text-xs font-medium text-blue-600 hover:text-blue-700">
-              Create Quiz &rarr;
-            </Link>
           </div>
           <Card className="border-zinc-200 shadow-sm">
             <CardContent className="p-0 divide-y divide-zinc-100">
