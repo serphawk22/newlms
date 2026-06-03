@@ -306,29 +306,72 @@ function OfficeViewer({ url, fileName }: { url: string; fileName: string }) {
 // Fallback: download card.
 
 function SpreadsheetViewer({ url, fileName }: { url: string; fileName: string }) {
-  const [loaded,  setLoaded]  = useState(false);
-  const [failed,  setFailed]  = useState(false);
+  const [engine, setEngine] = useState<"microsoft" | "google" | "none">("google");
+  const [loaded, setLoaded] = useState(false);
 
-  const msUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
-
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
-    const t = setTimeout(() => { if (!loaded) setFailed(true); }, 25_000);
-    return () => clearTimeout(t);
-  }, [loaded]);
+    if (engine === "none") return;
+    setLoaded(false);
+    clearTimeout(timeoutRef.current);
+    if (engine === "google") {
+      timeoutRef.current = setTimeout(() => {
+        setEngine("microsoft");
+      }, 20_000);
+    }
+    return () => clearTimeout(timeoutRef.current);
+  }, [engine]);
 
-  if (failed) return <DownloadCard url={url} fileName={fileName} label="Spreadsheet preview unavailable — download to open in Excel or Google Sheets." />;
+  const encoded = encodeURIComponent(url);
+  const msUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encoded}`;
+  const googleUrl = `https://docs.google.com/viewer?url=${encoded}&embedded=true`;
+  const src = engine === "microsoft" ? msUrl : googleUrl;
+  const engineLabel = engine === "microsoft" ? "Microsoft Office Viewer" : "Google Docs Viewer";
+
+  if (engine === "none") {
+    return (
+      <DownloadCard
+        url={url}
+        fileName={fileName}
+        label="Spreadsheet preview unavailable — download to open in Excel or Google Sheets."
+      />
+    );
+  }
 
   return (
     <div className="relative flex-1 flex flex-col min-h-0" style={{ height: "100%" }}>
-      {!loaded && <Spinner label="Loading spreadsheet via Microsoft Viewer…" />}
+      {!loaded && <Spinner label={`Loading spreadsheet via ${engineLabel}…`} />}
       <iframe
-        src={msUrl}
-        title="Spreadsheet preview"
+        key={engine}
+        src={src}
+        title={`Spreadsheet preview (${engineLabel})`}
         className="flex-1 w-full border-0 bg-white"
         style={{ height: "100%", minHeight: 0 }}
-        onLoad={() => setLoaded(true)}
-        onError={() => setFailed(true)}
+        onLoad={() => {
+          setLoaded(true);
+          clearTimeout(timeoutRef.current);
+        }}
+        onError={() => {
+          clearTimeout(timeoutRef.current);
+          setEngine((e) => (e === "microsoft" ? "google" : "none"));
+        }}
       />
+      {/* Engine switcher */}
+      <div className="flex items-center justify-between px-4 py-1.5 bg-slate-800/90 border-t border-slate-700 shrink-0 text-xs text-slate-400">
+        <span>{engineLabel}</span>
+        <button
+          onClick={() => {
+            clearTimeout(timeoutRef.current);
+            setEngine((e) => (e === "microsoft" ? "google" : "microsoft"));
+            setLoaded(false);
+          }}
+          className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+          suppressHydrationWarning
+        >
+          <RefreshCw className="w-3 h-3" />
+          {engine === "microsoft" ? "Switch to Google Docs Viewer" : "Switch to MS Office Viewer"}
+        </button>
+      </div>
     </div>
   );
 }
