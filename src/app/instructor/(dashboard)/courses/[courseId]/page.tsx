@@ -204,7 +204,15 @@ async function deleteQuiz(formData: FormData) {
   "use server";
   const id = formData.get("id") as string;
   const courseId = formData.get("courseId") as string;
-  await prisma.quiz.delete({ where: { id } });
+  try {
+    await prisma.$transaction([
+      prisma.quizSubmission.deleteMany({ where: { quizId: id } }),
+      prisma.question.deleteMany({ where: { quizId: id } }),
+      prisma.quiz.delete({ where: { id } }),
+    ]);
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
+  }
   revalidatePath(`/instructor/courses/${courseId}`);
 }
 
