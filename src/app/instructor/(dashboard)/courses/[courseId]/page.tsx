@@ -25,6 +25,7 @@ import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
 import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
 import { QuizPdfImporter } from "@/components/QuizPdfImporter";
 import { getCourseBannerUrl } from "@/lib/course-images";
+import { CourseCommentsTab } from "@/components/CourseCommentsTab";
 
 // --- SERVER ACTIONS ---
 
@@ -731,6 +732,15 @@ export default async function CourseBuilderPage({
                   className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
                 >
                   <HelpCircle className="w-4 h-4 mr-2" /> Quizzes & Tests
+                </Button>
+              </Link>
+              <Link href={`?tab=comments`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("comments")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" /> Q&A Discussions
                 </Button>
               </Link>
               <Link href={`?tab=students`}>
@@ -1703,6 +1713,11 @@ export default async function CourseBuilderPage({
             {/* ADMIN FEEDBACK TAB */}
             {tab === "adminfeedback" && (
               <InstructorFeedbackTab courseId={courseId} />
+            )}
+
+            {/* Q&A DISCUSSIONS TAB */}
+            {tab === "comments" && (
+              <CourseCommentsTab courseId={courseId} />
             )}
 
           </div>

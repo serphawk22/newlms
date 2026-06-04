@@ -68,6 +68,7 @@ model User {
   dailyLogins              DailyLogin[]
   certificates             Certificate[]
   studyFriendSessions      StudyFriendSession[]
+  courseComments           CourseComment[]          @relation("CourseCommentAuthor")
 }
 
 model OrganizationMember {
@@ -105,6 +106,7 @@ model Course {
   recordedClasses  RecordedClass[]
   certificates     Certificate[]
   reviews          Review[]
+  courseComments   CourseComment[]
 
   @@index([organizationId])
   @@index([creatorId])
@@ -598,4 +600,21 @@ enum LiveSessionStatus {
   SCHEDULED
   ONGOING
   COMPLETED
+}
+
+model CourseComment {
+  id        String   @id @default(cuid())
+  content   String
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("CourseCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    CourseComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   CourseComment[] @relation("CommentReplies")
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
+  @@index([authorId])
+  @@index([parentId])
 }
