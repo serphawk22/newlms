@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:inspect": "$env:NODE_OPTIONS='--inspect --max-old-space-size=6144'; node node_modules/next/dist/bin/next dev",
-    "build": "$env:NODE_OPTIONS='--max-old-space-size=6144'; node node_modules/next/dist/bin/next build",
-    "start": "$env:NODE_OPTIONS='--max-old-space-size=6144'; node node_modules/next/dist/bin/next start",
-    "start:inspect": "$env:NODE_OPTIONS='--inspect --max-old-space-size=6144'; node node_modules/next/dist/bin/next start",
-    "lint": "node node_modules/eslint/bin/eslint.js",
-    "postinstall": "node node_modules/prisma/build/index.js generate"
+    "dev:inspect": "cross-env NODE_OPTIONS='--inspect --max-old-space-size=6144' next dev",
+    "build": "cross-env NODE_OPTIONS='--max-old-space-size=6144' next build",
+    "start": "cross-env NODE_OPTIONS='--max-old-space-size=6144' next start",
+    "start:inspect": "cross-env NODE_OPTIONS='--inspect --max-old-space-size=6144' next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
