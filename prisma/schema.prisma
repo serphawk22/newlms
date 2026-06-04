@@ -69,6 +69,7 @@ model User {
   studentRoadmapProgresses StudentRoadmapProgress[]
   dailyLogins              DailyLogin[]
   certificates             Certificate[]
+  courseComments           CourseComment[]          @relation("CourseCommentAuthor")
 }
 
 model OrganizationMember {
@@ -106,6 +107,7 @@ model Course {
   adminComments    AdminComment[]
   courseRoadmap    CourseRoadmap?
   certificates     Certificate[]
+  courseComments   CourseComment[]
 
   @@index([organizationId])
   @@index([creatorId])
@@ -630,3 +632,20 @@ model CertificateTemplate {
   updatedAt DateTime @updatedAt
 }
 
+
+model CourseComment {
+  id        String   @id @default(cuid())
+  content   String
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("CourseCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    CourseComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   CourseComment[] @relation("CommentReplies")
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
+  @@index([authorId])
+  @@index([parentId])
+}

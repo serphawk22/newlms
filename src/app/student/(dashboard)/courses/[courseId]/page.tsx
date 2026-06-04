@@ -16,6 +16,7 @@ import { RecordedClassesTab } from "@/components/RecordedClassesTab";
 import { VideoPlayerModal } from "@/components/VideoPlayerModal";
 import { FileViewerModal } from "@/components/modals/FileViewerModal";
 import { StudentFeedbackTab } from "@/components/admin/StudentFeedbackTab";
+import { CourseCommentsTab } from "@/components/CourseCommentsTab";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
@@ -282,6 +283,11 @@ export default async function StudentCourseView({
             <Link href={`?tab=reviews`}>
               <Button variant={tab === "reviews" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reviews" ? "bg-amber-100 text-amber-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
                 <Star className="w-4 h-4 mr-3" /> Reviews
+              </Button>
+            </Link>
+            <Link href={`?tab=comments`}>
+              <Button variant={tab === "comments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "comments" ? "bg-blue-100 text-blue-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+                <MessageSquare className="w-4 h-4 mr-3" /> Q&A
               </Button>
             </Link>
             <Link href={`?tab=feedback`}>
@@ -714,6 +720,11 @@ export default async function StudentCourseView({
             {/* ---- ADMIN / INSTRUCTOR FEEDBACK ---- */}
             {tab === "feedback" && (
               <StudentFeedbackTab courseId={courseId} />
+            )}
+
+            {/* ---- Q&A COMMENTS ---- */}
+            {tab === "comments" && (
+              <CourseCommentsTab courseId={courseId} />
             )}
 
           </div>
