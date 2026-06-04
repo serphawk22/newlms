@@ -77,13 +77,17 @@ export default async function StudentProgressPage() {
       }),
     ]);
 
-  // ── Certificates ──────────────────────────────────────────────────────────
-  const [user, certificates] = await Promise.all([
+  // ── Certificates & Templates ──────────────────────────────────────────────
+  const [user, certificates, activeTemplate] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
     prisma.certificate.findMany({
       where: { studentId: userId },
       include: { course: { select: { title: true } } },
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.certificateTemplate.findFirst({
+      where: { isActive: true },
+      select: { fileUrl: true, mappings: true },
     }),
   ]);
 
@@ -148,6 +152,8 @@ export default async function StudentProgressPage() {
     completionDate: c.completionDate.toISOString(),
     courseDuration: c.courseDuration,
     course: { title: c.course.title },
+    templateUrl: activeTemplate?.fileUrl || null,
+    templateMappings: (activeTemplate?.mappings as Record<string, unknown> | null) ?? null,
   }));
 
   const completedAssignments = assignmentSubmissions.length;

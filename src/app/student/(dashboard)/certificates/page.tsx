@@ -24,7 +24,7 @@ export default async function StudentCertificatesPage() {
 
   const userId = payload.userId as string;
 
-  const [user, certificates, enrollments] = await Promise.all([
+  const [user, certificates, enrollments, activeTemplate] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
     prisma.certificate.findMany({
       where: { studentId: userId },
@@ -34,6 +34,10 @@ export default async function StudentCertificatesPage() {
     prisma.enrollment.findMany({
       where: { userId, status: "ACTIVE", progress: { gte: 100 } },
       include: { course: { select: { id: true, title: true } } },
+    }),
+    prisma.certificateTemplate.findFirst({
+      where: { isActive: true },
+      select: { fileUrl: true, mappings: true },
     }),
   ]);
 
@@ -55,6 +59,8 @@ export default async function StudentCertificatesPage() {
     completionDate: c.completionDate.toISOString(),
     courseDuration: c.courseDuration,
     course: { title: c.course.title },
+    templateUrl: activeTemplate?.fileUrl || null,
+    templateMappings: (activeTemplate?.mappings as Record<string, unknown> | null) ?? null,
   }));
 
   return (

@@ -20,7 +20,7 @@ import {
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "700"] });
 
-type Subtopic = { id: string; title: string; order: number; progress?: any[] };
+type Subtopic = { id: string; title: string; order: number; progress?: unknown[] };
 type Topic = { id: string; title: string; order: number; subtopics: Subtopic[] };
 type Phase = { id: string; title: string; description: string | null; order: number; topics: Topic[] };
 type Roadmap = { id: string; phases: Phase[] };
@@ -66,7 +66,7 @@ export default function InstructorRoadmapBuilder({
   const [formDesc, setFormDesc] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const openModal = (type: ModalType, payload?: any) => {
+  const openModal = (type: ModalType, payload?: { targetId?: string; parentId?: string; initialTitle?: string; initialDesc?: string | null }) => {
     setModalState({ isOpen: true, type, ...payload });
     setFormTitle(payload?.initialTitle || "");
     setFormDesc(payload?.initialDesc || "");
@@ -96,7 +96,7 @@ export default function InstructorRoadmapBuilder({
 
       closeModal();
       router.refresh();
-    } catch (e) {
+    } catch (_e) {
       alert("An error occurred");
     } finally {
       setIsSubmitting(false);
@@ -186,7 +186,8 @@ export default function InstructorRoadmapBuilder({
                     PHASE {String(pIdx + 1).padStart(2, "0")}
                   </span>
                   <span className={`${jetbrains.className} text-[10px] text-black/40 tracking-widest uppercase`}>
-                    // {phase.topics.length} MODULES
+                    {/* {phase.topics.length} MODULES */}
+                    {phase.topics.length} MODULES
                   </span>
                   
                   {isEditing && (
@@ -247,7 +248,7 @@ export default function InstructorRoadmapBuilder({
                       {isExpanded && (
                         <div className="border-t border-black p-6 md:p-8 bg-[#FDFDFD]">
                           <p className={`${jetbrains.className} text-[10px] text-black/40 tracking-widest uppercase mb-6`}>
-                            // TOPICS
+                            {/* TOPICS */}
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
                             {topic.subtopics.map((subtopic) => (

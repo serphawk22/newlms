@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer,
@@ -122,9 +123,9 @@ function EmptyState({ message }: { message: string }) {
     <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2 text-gray-400">
       <BookMarked className="w-10 h-10 opacity-30" />
       <p className="text-sm font-medium">{message}</p>
-      <a href="/student/courses" className="text-xs text-blue-500 hover:underline">
+      <Link href="/student/courses" className="text-xs text-blue-500 hover:underline">
         Find and add courses from the catalog
-      </a>
+      </Link>
     </div>
   );
 }

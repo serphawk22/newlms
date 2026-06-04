@@ -10,6 +10,8 @@ interface Certificate {
   completionDate: string;
   courseDuration: string;
   course: { title: string };
+  templateUrl?: string | null;
+  templateMappings?: Record<string, unknown> | null;
 }
 
 interface EligibleCourse {
@@ -64,6 +66,9 @@ export function StudentCertificatesClient({ certificates, studentName, eligibleC
               courseName: selected.course.title,
               completionDate: selected.completionDate,
               courseDuration: selected.courseDuration,
+              templateUrl: selected.templateUrl,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              templateMappings: (selected.templateMappings as any) ?? null,
             }}
           />
         </div>

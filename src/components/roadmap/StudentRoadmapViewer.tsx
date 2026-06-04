@@ -110,7 +110,7 @@ export default function StudentRoadmapViewer({
           
           {phases.length === 0 && (
             <div className="text-center py-20 border border-dashed border-black/20">
-              <p className={`${playfair.className} text-2xl text-black/50 mb-4`}>Roadmap hasn't been created yet.</p>
+              <p className={`${playfair.className} text-2xl text-black/50 mb-4`}>Roadmap hasn&apos;t been created yet.</p>
             </div>
           )}
 
@@ -124,7 +124,7 @@ export default function StudentRoadmapViewer({
                     PHASE {String(pIdx + 1).padStart(2, "0")}
                   </span>
                   <span className={`${jetbrains.className} text-[10px] text-black/40 tracking-widest uppercase`}>
-                    // {phase.topics.length} MODULES
+                    {phase.topics.length} MODULES
                   </span>
                 </div>
                 
@@ -178,7 +178,7 @@ export default function StudentRoadmapViewer({
                       {isExpanded && (
                         <div className="border-t border-black p-6 md:p-8 bg-[#FDFDFD]">
                           <p className={`${jetbrains.className} text-[10px] text-black/40 tracking-widest uppercase mb-6`}>
-                            // TOPICS
+                            TOPICS
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
                             {topic.subtopics.map((subtopic) => (
