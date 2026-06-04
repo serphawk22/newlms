@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { X, Trash2, Loader2, Users, Plus } from "lucide-react";
+import { X, Trash2, Users, Plus } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 
 interface Student {
@@ -121,7 +122,7 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
                 />
               </div>
               <Button type="submit" disabled={adding} className="h-10 px-5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-lg">
-                {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
+                {adding ? <RingLoader size="sm" className="inline-flex" /> : "Add"}
               </Button>
             </div>
             {addError && <p className="text-xs text-red-600 mt-2">{addError}</p>}
@@ -133,7 +134,7 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
         <div className="max-h-[440px] overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <RingLoader size="md" />
             </div>
           ) : students.length === 0 ? (
             <p className="text-center text-slate-400 text-sm py-16">No students in this workspace yet.</p>
@@ -160,7 +161,7 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
                         className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                       >
                         {deleting === s.memberId
-                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ? <RingLoader size="sm" className="inline-flex" />
                           : <Trash2 className="w-3.5 h-3.5" />
                         }
                       </Button>

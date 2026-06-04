@@ -9,11 +9,11 @@ import {
   Sparkles,
   GraduationCap,
   ArrowRight,
-  Loader2,
   AlertTriangle,
   TrendingUp,
   BookMarked,
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 // ── Types matching the API response ──────────────────────────────────────────
 interface RecommendedCourse {
@@ -241,7 +241,7 @@ export function RecommendedCourseCard() {
               >
                 {enrolling ? (
                   <>
-                    <Loader2 className="w-3 h-3 mr-1 animate-spin" /> Enrolling…
+                    <RingLoader size="sm" className="inline-flex mr-1" /> Enrolling…
                   </>
                 ) : (
                   <>

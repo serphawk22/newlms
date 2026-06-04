@@ -48,53 +48,87 @@ export function CourseCardWithDelete({ course }: { course: CourseData }) {
   return (
     <>
       <div>
-        <Card className="border-zinc-200 shadow-sm flex flex-col hover:border-zinc-300 hover:shadow-md transition-all duration-200 group">
-          <CardHeader className="pb-3 border-b border-zinc-100 bg-white rounded-t-xl relative">
+        <Card
+          style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+          className="flex flex-col hover:border-[#D9252A] transition-all duration-200 group"
+        >
+          <CardHeader
+            style={{ borderBottom: "1px solid var(--border)", background: "transparent" }}
+            className="pb-3 rounded-t-xl relative"
+          >
             <Button
               onClick={() => setShowConfirm(true)}
               variant="ghost"
               size="sm"
-              className="absolute top-2 right-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 h-8 w-8 p-0"
+              className="absolute top-2 right-2 transition-colors h-8 w-8 p-0"
+              style={{ color: "var(--muted-foreground)" }}
+              onMouseEnter={e => {
+                e.currentTarget.style.color = "#D9252A";
+                e.currentTarget.style.background = "rgba(217,37,42,0.08)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.color = "var(--muted-foreground)";
+                e.currentTarget.style.background = "transparent";
+              }}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
             <div className="flex justify-between items-start gap-3">
               <div className="space-y-1">
-                <CardTitle className="text-base leading-tight font-bold text-zinc-900 group-hover:text-violet-700 transition-colors line-clamp-2">
+                <CardTitle
+                  style={{ color: "var(--foreground)" }}
+                  className="text-base leading-tight font-bold group-hover:text-[#D9252A] transition-colors line-clamp-2"
+                >
                   {course.title}
                 </CardTitle>
-                <p className="text-[10px] text-zinc-500 font-medium">By {course.creator?.name || "Unknown"}</p>
+                <p className="text-[10px] font-medium" style={{ color: "var(--muted-foreground)" }}>
+                  By {course.creator?.name || "Unknown"}
+                </p>
               </div>
-              <span className={`text-[10px] font-black px-2 py-0.5 rounded-md whitespace-nowrap uppercase tracking-wider shrink-0 ${
-                course.published ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-              }`}>
+              <span
+                className="text-[10px] font-black px-2 py-0.5 rounded-md whitespace-nowrap uppercase tracking-wider shrink-0 border"
+                style={
+                  course.published
+                    ? { background: "rgba(217,37,42,0.12)", color: "#D9252A", borderColor: "rgba(217,37,42,0.25)" }
+                    : { background: "rgba(255,255,255,0.06)", color: "var(--muted-foreground)", borderColor: "var(--border)" }
+                }
+              >
                 {course.published ? "Published" : "Draft"}
               </span>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col flex-1 p-0">
-            <div className="grid grid-cols-2 gap-px bg-zinc-100 p-4 flex-1 content-start">
+            <div
+              style={{ background: "var(--secondary-background)" }}
+              className="grid grid-cols-2 gap-px p-4 flex-1 content-start"
+            >
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Students</span>
-                <span className="text-sm font-black text-zinc-700">{course._count.enrollments}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Students</span>
+                <span className="text-sm font-black" style={{ color: "var(--foreground)" }}>{course._count.enrollments}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Modules</span>
-                <span className="text-sm font-black text-zinc-700">{course._count.modules}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Modules</span>
+                <span className="text-sm font-black" style={{ color: "var(--foreground)" }}>{course._count.modules}</span>
               </div>
               <div className="flex flex-col gap-1 mt-3">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Quizzes</span>
-                <span className="text-sm font-black text-zinc-700">{course._count.quizzes}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Quizzes</span>
+                <span className="text-sm font-black" style={{ color: "var(--foreground)" }}>{course._count.quizzes}</span>
               </div>
               <div className="flex flex-col gap-1 mt-3">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Assignments</span>
-                <span className="text-sm font-black text-zinc-700">{course._count.assignments}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Assignments</span>
+                <span className="text-sm font-black" style={{ color: "var(--foreground)" }}>{course._count.assignments}</span>
               </div>
             </div>
 
-            <div className="p-4 bg-zinc-50 rounded-b-xl border-t border-zinc-100 mt-auto">
+            <div
+              style={{ background: "var(--secondary-background)", borderTop: "1px solid var(--border)" }}
+              className="p-4 rounded-b-xl mt-auto"
+            >
               <Link href={`/instructor/courses/${course.id}`}>
-                <Button className="w-full bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900 font-bold text-sm shadow-sm transition-all group-hover:border-zinc-300">
+                <Button
+                  style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+                  className="w-full hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A] font-bold text-sm shadow-sm transition-all"
+                >
                   <Settings className="w-4 h-4 mr-2" /> Manage Content
                 </Button>
               </Link>
@@ -117,32 +151,38 @@ export function CourseCardWithDelete({ course }: { course: CourseData }) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-4 w-full"
+              style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+              className="rounded-2xl shadow-2xl p-6 max-w-sm mx-4 w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                <div
+                  className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ background: "rgba(217,37,42,0.12)", border: "1px solid rgba(217,37,42,0.25)" }}
+                >
+                  <AlertTriangle className="w-5 h-5" style={{ color: "#D9252A" }} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-base font-bold text-zinc-900 mb-1">
+                  <h3 className="text-base font-bold mb-1" style={{ color: "var(--foreground)" }}>
                     Delete Course
                   </h3>
-                  <p className="text-sm text-zinc-500 mb-4">
-                    Are you sure you want to delete <strong className="text-zinc-700">{course.title}</strong>? This action cannot be undone. All modules, lessons, assignments, quizzes, and live sessions will be permanently removed.
+                  <p className="text-sm mb-4" style={{ color: "var(--muted-foreground)" }}>
+                    Are you sure you want to delete <strong style={{ color: "var(--foreground)" }}>{course.title}</strong>? This action cannot be undone. All modules, lessons, assignments, quizzes, and live sessions will be permanently removed.
                   </p>
                   <div className="flex gap-3 justify-end">
                     <Button
                       onClick={() => setShowConfirm(false)}
                       variant="outline"
-                      className="border-zinc-200 text-zinc-700"
+                      style={{ background: "var(--secondary-background)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+                      className="hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
                       disabled={deleting}
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={handleDelete}
-                      className="bg-red-600 hover:bg-red-700 text-white"
+                      style={{ background: "#D9252A", color: "#FFFFFF" }}
+                      className="hover:bg-[#C21F24]"
                       disabled={deleting}
                     >
                       {deleting ? "Deleting..." : "Delete"}

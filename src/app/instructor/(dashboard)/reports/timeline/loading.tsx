@@ -1,9 +1,5 @@
-import { Loader } from "@/components/ui/loader";
+import { PageLoader } from "@/components/ui/page-loader";
 
 export default function TimelineLoading() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh] bg-zinc-50">
-      <Loader variant="ring" label="Loading timeline…" />
-    </div>
-  );
+  return <PageLoader label="Loading timeline…" />;
 }

@@ -21,8 +21,6 @@ const CARDS = [
     label: "Total Students",
     sub: "in workspace",
     Icon: GraduationCap,
-    color: "text-violet-500",
-    bg: "bg-violet-50",
     modal: "students" as ModalType,
   },
   {
@@ -30,8 +28,6 @@ const CARDS = [
     label: "Instructors",
     sub: "in organization",
     Icon: Users,
-    color: "text-blue-500",
-    bg: "bg-blue-50",
     modal: "instructors" as ModalType,
   },
   {
@@ -39,8 +35,6 @@ const CARDS = [
     label: "Total Courses",
     sub: "in organization",
     Icon: BookOpen,
-    color: "text-emerald-500",
-    bg: "bg-emerald-50",
     modal: null,
   },
   {
@@ -48,8 +42,6 @@ const CARDS = [
     label: "Published Courses",
     sub: "live & accessible",
     Icon: BookMarked,
-    color: "text-green-500",
-    bg: "bg-green-50",
     modal: null,
   },
   {
@@ -57,8 +49,6 @@ const CARDS = [
     label: "Total Enrollments",
     sub: "across all courses",
     Icon: TrendingUp,
-    color: "text-pink-500",
-    bg: "bg-pink-50",
     modal: "enrollments" as ModalType,
   },
 ] as const;
@@ -69,34 +59,41 @@ export function AdminStatCards({ stats, orgId }: { stats: AdminStats; orgId: str
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {CARDS.map(({ key, label, sub, Icon, color, bg, modal }) => (
+        {CARDS.map(({ key, label, sub, Icon, modal }) => (
           <div
             key={key}
-            className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow relative group"
+            className="rounded-2xl p-4 transition-shadow relative group hover:shadow-sm"
+            style={{ background: "var(--card)", border: "1px solid var(--border)" }}
           >
             {/* Eye button on hoverable cards */}
             {modal && (
               <button
                 onClick={() => setActiveModal(modal)}
-                className="absolute top-3 right-3 p-1.5 rounded-lg bg-slate-100 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-slate-200"
+                className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: "rgba(255,255,255,0.06)", color: "var(--muted-foreground)" }}
                 title={`View ${label}`}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
               >
-                <Eye className="w-3.5 h-3.5 text-slate-500" />
+                <Eye className="w-3.5 h-3.5" />
               </button>
             )}
 
-            <div className={`inline-flex p-2 rounded-lg ${bg} mb-3`}>
-              <Icon className={`h-4 w-4 ${color}`} />
+            <div
+              className="inline-flex p-2 rounded-lg mb-3"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
+            >
+              <Icon className="h-4 w-4" style={{ color: "var(--foreground)" }} />
             </div>
-            <div className="text-2xl font-black text-slate-900">
+            <div className="text-2xl font-black" style={{ color: "var(--foreground)" }}>
               {stats[key as keyof AdminStats]}
             </div>
-            <p className="text-sm font-semibold text-slate-700 mt-0.5 leading-tight">{label}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{sub}</p>
+            <p className="text-sm font-semibold mt-0.5 leading-tight" style={{ color: "var(--foreground)" }}>{label}</p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{sub}</p>
 
             {/* Subtle eye hint on cards with modal */}
             {modal && (
-              <p className="text-[10px] text-slate-400 mt-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <p className="text-[10px] mt-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--muted-foreground)" }}>
                 <Eye className="w-2.5 h-2.5" /> Click eye to view details
               </p>
             )}

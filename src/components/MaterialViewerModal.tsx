@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useEffect } from "react";
 import {
-  X, BookOpen, Copy, Check, Loader2, AlertTriangle,
+  X, BookOpen, Copy, Check, AlertTriangle,
   Download, ExternalLink
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 
 // ─── File-type classification ─────────────────────────────────────────────────
@@ -321,10 +322,7 @@ export function MaterialViewerModal({
               {loading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
                   <div className="flex flex-col items-center gap-4 bg-slate-900/90 rounded-2xl px-10 py-8 shadow-2xl border border-slate-700">
-                    <Loader2 className="w-10 h-10 text-violet-400 animate-spin" />
-                    <p className="text-slate-300 font-medium text-sm animate-pulse">
-                      Loading preview…
-                    </p>
+                    <RingLoader size="lg" label="Loading preview…" />
                   </div>
                 </div>
               )}

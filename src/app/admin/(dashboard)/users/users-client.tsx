@@ -6,12 +6,16 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+<<<<<<< HEAD
 import { 
   Users, Search, Download, Plus, Trash2, X, AlertCircle, 
   CheckCircle2, Eye, Check, Ban, GraduationCap, Briefcase, Calendar, Mail
 } from "lucide-react";
+=======
+import { Users, Search, Download, Plus, Trash2, X, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+>>>>>>> vaishnavi-ui
 import { Loader } from "@/components/ui/loader";
-import type { UsersData, StudentRow, InstructorRow } from "./page";
+import type { UsersData, StudentRow, InstructorRow, PendingUserRow } from "./page";
 
 interface Props {
   data: UsersData;
@@ -51,7 +55,11 @@ function downloadCSV(csv: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+<<<<<<< HEAD
 function UserAvatar({ name, role }: { name: string | null; role: "STUDENT" | "INSTRUCTOR" }) {
+=======
+function Avatar({ name }: { name: string | null }) {
+>>>>>>> vaishnavi-ui
   const initial = (name || "?").charAt(0).toUpperCase();
   const bgClass = role === "STUDENT" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700";
   return (
@@ -267,6 +275,7 @@ function AddUserForm({ role, onClose, onSuccess }: { role: "STUDENT" | "INSTRUCT
   );
 }
 
+<<<<<<< HEAD
 export function UsersPageClient({ data }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -284,6 +293,412 @@ export function UsersPageClient({ data }: Props) {
     action: "approve" | "reject" | "delete";
   } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+=======
+function StudentsTab({ students, onRefresh }: { students: StudentRow[]; onRefresh: () => void }) {
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [showAdd, setShowAdd] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
+  const [removing, setRemoving] = useState(false);
+
+  const filtered = useMemo(() => {
+    return students.filter((s) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return s.name?.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
+    });
+  }, [students, search]);
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paged = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  const handleRemove = useCallback(async () => {
+    if (!removeTarget) return;
+    setRemoving(true);
+    try {
+      const res = await fetch("/api/admin/students", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId: removeTarget.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to remove student");
+      }
+      setRemoveTarget(null);
+      onRefresh();
+    } catch {
+      setRemoveTarget(null);
+    }
+    setRemoving(false);
+  }, [removeTarget, onRefresh]);
+
+  return (
+    <div>
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Student">
+        <AddUserForm role="STUDENT" onClose={() => { setShowAdd(false); onRefresh(); }} onSuccess={() => {}} />
+      </Modal>
+
+      <ConfirmDialog
+        open={!!removeTarget}
+        onClose={() => setRemoveTarget(null)}
+        onConfirm={handleRemove}
+        title="Remove Student"
+        message={`Are you sure you want to remove "${removeTarget?.name || "Unnamed"}" from this organization?`}
+        loading={removing}
+      />
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Input
+            placeholder="Search students..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            className="pl-9 border-zinc-200"
+          />
+        </div>
+        <span className="text-xs text-zinc-500">{filtered.length} students</span>
+        <div className="flex gap-2 ml-auto">
+          <Button
+            variant="outline"
+            className="border-zinc-200 text-zinc-700"
+            onClick={() => downloadCSV(studentsToCSV(filtered), "students.csv")}
+          >
+            <Download className="w-4 h-4 mr-2" /> Export
+          </Button>
+          <Button
+            className="bg-zinc-900 text-white hover:bg-zinc-700"
+            onClick={() => setShowAdd(true)}
+          >
+            <Plus className="w-4 h-4 mr-1.5" /> Add Student
+          </Button>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-zinc-100 bg-zinc-50">
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Name</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Email</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Enrolled</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Completed</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Last Login</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Joined</th>
+              <th className="text-right text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paged.map((s) => (
+              <tr key={s.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar name={s.name} />
+                    <span className="text-sm font-medium text-zinc-900">{s.name || "Unnamed"}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{s.email}</td>
+                <td className="px-4 py-3 text-sm text-zinc-700">{s.enrolledCourses}</td>
+                <td className="px-4 py-3 text-sm text-zinc-700">{s.completedCourses}</td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{s.lastLogin}</td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{s.joinedDate}</td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={() => setRemoveTarget({ id: s.memberId, name: s.name || "Unnamed" })}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-2.5 py-1.5 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-100">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+          >
+            Previous
+          </button>
+          <span className="text-xs text-zinc-500">Page {page} of {totalPages}</span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InstructorsTab({ instructors, onRefresh }: { instructors: InstructorRow[]; onRefresh: () => void }) {
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [showAdd, setShowAdd] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
+  const [removing, setRemoving] = useState(false);
+
+  const filtered = useMemo(() => {
+    return instructors.filter((inst) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return inst.name?.toLowerCase().includes(q) || inst.email.toLowerCase().includes(q);
+    });
+  }, [instructors, search]);
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paged = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  const handleRemove = useCallback(async () => {
+    if (!removeTarget) return;
+    setRemoving(true);
+    try {
+      const res = await fetch("/api/admin/instructors", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId: removeTarget.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to remove instructor");
+      }
+      setRemoveTarget(null);
+      onRefresh();
+    } catch {
+      setRemoveTarget(null);
+    }
+    setRemoving(false);
+  }, [removeTarget, onRefresh]);
+
+  return (
+    <div>
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Instructor">
+        <AddUserForm role="INSTRUCTOR" onClose={() => { setShowAdd(false); onRefresh(); }} onSuccess={() => {}} />
+      </Modal>
+
+      <ConfirmDialog
+        open={!!removeTarget}
+        onClose={() => setRemoveTarget(null)}
+        onConfirm={handleRemove}
+        title="Remove Instructor"
+        message={`Are you sure you want to remove "${removeTarget?.name || "Unnamed"}" from this organization?`}
+        loading={removing}
+      />
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Input
+            placeholder="Search instructors..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            className="pl-9 border-zinc-200"
+          />
+        </div>
+        <span className="text-xs text-zinc-500">{filtered.length} instructors</span>
+        <div className="flex gap-2 ml-auto">
+          <Button
+            variant="outline"
+            className="border-zinc-200 text-zinc-700"
+            onClick={() => downloadCSV(instructorsToCSV(filtered), "instructors.csv")}
+          >
+            <Download className="w-4 h-4 mr-2" /> Export
+          </Button>
+          <Button
+            className="bg-zinc-900 text-white hover:bg-zinc-700"
+            onClick={() => setShowAdd(true)}
+          >
+            <Plus className="w-4 h-4 mr-1.5" /> Add Instructor
+          </Button>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-zinc-100 bg-zinc-50">
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Name</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Email</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Courses</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Students</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Joined</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Last Login</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Status</th>
+              <th className="text-right text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paged.map((inst) => (
+              <tr key={inst.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar name={inst.name} />
+                    <span className="text-sm font-medium text-zinc-900">{inst.name || "Unnamed"}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{inst.email}</td>
+                <td className="px-4 py-3 text-sm text-zinc-700">{inst.coursesCreated}</td>
+                <td className="px-4 py-3 text-sm text-zinc-700">{inst.totalStudents}</td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{inst.joinedDate}</td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{inst.lastLogin}</td>
+                <td className="px-4 py-3">
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                    inst.status === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-500"
+                  }`}>
+                    {inst.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={() => setRemoveTarget({ id: inst.memberId, name: inst.name || "Unnamed" })}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-2.5 py-1.5 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-100">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+          >
+            Previous
+          </button>
+          <span className="text-xs text-zinc-500">Page {page} of {totalPages}</span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PendingTab({ pendingStudents, pendingInstructors, onRefresh }: {
+  pendingStudents: PendingUserRow[];
+  pendingInstructors: PendingUserRow[];
+  onRefresh: () => void;
+}) {
+  const allPending = useMemo(() => [...pendingStudents, ...pendingInstructors], [pendingStudents, pendingInstructors]);
+  const [approving, setApproving] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(() => {
+    if (!search) return allPending;
+    const q = search.toLowerCase();
+    return allPending.filter((u) => u.name?.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+  }, [allPending, search]);
+
+  const handleApprove = useCallback(async (user: PendingUserRow) => {
+    setApproving(user.id);
+    try {
+      const res = await fetch("/api/admin/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, role: user.role }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to approve user");
+      }
+      onRefresh();
+    } catch (err) {
+      console.error("Approve failed:", err);
+    }
+    setApproving(null);
+  }, [onRefresh]);
+
+  if (allPending.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-zinc-400">
+        <Clock className="w-10 h-10 mb-3" />
+        <p className="text-sm font-medium">No pending requests</p>
+        <p className="text-xs mt-1">All signup requests have been reviewed.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Input
+            placeholder="Search pending users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 border-zinc-200"
+          />
+        </div>
+        <span className="text-xs text-zinc-500">{filtered.length} pending</span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-zinc-100 bg-zinc-50">
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Name</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Email</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Intended Role</th>
+              <th className="text-right text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((u) => (
+              <tr key={u.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar name={u.name} />
+                    <span className="text-sm font-medium text-zinc-900">{u.name || "Unnamed"}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{u.email}</td>
+                <td className="px-4 py-3">
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                    u.role === "STUDENT" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"
+                  }`}>
+                    {u.role === "STUDENT" ? "Student" : "Instructor"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={() => handleApprove(u)}
+                    disabled={approving === u.id}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {approving === u.id && <Loader size="sm" variant="bars" />}
+                    {approving === u.id ? "Approving..." : "Approve"}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export function UsersPageClient({ data }: Props) {
+  const router = useRouter();
+  const [tab, setTab] = useState<"students" | "instructors" | "pending">("students");
+>>>>>>> vaishnavi-ui
 
   const handleRefresh = useCallback(() => {
     router.refresh();
@@ -487,6 +902,7 @@ export function UsersPageClient({ data }: Props) {
         <h1 className="text-xl font-bold text-zinc-900">User Directory</h1>
       </div>
 
+<<<<<<< HEAD
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-1.5 bg-zinc-100 rounded-xl p-1 w-fit border border-zinc-200">
         {[
@@ -669,6 +1085,46 @@ export function UsersPageClient({ data }: Props) {
               Next
             </button>
           </div>
+=======
+      <div className="flex gap-1 bg-zinc-100 rounded-lg p-0.5 w-fit">
+        <button
+          onClick={() => setTab("students")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            tab === "students" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+          }`}
+        >
+          Students ({data.totalStudents})
+        </button>
+        <button
+          onClick={() => setTab("instructors")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            tab === "instructors" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+          }`}
+        >
+          Instructors ({data.totalInstructors})
+        </button>
+        <button
+          onClick={() => setTab("pending")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            tab === "pending" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+          }`}
+        >
+          Pending ({data.totalPendingStudents + data.totalPendingInstructors})
+        </button>
+      </div>
+
+      <Card className="border-zinc-200 shadow-sm p-4">
+        {tab === "students" ? (
+          <StudentsTab students={data.students} onRefresh={handleRefresh} />
+        ) : tab === "instructors" ? (
+          <InstructorsTab instructors={data.instructors} onRefresh={handleRefresh} />
+        ) : (
+          <PendingTab
+            pendingStudents={data.pendingStudents}
+            pendingInstructors={data.pendingInstructors}
+            onRefresh={handleRefresh}
+          />
+>>>>>>> vaishnavi-ui
         )}
       </Card>
     </motion.div>

@@ -89,6 +89,19 @@ export async function POST(req: Request) {
     // Generate a unique login code for this user
     const loginCode = await generateUniqueLoginCode(assignedRole, prisma);
 
+    // Only admins get immediate access (admin code acts as authorization).
+    // Students and instructors require approval.
+    const membershipData = assignedRole === "ADMIN"
+      ? {
+          memberships: {
+            create: {
+              organizationId: org.id,
+              role: assignedRole,
+            },
+          },
+        }
+      : {};
+
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -107,9 +120,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
-        message: "Registration successful",
+        message: assignedRole === "ADMIN"
+          ? "Registration successful"
+          : "Registration submitted. Awaiting administrator approval.",
         loginCode: newUser.loginCode,
         role: assignedRole,
+        pendingApproval: assignedRole !== "ADMIN",
       },
       { status: 201 }
     );

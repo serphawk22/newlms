@@ -138,6 +138,11 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   console.log("PROXY START:", pathname);
 
+  // Debug: log all cookies present on the request
+  const allCookies: Record<string, string> = {};
+  req.cookies.getAll().forEach((c) => { allCookies[c.name] = c.value.substring(0, 20) + "..."; });
+  console.log("PROXY COOKIES:", JSON.stringify(allCookies));
+
   if (req.headers.get("Next-Action") !== null) {
     return NextResponse.next();
   }
@@ -171,11 +176,14 @@ export async function proxy(req: NextRequest) {
   const auth = await findAuthForRoles(req, allowedRoles);
 
   if (!auth) {
+    console.log("PROXY: No valid auth found for roles:", allowedRoles);
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return redirectToLogin(req, pathname, "session_required");
   }
+
+  console.log("PROXY: Auth found for role:", auth.role);
 
   if (pathname.startsWith("/api/")) {
     return nextWithToken(req, auth.token);

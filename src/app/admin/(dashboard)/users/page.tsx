@@ -16,6 +16,14 @@ export interface StudentRow {
   status: string;
 }
 
+export interface PendingUserRow {
+  id: string;
+  name: string | null;
+  email: string;
+  loginCode: string | null;
+  role: "STUDENT" | "INSTRUCTOR";
+}
+
 export interface InstructorRow {
   id: string;
   memberId: string;
@@ -30,15 +38,19 @@ export interface InstructorRow {
 
 export interface UsersData {
   students: StudentRow[];
+  pendingStudents: PendingUserRow[];
+  pendingInstructors: PendingUserRow[];
   instructors: InstructorRow[];
   totalStudents: number;
+  totalPendingStudents: number;
+  totalPendingInstructors: number;
   totalInstructors: number;
 }
 
 export default async function AdminUsersPage() {
   const ctx = await getAdminContext();
 
-  const [studentMembers, instructorMembers, enrollments] = await Promise.all([
+  const [studentMembers, instructorMembers, enrollments, pendingStudents, pendingInstructors] = await Promise.all([
     prisma.organizationMember.findMany({
       where: { organizationId: ctx.orgId, role: "STUDENT" },
       include: {
@@ -70,8 +82,27 @@ export default async function AdminUsersPage() {
       where: { course: { organizationId: ctx.orgId } },
       select: { courseId: true, course: { select: { creatorId: true } } },
     }),
+    // Pending students — have loginCode starting with STU, no membership in this org
+    prisma.user.findMany({
+      where: {
+        loginCode: { startsWith: "STU" },
+        memberships: { none: { organizationId: ctx.orgId } },
+      },
+      select: { id: true, name: true, email: true, loginCode: true },
+      orderBy: { id: "desc" },
+    }),
+    // Pending instructors — have loginCode starting with INS, no membership in this org
+    prisma.user.findMany({
+      where: {
+        loginCode: { startsWith: "INS" },
+        memberships: { none: { organizationId: ctx.orgId } },
+      },
+      select: { id: true, name: true, email: true, loginCode: true },
+      orderBy: { id: "desc" },
+    }),
   ]);
 
+  // All student members are active (membership = approval)
   const students: StudentRow[] = studentMembers.map((m) => {
     const orgEnrollments = m.user.enrollments.filter((e) => e.course.organizationId === ctx.orgId);
     return {
@@ -81,13 +112,29 @@ export default async function AdminUsersPage() {
       email: m.user.email,
       enrolledCourses: orgEnrollments.length,
       completedCourses: orgEnrollments.filter((e) => e.progress >= 100).length,
-      lastLogin: m.user.sessionToken ? "Active session" : "N/A",
+      lastLogin: "Active session",
       joinedDate: orgEnrollments.length > 0
         ? orgEnrollments.sort((a, b) => a.enrolledAt.getTime() - b.enrolledAt.getTime())[0].enrolledAt.toISOString().slice(0, 10)
         : "N/A",
       status: m.user.status,
     };
   });
+
+  const pendingStudentRows: PendingUserRow[] = pendingStudents.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    loginCode: u.loginCode,
+    role: "STUDENT",
+  }));
+
+  const pendingInstructorRows: PendingUserRow[] = pendingInstructors.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    loginCode: u.loginCode,
+    role: "INSTRUCTOR",
+  }));
 
   const enrollmentsByCreator = new Map<string, number>();
   for (const e of enrollments) {
@@ -109,8 +156,12 @@ export default async function AdminUsersPage() {
 
   const data: UsersData = {
     students,
+    pendingStudents: pendingStudentRows,
+    pendingInstructors: pendingInstructorRows,
     instructors,
     totalStudents: students.length,
+    totalPendingStudents: pendingStudentRows.length,
+    totalPendingInstructors: pendingInstructorRows.length,
     totalInstructors: instructors.length,
   };
 

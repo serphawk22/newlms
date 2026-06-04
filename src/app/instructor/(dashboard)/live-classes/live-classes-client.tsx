@@ -11,12 +11,6 @@ interface Props {
   sessions: LiveClassRow[];
 }
 
-const statusStyles: Record<string, string> = {
-  SCHEDULED: "bg-blue-100 text-blue-700",
-  ONGOING: "bg-emerald-100 text-emerald-700",
-  COMPLETED: "bg-zinc-100 text-zinc-500",
-};
-
 export function LiveClassesPageClient({ sessions }: Props) {
   const [search, setSearch] = useState("");
 
@@ -26,6 +20,28 @@ export function LiveClassesPageClient({ sessions }: Props) {
     return sessions.filter((s) => s.title.toLowerCase().includes(q) || s.courseTitle.toLowerCase().includes(q));
   }, [sessions, search]);
 
+  const getStatusStyle = (status: string) => {
+    if (status === "ONGOING") {
+      return {
+        background: "rgba(217,37,42,0.12)",
+        color: "#D9252A",
+        borderColor: "rgba(217,37,42,0.25)",
+      };
+    }
+    if (status === "SCHEDULED") {
+      return {
+        background: "rgba(255,255,255,0.06)",
+        color: "var(--foreground)",
+        borderColor: "var(--border)",
+      };
+    }
+    return {
+      background: "rgba(255,255,255,0.04)",
+      color: "var(--muted-foreground)",
+      borderColor: "var(--border)",
+    };
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -34,40 +50,62 @@ export function LiveClassesPageClient({ sessions }: Props) {
       className="container-page space-y-6"
     >
       <div className="flex items-center gap-2">
-        <Video className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Live Classes</h1>
-        <span className="ml-auto text-xs font-semibold bg-zinc-100 text-zinc-600 px-2.5 py-1 rounded-full">
+        <Video className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Live Classes</h1>
+        <span
+          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border"
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            borderColor: "var(--border)",
+            color: "var(--muted-foreground)",
+          }}
+        >
           {sessions.length} sessions
         </span>
       </div>
 
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
         <Input
           placeholder="Search live classes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 border-zinc-200"
+          style={{
+            background: "var(--secondary-background)",
+            border: "1px solid var(--border)",
+            color: "var(--foreground)",
+          }}
+          className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
         />
       </div>
 
-      <Card className="border-zinc-200 shadow-sm overflow-hidden">
+      <Card
+        className="overflow-hidden"
+        style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-zinc-100 bg-zinc-50">
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Title</th>
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Course</th>
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Scheduled</th>
-                <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Status</th>
+              <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                {["Title", "Course", "Scheduled", "Status"].map((h) => (
+                  <th key={h} className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map((s) => (
-                <tr key={s.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-zinc-900">{s.title}</td>
-                  <td className="px-4 py-3 text-sm text-zinc-500">{s.courseTitle}</td>
-                  <td className="px-4 py-3 text-sm text-zinc-700">
+                <tr
+                  key={s.id}
+                  className="transition-colors"
+                  style={{ borderBottom: "1px solid var(--border)" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <td className="px-4 py-3 text-sm font-semibold" style={{ color: "var(--foreground)" }}>{s.title}</td>
+                  <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{s.courseTitle}</td>
+                  <td className="px-4 py-3 text-sm" style={{ color: "var(--foreground)" }}>
                     {new Date(s.scheduledAt).toLocaleDateString(undefined, {
                       weekday: "short",
                       month: "short",
@@ -77,7 +115,10 @@ export function LiveClassesPageClient({ sessions }: Props) {
                     })}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${statusStyles[s.status] || "bg-zinc-100 text-zinc-600"}`}>
+                    <span
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider border"
+                      style={getStatusStyle(s.status)}
+                    >
                       {s.status}
                     </span>
                   </td>
@@ -87,7 +128,10 @@ export function LiveClassesPageClient({ sessions }: Props) {
           </table>
         </div>
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-zinc-400 text-sm">No live classes found.</div>
+          <div className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>
+            <Video className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
+            No live classes found.
+          </div>
         )}
       </Card>
     </motion.div>

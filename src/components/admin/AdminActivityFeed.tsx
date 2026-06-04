@@ -10,14 +10,6 @@ interface ActivityEntry {
   createdAt: Date;
 }
 
-const TYPE_STYLES: Record<string, { bg: string; text: string; Icon: React.ElementType }> = {
-  COURSE:     { bg: "bg-violet-100", text: "text-violet-600", Icon: BookOpen      },
-  ASSIGNMENT: { bg: "bg-amber-100",  text: "text-amber-600",  Icon: BookPlus      },
-  MODULE:     { bg: "bg-blue-100",   text: "text-blue-600",   Icon: Zap           },
-  QUIZ:       { bg: "bg-pink-100",   text: "text-pink-600",   Icon: BarChart3     },
-  LIVE:       { bg: "bg-red-100",    text: "text-red-600",    Icon: Activity      },
-};
-
 function timeAgo(date: Date) {
   const diff = Date.now() - new Date(date).getTime();
   const m = Math.floor(diff / 60000);
@@ -29,28 +21,37 @@ function timeAgo(date: Date) {
 
 export function AdminActivityFeed({ activities }: { activities: ActivityEntry[] }) {
   return (
-    <Card className="border-slate-200 shadow-none">
+    <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
-          <Activity className="w-4 h-4 text-violet-500" /> Recent Activity
+        <CardTitle className="flex items-center gap-2 text-base font-bold" style={{ color: "var(--foreground)" }}>
+          <Activity className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> Recent Activity
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 max-h-72 overflow-y-auto">
         {activities.length === 0 ? (
-          <p className="text-xs text-slate-400 text-center py-4">No recent activity</p>
+          <p className="text-xs text-center py-4" style={{ color: "var(--muted-foreground)" }}>No recent activity</p>
         ) : activities.map((a) => {
-          const style = TYPE_STYLES[a.type] ?? { bg: "bg-slate-100", text: "text-slate-600", Icon: Activity };
-          const { bg, text, Icon } = style;
           return (
-            <div key={a.id} className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors">
-              <div className={`p-1.5 rounded-lg ${bg} flex-shrink-0 mt-0.5`}>
-                <Icon className={`w-3 h-3 ${text}`} />
+            <div
+              key={a.id}
+              className="flex items-start gap-3 p-2.5 rounded-lg transition-colors"
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+            >
+              <div
+                className="p-1.5 rounded-lg flex-shrink-0 mt-0.5"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
+              >
+                <Activity className="w-3 h-3" style={{ color: "var(--foreground)" }} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-slate-700 leading-snug">{a.message}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{timeAgo(a.createdAt)}</p>
+                <p className="text-sm leading-snug" style={{ color: "var(--foreground)" }}>{a.message}</p>
+                <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{timeAgo(a.createdAt)}</p>
               </div>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold flex-shrink-0 ${bg} ${text}`}>
+              <span
+                className="text-[10px] px-1.5 py-0.5 rounded-full font-bold flex-shrink-0"
+                style={{ background: "rgba(255,255,255,0.08)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+              >
                 {a.type}
               </span>
             </div>
@@ -63,26 +64,44 @@ export function AdminActivityFeed({ activities }: { activities: ActivityEntry[] 
 
 export function AdminQuickActions({ orgId }: { orgId: string }) {
   return (
-    <Card className="border-slate-200 shadow-none">
+    <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900">
-          <Zap className="w-4 h-4 text-amber-500" /> Quick Actions
+        <CardTitle className="flex items-center gap-2 text-base font-bold" style={{ color: "var(--foreground)" }}>
+          <Zap className="w-4 h-4" style={{ color: "#D9252A" }} /> Quick Actions
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <Link href="/instructor#directory">
-          <Button variant="outline" className="w-full justify-start gap-2 border-slate-200 hover:bg-violet-50 hover:border-violet-200 text-slate-700">
-            <UserPlus className="w-4 h-4 text-violet-500" /> Add Instructor
+          <Button
+            variant="outline"
+            className="w-full justify-start gap-2 transition-colors"
+            style={{ border: "1px solid var(--border)", color: "var(--foreground)", background: "transparent" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(217,37,42,0.06)"; e.currentTarget.style.borderColor = "rgba(217,37,42,0.25)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "var(--border)"; }}
+          >
+            <UserPlus className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> Add Instructor
           </Button>
         </Link>
         <Link href="/instructor#courses">
-          <Button variant="outline" className="w-full justify-start gap-2 border-slate-200 hover:bg-emerald-50 hover:border-emerald-200 text-slate-700">
-            <BookPlus className="w-4 h-4 text-emerald-500" /> Create Course
+          <Button
+            variant="outline"
+            className="w-full justify-start gap-2 transition-colors"
+            style={{ border: "1px solid var(--border)", color: "var(--foreground)", background: "transparent" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(217,37,42,0.06)"; e.currentTarget.style.borderColor = "rgba(217,37,42,0.25)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "var(--border)"; }}
+          >
+            <BookPlus className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> Create Course
           </Button>
         </Link>
         <Link href="/instructor#admin-analytics">
-          <Button variant="outline" className="w-full justify-start gap-2 border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-slate-700">
-            <BarChart3 className="w-4 h-4 text-blue-500" /> View Reports
+          <Button
+            variant="outline"
+            className="w-full justify-start gap-2 transition-colors"
+            style={{ border: "1px solid var(--border)", color: "var(--foreground)", background: "transparent" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(217,37,42,0.06)"; e.currentTarget.style.borderColor = "rgba(217,37,42,0.25)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "var(--border)"; }}
+          >
+            <BarChart3 className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> View Reports
           </Button>
         </Link>
       </CardContent>
