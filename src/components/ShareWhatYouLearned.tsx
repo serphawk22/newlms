@@ -52,21 +52,8 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
   // Timer Ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      stopAllStreams();
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  // Format Duration
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60).toString().padStart(2, "0");
-    const s = (secs % 60).toString().padStart(2, "0");
-    return `${m}:${s}`;
-  };
-
+  // ── Stop all media streams ─────────────────────────────────────────────────
+  // Declared BEFORE the useEffect that uses it — arrow functions are not hoisted
   const stopAllStreams = () => {
     if (animationFrameIdRef.current) {
       cancelAnimationFrame(animationFrameIdRef.current);
@@ -85,6 +72,22 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
       combinedStreamRef.current = null;
     }
   };
+
+  // Format Duration
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, "0");
+    const s = (secs % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopAllStreams();
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startRecording = async () => {
     setError(null);
@@ -179,7 +182,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
       drawFrame();
 
       // 5. Composite audio tracks using Web Audio API
-      // @ts-ignore
+      // @ts-expect-error — webkitAudioContext is a vendor-prefixed fallback not in TS types
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       const audioContext = new AudioContextClass();
       const destination = audioContext.createMediaStreamDestination();

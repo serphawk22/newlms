@@ -400,14 +400,14 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
     }
   }, [ttsSupported]);
 
-  /** Toggle: if already speaking this message → stop; otherwise start */
-  const toggleSpeak = useCallback((text: string, idx: number) => {
+  // Toggle: if already speaking this message → stop; otherwise start
+  const toggleSpeak = (text: string, idx: number) => {
     if (speakingMsgIdx === idx) {
       stopSpeaking();
     } else {
       speakMessage(text, idx);
     }
-  }, [speakingMsgIdx, speakMessage, stopSpeaking]);
+  };
 
   // ---- Simple bold renderer ----
   const renderContent = (content: string) =>

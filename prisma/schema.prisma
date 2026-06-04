@@ -620,3 +620,13 @@ model Certificate {
   @@index([certificateNumber])
 }
 
+model CertificateTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  fileUrl   String
+  isActive  Boolean  @default(false)
+  mappings  Json?    // Stores field positions as percentages: { studentName: {x,y,w,h,fontSize,color,align}, ... }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

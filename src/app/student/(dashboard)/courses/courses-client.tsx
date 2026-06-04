@@ -292,7 +292,7 @@ export default function StudentCoursesClient({
               </div>
             ) : (
               <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-6 text-center text-sm text-zinc-500">
-                You are not enrolled in any courses yet. Browse "All Courses" to request enrollment.
+                You are not enrolled in any courses yet. Browse &quot;All Courses&quot; to request enrollment.
               </div>
             )}
           </div>

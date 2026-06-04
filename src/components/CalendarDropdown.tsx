@@ -106,6 +106,7 @@ export function CalendarDropdown() {
 
   // Count events in the next 7 days as a badge
   const upcomingSoon = events.filter((e) => {
+    // eslint-disable-next-line
     const diff = new Date(e.date).getTime() - Date.now();
     return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
   }).length;

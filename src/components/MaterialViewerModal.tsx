@@ -348,7 +348,7 @@ export function MaterialViewerModal({
                         <li>Log in to your <strong>Cloudinary Console</strong>.</li>
                         <li>Open <strong>Settings</strong> (gear icon) &gt; <strong>Security</strong>.</li>
                         <li>Scroll to <strong>PDF and ZIP files delivery</strong>.</li>
-                        <li>Enable <strong>"Allow delivery of PDF and ZIP files"</strong> and save your changes.</li>
+                        <li>Enable <strong>&quot;Allow delivery of PDF and ZIP files&quot;</strong> and save your changes.</li>
                       </ol>
                     </div>
                     <div className="flex flex-col gap-3 w-full mt-2">

@@ -23,6 +23,7 @@ import { jwtVerify } from "jose";
 import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
 import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
+import { QuizPdfImporter } from "@/components/QuizPdfImporter";
 
 // --- SERVER ACTIONS ---
 
@@ -204,7 +205,15 @@ async function deleteQuiz(formData: FormData) {
   "use server";
   const id = formData.get("id") as string;
   const courseId = formData.get("courseId") as string;
-  await prisma.quiz.delete({ where: { id } });
+  try {
+    await prisma.$transaction([
+      prisma.quizSubmission.deleteMany({ where: { quizId: id } }),
+      prisma.question.deleteMany({ where: { quizId: id } }),
+      prisma.quiz.delete({ where: { id } }),
+    ]);
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
+  }
   revalidatePath(`/instructor/courses/${courseId}`);
 }
 
@@ -985,6 +994,14 @@ export default async function CourseBuilderPage({
                             )}
                           </div>
                         ))}
+                      </div>
+
+                      {/* PDF Import */}
+                      <div className="pt-6 border-t border-slate-100">
+                        <QuizPdfImporter
+                          quizId={quiz.id}
+                          courseId={courseId}
+                        />
                       </div>
 
                       {/* Add Question Form */}
