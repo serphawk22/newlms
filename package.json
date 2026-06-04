@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=6144 next dev",
     "dev:inspect": "cross-env NODE_OPTIONS=\"--inspect --max-old-space-size=6144\" next dev --no-turbo",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 next build",
+    "build": "next build",
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=6144 next start",
     "start:inspect": "cross-env NODE_OPTIONS=\"--inspect --max-old-space-size=6144\" next start",
     "lint": "eslint",

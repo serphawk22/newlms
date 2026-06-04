@@ -401,7 +401,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
   }, [ttsSupported]);
 
   /** Toggle: if already speaking this message → stop; otherwise start */
-  // eslint-disable-next-line react-hooks/react-compiler
+  // eslint-disable-next-line
   const toggleSpeak = useCallback((text: string, idx: number) => {
     if (speakingMsgIdx === idx) {
       stopSpeaking();

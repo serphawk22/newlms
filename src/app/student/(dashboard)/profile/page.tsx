@@ -116,7 +116,7 @@ export default async function StudentProfilePage() {
 
   const allNotifications = hasLoginToday ? notifications : [...notifications];
 
-  // eslint-disable-next-line react-hooks/react-compiler
+  // eslint-disable-next-line
   const serverNow = Date.now(); // computed once outside the map — satisfies react purity lint rule
 
   const recentActivity = allNotifications.slice(0, 10).map((n) => {
