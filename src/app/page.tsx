@@ -76,9 +76,7 @@ export default function Home() {
         <div className="relative z-10 text-center max-w-4xl mx-auto">
           <motion.div initial="hidden" animate="visible" className="space-y-8">
             <motion.div custom={0} variants={fadeUp}>
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-zinc-100 text-zinc-700 rounded-full text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 text-zinc-900" /> The Modern LMS for Institutions
-              </span>
+              
             </motion.div>
             <motion.h1 custom={1} variants={fadeUp} className="text-5xl sm:text-6xl lg:text-7xl font-bold text-zinc-900 tracking-tight leading-[1.1]">
               Focus. <span className="text-zinc-400">Learn.</span> Build.

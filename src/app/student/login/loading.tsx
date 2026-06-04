@@ -1,9 +1,5 @@
-import { Loader } from "@/components/ui/loader";
+import { PageLoader } from "@/components/ui/page-loader";
 
 export default function StudentLoginLoading() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-zinc-50">
-      <Loader variant="ring" />
-    </div>
-  );
+  return <PageLoader />;
 }

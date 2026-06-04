@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { CompactSidebar, CompactNavItem } from "./CompactSidebar";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 interface SidebarLayoutWrapperProps {
   items: CompactNavItem[];
@@ -13,11 +14,15 @@ interface SidebarLayoutWrapperProps {
   children: React.ReactNode;
 }
 
+function dashboardHome(role: string) {
+  if (role === "STUDENT") return "/student";
+  if (role === "ADMIN") return "/admin";
+  return "/instructor";
+}
+
 export function SidebarLayoutWrapper({
   items,
   role,
-  userName,
-  userEmail,
   children,
 }: SidebarLayoutWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,9 +32,7 @@ export function SidebarLayoutWrapper({
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem("sidebar-open");
-    if (saved === "true") {
-      setIsOpen(true);
-    }
+    if (saved === "true") setIsOpen(true);
   }, []);
 
   const toggleDesktop = () => {
@@ -38,16 +41,24 @@ export function SidebarLayoutWrapper({
     localStorage.setItem("sidebar-open", String(nextState));
   };
 
-  const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen);
-  };
-
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col lg:flex-row">
-      {/* Mobile Header */}
-      <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-zinc-950 text-white sticky top-0 z-30">
-        <div className="font-medium tracking-tight text-lg">OG LMS</div>
-        <button onClick={toggleMobile} className="p-2 -mr-2">
+    <div className="min-h-screen flex flex-col lg:flex-row" style={{ background: "var(--background)" }}>
+      <header
+        className="lg:hidden flex items-center justify-between px-4 h-14 sticky top-0 z-30"
+        style={{
+          background: "var(--card)",
+          borderBottom: "1px solid var(--border)",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
+        <Logo href={dashboardHome(role)} size="sm" />
+        <button
+          type="button"
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="p-2 -mr-2 rounded-lg"
+          style={{ color: "var(--foreground)" }}
+          aria-label="Open navigation"
+        >
           <Menu className="w-6 h-6" />
         </button>
       </header>
@@ -55,8 +66,8 @@ export function SidebarLayoutWrapper({
       <CompactSidebar
         items={items}
         role={role}
-        userName={userName}
-        userEmail={userEmail}
+        userName=""
+        userEmail=""
         isOpen={isOpen}
         isMobileOpen={isMobileOpen}
         onToggleDesktop={toggleDesktop}
@@ -65,7 +76,7 @@ export function SidebarLayoutWrapper({
 
       <main
         className={cn(
-          "flex-1 min-h-screen transition-[margin] duration-300 ease-in-out relative",
+          "flex-1 min-h-screen transition-[margin] duration-300 ease-in-out",
           mounted ? (isOpen ? "lg:ml-[240px]" : "lg:ml-[64px]") : "lg:ml-[64px]"
         )}
       >

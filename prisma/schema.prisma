@@ -7,28 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  STUDENT
-  INSTRUCTOR
-  ADMIN
-}
-
-enum EnrollmentStatus {
-  PENDING
-  ACTIVE
-  REJECTED
-}
-
 model Organization {
-  id              String               @id @default(cuid())
-  name            String
-  slug            String               @unique
-  joinCode        String               @unique
-  instructorCode  String               @unique
-  adminCode       String               @unique
-  members         OrganizationMember[]
-  courses         Course[]
-  dailyBites      DailyBite[]
+  id             String               @id @default(cuid())
+  name           String
+  slug           String               @unique
+  joinCode       String               @unique
+  instructorCode String               @unique
+  adminCode      String               @unique
+  courses        Course[]
+  dailyBites     DailyBite[]
+  members        OrganizationMember[]
 
   @@index([name])
 }
@@ -36,28 +24,28 @@ model Organization {
 model User {
   id                       String                   @id @default(cuid())
   email                    String                   @unique
-  password                 String // ADDED for custom JWT auth
+  password                 String
   name                     String?
-  avatar                   String?
-  coverImage               String?
-  loginCode                String?                  @unique // role-prefixed unique code e.g. STU4839
-  sessionToken             String? // ADDED: single-session enforcement — rotated on every login
+  loginCode                String?                  @unique
+  sessionToken             String?
   expertise                String[]                 @default([])
   bio                      String?
-  memberships              OrganizationMember[]
-  enrollments              Enrollment[]
-  coursesCreated           Course[]                 @relation("CourseCreator")
-  notifications            Notification[]
-  chats                    Chat[]
-  submissions              AssignmentSubmission[]
-  reviews                  Review[]
-  quizSubmissions          QuizSubmission[]
-  recordedClasses          RecordedClass[]
-  materialViews            MaterialView[]
+  avatar                   String?
+  coverImage               String?
   adminCommentsAuthored    AdminComment[]           @relation("AdminCommentAuthor")
   adminCommentsReceived    AdminComment[]           @relation("AdminCommentStudent")
-  studyFriendSessions      StudyFriendSession[]
+  submissions              AssignmentSubmission[]
+  chats                    Chat[]
+  coursesCreated           Course[]                 @relation("CourseCreator")
+  enrollments              Enrollment[]
+  materialViews            MaterialView[]
+  notifications            Notification[]
+  memberships              OrganizationMember[]
+  quizSubmissions          QuizSubmission[]
+  recordedClasses          RecordedClass[]
+  reviews                  Review[]
   studentRoadmapProgresses StudentRoadmapProgress[]
+  studyFriendSessions      StudyFriendSession[]
 }
 
 model OrganizationMember {
@@ -65,8 +53,8 @@ model OrganizationMember {
   userId         String
   organizationId String
   role           Role         @default(STUDENT)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, organizationId])
   @@index([organizationId])
@@ -79,21 +67,21 @@ model Course {
   description      String?
   published        Boolean           @default(false)
   organizationId   String
-  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   creatorId        String
-  creator          User              @relation("CourseCreator", fields: [creatorId], references: [id])
-  modules          Module[]
+  adminComments    AdminComment[]
   assignments      Assignment[]
-  readingMaterials ReadingMaterial[]
-  quizzes          Quiz[]
+  chats            Chat[]
+  creator          User              @relation("CourseCreator", fields: [creatorId], references: [id])
+  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  courseRoadmap    CourseRoadmap?
   enrollments      Enrollment[]
   events           Event[]
   liveSessions     LiveSession[]
-  chats            Chat[]
-  reviews          Review[]
+  modules          Module[]
+  quizzes          Quiz[]
+  readingMaterials ReadingMaterial[]
   recordedClasses  RecordedClass[]
-  adminComments    AdminComment[]
-  courseRoadmap    CourseRoadmap?
+  reviews          Review[]
 
   @@index([organizationId])
   @@index([creatorId])
@@ -104,10 +92,10 @@ model Module {
   id              String          @id @default(cuid())
   title           String
   courseId        String
-  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons         Lesson[]
-  liveSessions    LiveSession[] // module-specific live classes (optional)
-  recordedClasses RecordedClass[] // module-specific recordings (optional)
+  liveSessions    LiveSession[]
+  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  recordedClasses RecordedClass[]
 
   @@index([courseId])
 }
@@ -130,8 +118,8 @@ model Enrollment {
   status     EnrollmentStatus @default(PENDING)
   progress   Float            @default(0.0)
   enrolledAt DateTime         @default(now())
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@index([userId])
@@ -156,11 +144,11 @@ model Assignment {
   description       String?
   driveLink         String?
   courseId          String
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
   course            Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
   submissions       AssignmentSubmission[]
   plagiarismResults PlagiarismResult[]
-  createdAt         DateTime               @default(now())
-  updatedAt         DateTime               @updatedAt
 
   @@index([courseId])
 }
@@ -169,24 +157,21 @@ model AssignmentSubmission {
   id               String            @id @default(cuid())
   assignmentId     String
   studentId        String
-  driveLink        String            @default("") // kept for backward compat — empty for new file uploads
-  // ── Legacy Cloudinary fields (kept for backward compat with old records) ────
-  fileUrl          String? // legacy: Cloudinary secure_url
-  publicId         String? // legacy: Cloudinary public_id
-  fileType         String? // legacy: lowercase extension
-  mimeType         String? // legacy: MIME type
-  fileSize         Int? // legacy: file size in bytes
-  originalFileName String? // legacy: original filename
-  // ── New normalized file relation ─────────────────────────────────────────────
-  fileId           String? // FK → UploadedFile.id
-  file             UploadedFile?     @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  // ────────────────────────────────────────────────────────────────────────────
+  driveLink        String            @default("")
+  fileUrl          String?
+  publicId         String?
+  fileType         String?
+  mimeType         String?
+  fileSize         Int?
+  originalFileName String?
+  fileId           String?
   grade            Int?
   maxGrade         Int               @default(100)
   feedback         String?
   submittedAt      DateTime          @default(now())
   gradedAt         DateTime?
   assignment       Assignment        @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  file             UploadedFile?     @relation(fields: [fileId], references: [id], onDelete: Cascade)
   student          User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
   plagiarismResult PlagiarismResult?
 
@@ -198,24 +183,21 @@ model AssignmentSubmission {
 model ReadingMaterial {
   id               String         @id @default(cuid())
   title            String
-  link             String? // optional — kept for backward compat with old Google Drive records
+  link             String?
   courseId         String
-  // ── Legacy Cloudinary fields (kept for backward compat with old records) ──
-  fileUrl          String? // legacy: Cloudinary secure_url
-  originalFileName String? // legacy: original file name
-  publicId         String? // legacy: Cloudinary public_id
-  fileType         String? // legacy: lowercase extension
-  mimeType         String? // legacy: MIME type
-  resourceType     String? // legacy: Cloudinary resource_type
-  fileSize         Int? // legacy: file size in bytes
-  uploadedBy       String? // legacy: userId of instructor who uploaded
-  // ── New normalized file relation ─────────────────────────────────────────
-  fileId           String? // FK → UploadedFile.id
-  file             UploadedFile?  @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  // ── Relations ─────────────────────────────────────────────────────────────
-  course           Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  fileUrl          String?
+  originalFileName String?
+  publicId         String?
+  fileType         String?
+  mimeType         String?
+  resourceType     String?
+  fileSize         Int?
+  uploadedBy       String?
+  fileId           String?
   createdAt        DateTime       @default(now())
   materialViews    MaterialView[]
+  course           Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  file             UploadedFile?  @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
 }
@@ -225,10 +207,10 @@ model Quiz {
   title        String
   courseId     String
   retryEnabled Boolean          @default(false)
-  course       Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  questions    Question[]
-  submissions  QuizSubmission[]
   createdAt    DateTime         @default(now())
+  questions    Question[]
+  course       Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions  QuizSubmission[]
 
   @@index([courseId])
 }
@@ -237,7 +219,7 @@ model QuizSubmission {
   id            String   @id @default(cuid())
   quizId        String
   studentId     String
-  answers       Json // { questionId: selectedOptionIndex | "essay_text" }
+  answers       Json
   obtainedMarks Int
   totalMarks    Int
   submittedAt   DateTime @default(now())
@@ -252,12 +234,12 @@ model QuizSubmission {
 model Question {
   id            String   @id @default(cuid())
   quizId        String
-  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  type          String // "MCQ" or "ESSAY"
+  type          String
   text          String
-  options       String[] // Only for MCQ
-  correctOption Int? // Index of correct option (0-3) for MCQ
+  options       String[]
+  correctOption Int?
   points        Int      @default(1)
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
   @@index([quizId])
 }
@@ -265,12 +247,12 @@ model Question {
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   message   String
-  type      String // "COURSE" | "ASSIGNMENT" | "MODULE" | "LIVE_CLASS"
-  link      String? // destination URL to navigate to when clicked
+  type      String
+  link      String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -279,39 +261,31 @@ model Event {
   id       String   @id @default(cuid())
   title    String
   date     DateTime
-  type     String // "ASSIGNMENT_DEADLINE" | "MODULE_PUBLISH" | "COURSE_PUBLISHED"
+  type     String
   courseId String?
   course   Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
 }
 
-// ── Plagiarism Detection ───────────────────────────────────────────────────────
-
 model PlagiarismResult {
   id               String               @id @default(cuid())
   submissionId     String               @unique
   assignmentId     String
-  status           String               @default("PENDING") // PENDING|RUNNING|DONE|ERROR
-  similarityScore  Float                @default(0) // 0-100
-  plagiarismStatus String               @default("SAFE") // SAFE|MEDIUM|HIGH
+  status           String               @default("PENDING")
+  similarityScore  Float                @default(0)
+  plagiarismStatus String               @default("SAFE")
   matches          Json                 @default("[]")
-  extractedText    String?              @db.Text
+  extractedText    String?
   errorMessage     String?
   checkedAt        DateTime?
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
-  submission       AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   assignment       Assignment           @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  submission       AssignmentSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@index([assignmentId])
   @@index([submissionId])
-}
-
-enum LiveSessionStatus {
-  SCHEDULED
-  ONGOING
-  COMPLETED
 }
 
 model LiveSession {
@@ -319,20 +293,17 @@ model LiveSession {
   roomId       String            @unique
   title        String
   courseId     String
-  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  // Optional: link this session to a specific module (null = course-level, backward-compatible)
   moduleId     String?
-  module       Module?           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   status       LiveSessionStatus @default(SCHEDULED)
   scheduledAt  DateTime          @default(now())
   recordingUrl String?
   createdAt    DateTime          @default(now())
+  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module       Module?           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
   @@index([moduleId])
 }
-
-// --- AI Chat History ---
 
 model Chat {
   id        String        @id @default(cuid())
@@ -340,8 +311,8 @@ model Chat {
   courseId  String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   course    Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  ChatMessage[]
 
   @@index([userId])
@@ -351,7 +322,7 @@ model Chat {
 model ChatMessage {
   id        String   @id @default(cuid())
   chatId    String
-  role      String // "user" | "assistant"
+  role      String
   content   String
   createdAt DateTime @default(now())
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
@@ -359,11 +330,9 @@ model ChatMessage {
   @@index([chatId])
 }
 
-// --- Course Reviews ---
-
 model Review {
   id        String   @id @default(cuid())
-  rating    Int // 1-5 stars
+  rating    Int
   comment   String
   courseId  String
   studentId String
@@ -377,28 +346,23 @@ model Review {
   @@index([studentId])
 }
 
-// ── Recorded Classes (auto-uploaded from live sessions via Cloudinary) ─────────
-
 model RecordedClass {
   id           String   @id @default(cuid())
   courseId     String
   instructorId String
   title        String
   videoUrl     String
-  duration     Int? // in seconds
-  // Optional: link this recording to a specific module (null = course-level, backward-compatible)
+  duration     Int?
   moduleId     String?
-  module       Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
   course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   instructor   User     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  module       Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
   @@index([instructorId])
   @@index([moduleId])
 }
-
-// ── Per-student reading material view tracking ──────────────────────────────
 
 model MaterialView {
   id         String          @id @default(cuid())
@@ -414,42 +378,35 @@ model MaterialView {
   @@index([studentId])
 }
 
-// ── Centralized uploaded file metadata ────────────────────────────────────────
-// All new uploads store their metadata here. Legacy fields on ReadingMaterial
-// and AssignmentSubmission are kept only for backward compatibility.
-
 model UploadedFile {
-  id           String   @id @default(cuid())
-  originalName String
-  extension    String
-  mimeType     String
-  size         Int
-  url          String
-  publicId     String
-  resourceType String? // Cloudinary resource_type: image | video | raw
-  uploadedBy   String? // userId of uploader
-  uploadedAt   DateTime @default(now())
-
-  readingMaterials      ReadingMaterial[]
+  id                    String                 @id @default(cuid())
+  originalName          String
+  extension             String
+  mimeType              String
+  size                  Int
+  url                   String
+  publicId              String
+  resourceType          String?
+  uploadedBy            String?
+  uploadedAt            DateTime               @default(now())
   assignmentSubmissions AssignmentSubmission[]
+  readingMaterials      ReadingMaterial[]
 
   @@index([uploadedAt])
   @@index([uploadedBy])
 }
 
-// ── Admin Comments (course-level & student-level, visibility enforced by API) ──
-
 model AdminComment {
   id         String   @id @default(cuid())
   content    String
   courseId   String
-  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   authorId   String
-  author     User     @relation("AdminCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  targetType String // "COURSE" | "STUDENT"
+  targetType String
   studentId  String?
-  student    User?    @relation("AdminCommentStudent", fields: [studentId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+  author     User     @relation("AdminCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student    User?    @relation("AdminCommentStudent", fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
   @@index([authorId])
@@ -463,11 +420,11 @@ model StudyFriendSession {
   fileUrl       String?
   fileName      String?
   fileExt       String?
-  extractedText String?              @db.Text
+  extractedText String?
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
-  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages      StudyFriendMessage[]
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -475,47 +432,43 @@ model StudyFriendSession {
 model StudyFriendMessage {
   id        String             @id @default(cuid())
   sessionId String
-  role      String // "user" | "assistant"
-  content   String             @db.Text
+  role      String
+  content   String
   createdAt DateTime           @default(now())
   session   StudyFriendSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
 }
 
-// ── AI Prompt Caching ─────────────────────────────────────────────────────────
-
 model PromptCache {
   id         String   @id @default(cuid())
   promptHash String   @unique
-  prompt     String   @db.Text
-  response   String   @db.Text
+  prompt     String
+  response   String
   createdAt  DateTime @default(now())
 
   @@index([promptHash])
 }
 
-// ── Course Roadmap (Interactive Learning Path) ────────────────────────────────
-
 model CourseRoadmap {
   id        String         @id @default(cuid())
   courseId  String         @unique
-  course    Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  phases    RoadmapPhase[]
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
+  course    Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  phases    RoadmapPhase[]
 }
 
 model RoadmapPhase {
   id          String         @id @default(cuid())
   roadmapId   String
-  roadmap     CourseRoadmap  @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
   title       String
-  description String?        @db.Text
+  description String?
   order       Int            @default(0)
-  topics      RoadmapTopic[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  roadmap     CourseRoadmap  @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  topics      RoadmapTopic[]
 
   @@index([roadmapId])
 }
@@ -523,12 +476,12 @@ model RoadmapPhase {
 model RoadmapTopic {
   id        String            @id @default(cuid())
   phaseId   String
-  phase     RoadmapPhase      @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   title     String
   order     Int               @default(0)
-  subtopics RoadmapSubtopic[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+  subtopics RoadmapSubtopic[]
+  phase     RoadmapPhase      @relation(fields: [phaseId], references: [id], onDelete: Cascade)
 
   @@index([phaseId])
 }
@@ -536,12 +489,12 @@ model RoadmapTopic {
 model RoadmapSubtopic {
   id        String                   @id @default(cuid())
   topicId   String
-  topic     RoadmapTopic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
   title     String
   order     Int                      @default(0)
-  progress  StudentRoadmapProgress[]
   createdAt DateTime                 @default(now())
   updatedAt DateTime                 @updatedAt
+  topic     RoadmapTopic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  progress  StudentRoadmapProgress[]
 
   @@index([topicId])
 }
@@ -572,3 +525,20 @@ model SharedVideo {
   @@index([orgId])
 }
 
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+
+enum LiveSessionStatus {
+  SCHEDULED
+  ONGOING
+  COMPLETED
+}

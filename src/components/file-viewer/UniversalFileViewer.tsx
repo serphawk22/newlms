@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Loader2, Download, ExternalLink, RefreshCw,
+  Download, ExternalLink, RefreshCw,
   FileText, AlertTriangle, Copy, Check,
   Code2, Archive, FileImage, Sheet,
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 // ─── File category types ───────────────────────────────────────────────────────
 
@@ -87,9 +88,8 @@ function FileActions({ url, fileName }: { url: string; fileName: string }) {
 /** Centered loading spinner. */
 function Spinner({ label }: { label?: string }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-900/80 z-10">
-      <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
-      {label && <p className="text-xs text-slate-400">{label}</p>}
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-10">
+      <RingLoader size="lg" label={label} />
     </div>
   );
 }
@@ -200,7 +200,7 @@ function ImageViewer({ url, fileName }: { url: string; fileName: string }) {
     <div className="flex-1 flex items-center justify-center p-4 bg-slate-950 overflow-auto">
       {!loaded && !error && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
+          <RingLoader size="lg" />
         </div>
       )}
       {error ? (
@@ -418,7 +418,7 @@ function CodeViewer({ url, ext, fileName }: { url: string; ext: string; fileName
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
+          <RingLoader size="lg" />
           <p className="text-xs text-slate-400">Fetching file contents…</p>
         </div>
       </div>
@@ -502,7 +502,7 @@ function TextViewer({ url, fileName }: { url: string; fileName: string }) {
 
   if (loading) return (
     <div className="flex-1 flex items-center justify-center">
-      <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
+      <RingLoader size="lg" />
     </div>
   );
 

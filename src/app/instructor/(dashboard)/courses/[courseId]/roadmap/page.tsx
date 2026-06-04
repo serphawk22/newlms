@@ -40,7 +40,7 @@ export default async function InstructorRoadmapPage({
   }
 
   return (
-    <div className="container-page space-y-8">
+    <div className="course-theme-scope container-page space-y-8">
       {/* Course Title Header */}
       <div className="flex items-center justify-between">
         <Link href="/instructor">

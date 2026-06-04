@@ -8,7 +8,6 @@ import {
   Play, 
   Square, 
   Share2, 
-  Loader2, 
   CheckCircle2, 
   AlertCircle,
   Clock,
@@ -16,6 +15,7 @@ import {
   RefreshCw,
   MessageSquare
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -477,12 +477,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
         {/* ── STATE: UPLOADING ── */}
         {recordingState === "uploading" && (
           <div className="text-center py-8 space-y-4">
-            <div className="relative inline-flex">
-              <div className="w-14 h-14 rounded-full border-4 border-zinc-800 border-t-violet-500 animate-spin flex items-center justify-center" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 className="w-5 h-5 text-violet-400 animate-pulse" />
-              </div>
-            </div>
+            <RingLoader size="lg" />
             
             <div className="space-y-1">
               <p className="text-xs font-bold text-white">Uploading your learning video...</p>

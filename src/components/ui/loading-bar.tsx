@@ -21,20 +21,32 @@ export function LoadingBar() {
   return (
     <AnimatePresence>
       {loading && (
-        <motion.div
-          key={pathname}
-          className="fixed top-0 left-0 z-50 h-[3px] bg-zinc-900"
-          initial={{ width: "0%", left: "0%" }}
-          animate={{
-            width: ["0%", "30%", "70%", "95%"],
-            transition: {
-              duration: 2,
-              ease: "easeOut",
-              times: [0, 0.3, 0.6, 1],
-            },
-          }}
-          exit={{ opacity: 0, transition: { duration: 0.2 } }}
-        />
+        <>
+          {/* Grey track */}
+          <motion.div
+            key={`${pathname}-track`}
+            className="fixed top-0 left-0 z-[9998] h-[3px] w-full"
+            style={{ background: "var(--border)" }}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+          {/* Red progress */}
+          <motion.div
+            key={pathname}
+            className="fixed top-0 left-0 z-[9999] h-[3px]"
+            style={{ background: "var(--accent)" }}
+            initial={{ width: "0%", left: "0%" }}
+            animate={{
+              width: ["0%", "35%", "75%", "92%"],
+              transition: {
+                duration: 2,
+                ease: "easeOut",
+                times: [0, 0.35, 0.7, 1],
+              },
+            }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+          />
+        </>
       )}
     </AnimatePresence>
   );

@@ -58,7 +58,7 @@ export default async function StudentLiveClassesPage() {
     <div className="container-page space-y-8">
       <div className="flex items-center gap-2">
         <Video className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Live Classes</h1>
+        <h1 className="text-xl font-bold text-grey-900">Live Classes</h1>
       </div>
 
       {/* Ongoing session banner */}

@@ -7,9 +7,6 @@ import {
   Users,
   UserCircle,
   BarChart2,
-  ClipboardList,
-  HelpCircle,
-  Video,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -25,9 +22,6 @@ export default async function InstructorLayout({
     { label: "Dashboard", href: "/instructor", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "My Courses", href: "/instructor/courses", icon: <BookOpen className="w-5 h-5" /> },
     { label: "Students", href: "/instructor/students", icon: <Users className="w-5 h-5" /> },
-    { label: "Assignments", href: "/instructor/assignments", icon: <ClipboardList className="w-5 h-5" /> },
-    { label: "Quizzes", href: "/instructor/quizzes", icon: <HelpCircle className="w-5 h-5" /> },
-    { label: "Live Classes", href: "/instructor/live-classes", icon: <Video className="w-5 h-5" /> },
     { label: "Analytics", href: "/instructor/analytics", icon: <BarChart2 className="w-5 h-5" /> },
     { label: "My Profile", href: "/instructor/profile", icon: <UserCircle className="w-5 h-5" /> },
   ];

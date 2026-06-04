@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { User, LogOut, PanelLeftOpen, PanelLeftClose } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { LogOut, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Logo } from "@/components/Logo";
 
 export interface CompactNavItem {
   label: string;
@@ -24,18 +25,23 @@ interface CompactSidebarProps {
   onCloseMobile: () => void;
 }
 
+function dashboardHome(role: string) {
+  if (role === "STUDENT") return "/student";
+  if (role === "ADMIN") return "/admin";
+  return "/instructor";
+}
+
 export function CompactSidebar({
   items,
   role,
-  userName,
   isOpen,
   isMobileOpen,
   onToggleDesktop,
   onCloseMobile,
 }: CompactSidebarProps) {
   const pathname = usePathname();
+  const home = dashboardHome(role);
 
-  // Close mobile sidebar on route change
   useEffect(() => {
     onCloseMobile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,8 +50,9 @@ export function CompactSidebar({
   const isActive = useCallback(
     (href: string) => {
       if (href.includes("?") || href.includes("#")) return false;
-      // Exact match for dashboard roots so /student doesn't match /student/courses etc.
-      if (href === "/instructor" || href === "/student") return pathname === href;
+      if (href === "/instructor" || href === "/student" || href === "/admin") {
+        return pathname === href;
+      }
       return pathname.startsWith(href);
     },
     [pathname]
@@ -66,49 +73,73 @@ export function CompactSidebar({
   };
 
   const textVariants = {
-    collapsed: { opacity: 0, x: -10, display: "none" },
-    expanded: { opacity: 1, x: 0, display: "block" },
+    collapsed: { opacity: 0, x: -10, display: "none" as const },
+    expanded: { opacity: 1, x: 0, display: "block" as const },
   };
 
-  const renderNavLinks = () =>
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
+  const [logoutHovered, setLogoutHovered] = useState(false);
+
+  const renderNavLinks = (expanded: boolean) =>
     items.map((item) => {
       const active = isActive(item.href);
+      const isHovered = hoveredHref === item.href;
       return (
-        <Link key={item.href + item.label} href={item.href} className="w-full relative group">
+        <Link
+          key={item.href + item.label}
+          href={item.href}
+          className="w-full relative group"
+          onClick={expanded ? undefined : onCloseMobile}
+        >
           <motion.div
             variants={navItemVariants}
-            initial={isOpen ? "expanded" : "collapsed"}
-            animate={isOpen ? "expanded" : "collapsed"}
+            initial={expanded ? "expanded" : "collapsed"}
+            animate={expanded ? "expanded" : "collapsed"}
             transition={{ duration: 0.25, ease: "easeInOut" }}
+            onMouseEnter={() => setHoveredHref(item.href)}
+            onMouseLeave={() => setHoveredHref(null)}
             className={cn(
-              "flex items-center h-10 rounded-lg transition-colors cursor-pointer mx-auto",
-              isOpen ? "px-3" : "",
-              active
-                ? "bg-zinc-800 text-white"
-                : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+              "flex items-center h-10 rounded-lg transition-all cursor-pointer mx-auto relative",
+              expanded ? "px-3" : "",
+              active ? "font-semibold" : ""
             )}
+            style={{
+              background: active
+                ? "var(--sidebar-accent)"
+                : isHovered
+                ? "rgba(255,255,255,0.04)"
+                : "transparent",
+              color: active || isHovered ? "#D9252A" : "var(--foreground)",
+              borderLeft: active
+                ? "3px solid #D9252A"
+                : "3px solid transparent",
+            }}
           >
             <span className="shrink-0 flex items-center justify-center">{item.icon}</span>
-
             <AnimatePresence>
-              {isOpen && (
+              {expanded && (
                 <motion.span
                   variants={textVariants}
                   initial="collapsed"
                   animate="expanded"
                   exit="collapsed"
                   transition={{ duration: 0.2, ease: "easeInOut" }}
-                  className="ml-3 text-sm font-medium whitespace-nowrap overflow-hidden"
+                  className="ml-3 text-sm whitespace-nowrap overflow-hidden"
                 >
                   {item.label}
                 </motion.span>
               )}
             </AnimatePresence>
           </motion.div>
-
-          {/* Tooltip for collapsed state */}
-          {!isOpen && (
-            <div className="hidden lg:block absolute left-full ml-3 px-2.5 py-1.5 top-1/2 -translate-y-1/2 bg-zinc-900 text-white text-xs font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl border border-zinc-800 pointer-events-none">
+          {!expanded && (
+            <div
+              className="hidden lg:block absolute left-full ml-3 px-2.5 py-1.5 top-1/2 -translate-y-1/2 text-xs font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-md pointer-events-none"
+              style={{
+                background: "var(--card)",
+                color: "var(--foreground)",
+                border: "1px solid var(--border)",
+              }}
+            >
               {item.label}
             </div>
           )}
@@ -116,52 +147,49 @@ export function CompactSidebar({
       );
     });
 
-  const sidebarContent = (
+  const sidebarShell = (expanded: boolean) => (
     <>
-      {/* Header */}
-      <div className="h-14 flex items-center px-4 border-b border-zinc-800">
-        <Link
-          href={role === "STUDENT" ? "/student" : "/instructor"}
-          className="text-white font-medium text-lg tracking-tight shrink-0 flex items-center gap-2 overflow-hidden"
-        >
-          <span>OG</span>
-          <AnimatePresence>
-            {isOpen && (
-              <motion.span
-                variants={textVariants}
-                initial="collapsed"
-                animate="expanded"
-                exit="collapsed"
-                transition={{ duration: 0.2 }}
-              >
-                LMS
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </Link>
+      <div
+        className="h-14 flex items-center px-3 shrink-0"
+        style={{ borderBottom: "1px solid var(--sidebar-border)" }}
+      >
+        <Logo href={home} size="sm" />
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 flex flex-col items-center gap-1.5 py-4 px-3 overflow-y-auto overflow-x-hidden">
-        {renderNavLinks()}
+      <nav className="flex-1 flex flex-col items-center gap-1 py-4 px-2 overflow-y-auto overflow-x-hidden">
+        {renderNavLinks(expanded)}
       </nav>
 
-      {/* Bottom Logout */}
-      <div className="border-t border-zinc-800 py-3 flex flex-col gap-1.5 px-3">
-        <button onClick={handleLogout} className="w-full relative group">
+      <div
+        className="py-3 flex flex-col gap-1.5 px-2 shrink-0"
+        style={{ borderTop: "1px solid var(--sidebar-border)" }}
+      >
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-full relative group"
+          onMouseEnter={() => setLogoutHovered(true)}
+          onMouseLeave={() => setLogoutHovered(false)}
+        >
           <motion.div
             variants={navItemVariants}
-            initial={isOpen ? "expanded" : "collapsed"}
-            animate={isOpen ? "expanded" : "collapsed"}
+            initial={expanded ? "expanded" : "collapsed"}
+            animate={expanded ? "expanded" : "collapsed"}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className={cn(
-              "flex items-center h-10 rounded-lg hover:bg-red-500/10 transition-colors text-zinc-400 hover:text-red-400 mx-auto",
-              isOpen ? "px-3" : ""
+              "flex items-center h-10 rounded-lg transition-all mx-auto",
+              expanded ? "px-3" : ""
             )}
+            style={{
+              background: logoutHovered ? "rgba(255,255,255,0.04)" : "transparent",
+              color: logoutHovered ? "#D9252A" : "var(--foreground)",
+            }}
           >
-            <span className="shrink-0 flex items-center justify-center"><LogOut className="w-5 h-5" /></span>
+            <span className="shrink-0 flex items-center justify-center">
+              <LogOut className="w-5 h-5" />
+            </span>
             <AnimatePresence>
-              {isOpen && (
+              {expanded && (
                 <motion.span
                   variants={textVariants}
                   initial="collapsed"
@@ -174,11 +202,6 @@ export function CompactSidebar({
               )}
             </AnimatePresence>
           </motion.div>
-          {!isOpen && (
-            <div className="hidden lg:block absolute left-full ml-3 px-2.5 py-1.5 top-1/2 -translate-y-1/2 bg-zinc-900 text-white text-xs font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl border border-zinc-800 pointer-events-none">
-              Logout
-            </div>
-          )}
         </button>
       </div>
     </>
@@ -186,25 +209,33 @@ export function CompactSidebar({
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <motion.aside
         initial={false}
         animate={{ width: isOpen ? 240 : 64 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="hidden lg:flex fixed left-0 top-0 z-40 h-full flex-col bg-zinc-950 border-r border-zinc-800 overflow-visible"
+        className="hidden lg:flex fixed left-0 top-0 z-40 h-full flex-col overflow-visible"
+        style={{
+          background: "var(--sidebar)",
+          borderRight: "1px solid var(--sidebar-border)",
+          boxShadow: "var(--shadow-sm)",
+        }}
       >
-        {sidebarContent}
-        
-        {/* Toggle Button vertically centered */}
+        {sidebarShell(isOpen)}
         <button
+          type="button"
           onClick={onToggleDesktop}
-          className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-50 items-center justify-center p-1.5 rounded-full bg-zinc-800 border-2 border-zinc-950 hover:bg-zinc-700 text-zinc-300 transition-colors shadow-lg"
+          className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-50 items-center justify-center p-1.5 rounded-full transition-colors shadow-md"
+          style={{
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+            color: "var(--muted-foreground)",
+          }}
+          aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           {isOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
         </button>
       </motion.aside>
 
-      {/* Mobile Drawer Overlay */}
       <AnimatePresence>
         {isMobileOpen && (
           <>
@@ -213,7 +244,7 @@ export function CompactSidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
+              className="lg:hidden fixed inset-0 bg-black/40 z-40"
               onClick={onCloseMobile}
             />
             <motion.aside
@@ -221,55 +252,17 @@ export function CompactSidebar({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="lg:hidden fixed left-0 top-0 z-50 h-full w-[240px] flex flex-col bg-zinc-950 border-r border-zinc-800 overflow-hidden"
+              className="lg:hidden fixed left-0 top-0 z-50 h-full w-[240px] flex flex-col overflow-hidden"
+              style={{
+                background: "var(--sidebar)",
+                borderRight: "1px solid var(--sidebar-border)",
+              }}
             >
-              {/* Force 'isOpen' to be true for mobile rendering so text is visible */}
-              <div className="w-[240px] h-full flex flex-col">
-                <CompactSidebarContent
-                  items={items}
-                  role={role}
-                  isActive={isActive}
-                  handleLogout={handleLogout}
-                  onCloseMobile={onCloseMobile}
-                />
-              </div>
+              <div className="w-[240px] h-full flex flex-col">{sidebarShell(true)}</div>
             </motion.aside>
           </>
         )}
       </AnimatePresence>
-    </>
-  );
-}
-
-// Extract content logic to keep mobile fully expanded
-function CompactSidebarContent({ items, role, isActive, handleLogout, onCloseMobile }: any) {
-  return (
-    <>
-      <div className="h-14 flex items-center justify-between px-4 border-b border-zinc-800">
-        <Link href={role === "STUDENT" ? "/student" : "/instructor"} className="text-white font-medium text-lg tracking-tight flex items-center gap-2">
-          <span>OG LMS</span>
-        </Link>
-      </div>
-      <nav className="flex-1 flex flex-col gap-1.5 py-4 px-3 overflow-y-auto">
-        {items.map((item: any) => {
-          const active = isActive(item.href);
-          return (
-            <Link key={item.href + item.label} href={item.href} onClick={onCloseMobile} className={cn(
-              "flex items-center h-10 px-3 rounded-lg transition-colors",
-              active ? "bg-zinc-800 text-white" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-            )}>
-              <span className="shrink-0 flex items-center justify-center">{item.icon}</span>
-              <span className="ml-3 text-sm font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="border-t border-zinc-800 py-3 flex flex-col gap-1.5 px-3">
-        <button onClick={handleLogout} className="flex items-center h-10 px-3 rounded-lg text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
-          <span className="shrink-0 flex items-center justify-center"><LogOut className="w-5 h-5" /></span>
-          <span className="ml-3 text-sm font-medium">Logout</span>
-        </button>
-      </div>
     </>
   );
 }

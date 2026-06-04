@@ -58,7 +58,7 @@ export default async function LessonEditorPage({
   ];
 
   return (
-    <div className="container-page space-y-8">
+    <div className="course-theme-scope container-page space-y-8">
       {/* Lesson Header */}
       <div className="flex items-center justify-between">
         <Link href={`/instructor/courses/${courseId}`}>

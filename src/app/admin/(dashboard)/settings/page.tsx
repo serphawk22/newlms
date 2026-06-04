@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { uploadToCloudinaryDirect } from "@/lib/uploads";
-import { Settings, CheckCircle2, AlertCircle, Upload, X, Loader2 } from "lucide-react";
+import { Settings, CheckCircle2, AlertCircle, Upload, X } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { cn } from "@/lib/utils";
 
 interface OrgSettings {
@@ -289,7 +290,7 @@ export default function AdminSettingsPage() {
             >
               {saving ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <RingLoader size="sm" className="inline-flex" />
                   Saving...
                 </>
               ) : (

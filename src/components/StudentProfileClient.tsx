@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft, BookOpen, MapPin, Settings, Trophy, Star,
-  Building2, Mail, Camera, Award, Loader, X, Plus, Flame, GraduationCap
+  Building2, Mail, Camera, Award, X, Plus, Flame, GraduationCap
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 interface Achievement {
   name: string;
@@ -412,7 +413,7 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                     disabled={uploadingCover}
                     className="absolute bottom-3 right-3 bg-white/95 text-zinc-700 shadow-sm border border-zinc-200 hover:bg-white px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
                   >
-                    {uploadingCover ? <Loader className="w-3.5 h-3.5 animate-spin text-zinc-500" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                    {uploadingCover ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
                     Upload cover image
                   </button>
                 </div>
@@ -440,7 +441,7 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                       disabled={uploadingAvatar}
                       className="bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200 px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     >
-                      {uploadingAvatar ? <Loader className="w-3.5 h-3.5 animate-spin text-zinc-500" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                      {uploadingAvatar ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
                       Upload profile photo
                     </button>
                     {modalAvatar && (
@@ -546,7 +547,7 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                 disabled={isSaving}
                 className="bg-zinc-900 hover:bg-zinc-800 text-white px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
               >
-                {isSaving && <Loader className="w-3.5 h-3.5 animate-spin" />}
+                {isSaving && <RingLoader size="sm" className="inline-flex" />}
                 Save Changes
               </Button>
             </div>

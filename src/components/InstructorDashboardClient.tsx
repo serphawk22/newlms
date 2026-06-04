@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import {
@@ -38,7 +38,8 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
     <motion.span
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-2xl font-medium text-zinc-900"
+      className="text-2xl font-medium"
+      style={{ color: "var(--foreground)" }}
     >
       {value}{suffix}
     </motion.span>
@@ -54,41 +55,75 @@ function MiniCalendar({ sessionDates }: { sessionDates: string[] }) {
   const startDay = getDay(startOfMonth(currentMonth));
 
   return (
-    <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-4">
+    <div className="rounded-xl p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+      {/* Month navigation */}
       <div className="flex items-center justify-between mb-3">
-        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-1 rounded-lg hover:bg-zinc-100 text-zinc-500">
+        <button
+          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+          className="p-1 rounded-lg transition-colors"
+          style={{ color: "var(--muted-foreground)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--foreground)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
+        >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-sm font-medium text-zinc-900">
+        <span className="text-sm" style={{ color: "var(--foreground)", fontWeight: 600 }}>
           {format(currentMonth, "MMMM yyyy")}
         </span>
-        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-1 rounded-lg hover:bg-zinc-100 text-zinc-500">
+        <button
+          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+          className="p-1 rounded-lg transition-colors"
+          style={{ color: "var(--muted-foreground)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--foreground)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
+        >
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Day headers */}
       <div className="grid grid-cols-7 gap-1 text-center mb-2">
         {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
-          <span key={d} className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">{d}</span>
+          <span
+            key={d}
+            className="text-[10px] font-medium uppercase tracking-wider"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            {d}
+          </span>
         ))}
       </div>
+
+      {/* Day grid */}
       <div className="grid grid-cols-7 gap-1">
         {Array.from({ length: startDay }).map((_, i) => (
           <div key={`empty-${i}`} />
         ))}
         {days.map((day) => {
           const hasSession = sessionDates.some((d) => isSameDay(new Date(d), day));
+          const today = isToday(day);
           return (
             <div
               key={day.toISOString()}
-              className={`relative flex items-center justify-center h-8 w-full rounded-lg text-xs font-medium transition-colors ${
-                isToday(day)
-                  ? "bg-zinc-900 text-white"
-                  : "text-zinc-600 hover:bg-zinc-100"
-              }`}
+              className="relative flex items-center justify-center h-8 w-full rounded-lg text-xs font-medium transition-colors"
+              style={
+                today
+                  ? { background: "#D9252A", color: "#FFFFFF" }
+                  : { color: "var(--foreground)" }
+              }
+              onMouseEnter={e => {
+                if (!today) (e.currentTarget as HTMLDivElement).style.background = "var(--muted)";
+              }}
+              onMouseLeave={e => {
+                if (!today) (e.currentTarget as HTMLDivElement).style.background = "transparent";
+              }}
             >
               {format(day, "d")}
-              {hasSession && !isToday(day) && (
-                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-blue-500" />
+              {hasSession && !today && (
+                <span
+                  className="absolute bottom-0.5 w-1 h-1 rounded-full"
+                  style={{ background: "#D9252A" }}
+                />
               )}
             </div>
           );
@@ -121,10 +156,10 @@ export function InstructorDashboardClient({
   const [chartView, setChartView] = useState<"weekly" | "monthly">("weekly");
 
   const stats = [
-    { label: "Total Students", value: totalStudents, suffix: "+", icon: Users, color: "bg-blue-100 text-blue-600" },
-    { label: "Total Courses", value: totalCourses, suffix: "+", icon: BookOpen, color: "bg-emerald-100 text-emerald-600" },
-    { label: "Active Quizzes", value: activeQuizzes, suffix: "", icon: HelpCircle, color: "bg-amber-100 text-amber-600" },
-    { label: "Pending Assignments", value: pendingAssignments, suffix: "", icon: ClipboardList, color: "bg-purple-100 text-purple-600" },
+    { label: "Total Students", value: totalStudents, suffix: "+", icon: Users },
+    { label: "Total Courses", value: totalCourses, suffix: "+", icon: BookOpen },
+    { label: "Active Quizzes", value: activeQuizzes, suffix: "", icon: HelpCircle },
+    { label: "Pending Assignments", value: pendingAssignments, suffix: "", icon: ClipboardList },
   ];
 
   const chartData = chartView === "weekly"
@@ -144,10 +179,10 @@ export function InstructorDashboardClient({
       {/* Header */}
       <motion.div initial="hidden" animate="visible" variants={fadeUp} className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-medium text-zinc-900">
+          <h1 className="text-2xl sm:text-3xl font-medium" style={{ color: "var(--foreground)" }}>
             {greeting}, {userName}
           </h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Here&apos;s what&apos;s happening with your courses today.</p>
+          <p className="text-sm mt-0.5" style={{ color: "var(--muted-foreground)" }}>Here&apos;s what&apos;s happening with your courses today.</p>
         </div>
       </motion.div>
 
@@ -155,16 +190,19 @@ export function InstructorDashboardClient({
       <motion.div initial="hidden" animate="visible" variants={stagger} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <motion.div key={stat.label} variants={cardItem}>
-            <Card className="border-zinc-200 shadow-sm hover:shadow-md transition-shadow">
+            <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }} className="hover:shadow-sm transition-shadow">
               <CardContent className="p-4 sm:p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <div className={`w-10 h-10 rounded-xl ${stat.color} flex items-center justify-center`}>
-                    <stat.icon className="w-5 h-5" />
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
+                  >
+                    <stat.icon className="w-5 h-5" style={{ color: "var(--foreground)" } as React.CSSProperties} />
                   </div>
-                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                  <TrendingUp className="w-4 h-4" style={{ color: "#D9252A" }} />
                 </div>
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                <p className="text-xs font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -180,8 +218,8 @@ export function InstructorDashboardClient({
           transition={{ delay: 0.2, ease: "easeOut", duration: 0.4 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <CalendarDays className="w-4 h-4 text-zinc-500" />
-            <h3 className="text-xs font-medium text-zinc-700 uppercase tracking-wider">Schedule</h3>
+            <CalendarDays className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Schedule</h3>
           </div>
           <MiniCalendar sessionDates={sessionDates} />
         </motion.div>
@@ -194,52 +232,73 @@ export function InstructorDashboardClient({
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-medium text-zinc-700 uppercase tracking-wider">Course Performance</h3>
+              <TrendingUp className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Course Performance</h3>
             </div>
-            <div className="flex items-center gap-1 bg-zinc-100 rounded-lg p-0.5">
+            <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ background: "var(--muted)" }}>
               <button
                 onClick={() => setChartView("weekly")}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                  chartView === "weekly" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
-                }`}
+                style={chartView === "weekly"
+                  ? { background: "var(--card)", color: "var(--foreground)", boxShadow: "0 1px 3px rgba(0,0,0,0.12)" }
+                  : { color: "var(--muted-foreground)" }
+                }
+                className="px-3 py-1 rounded-md text-xs font-medium transition-colors"
               >
                 Weekly
               </button>
               <button
                 onClick={() => setChartView("monthly")}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                  chartView === "monthly" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
-                }`}
+                style={chartView === "monthly"
+                  ? { background: "var(--card)", color: "var(--foreground)", boxShadow: "0 1px 3px rgba(0,0,0,0.12)" }
+                  : { color: "var(--muted-foreground)" }
+                }
+                className="px-3 py-1 rounded-md text-xs font-medium transition-colors"
               >
                 Monthly
               </button>
             </div>
           </div>
-          <Card className="border-zinc-200 shadow-sm">
+          <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
             <CardContent className="p-4 sm:p-6">
               <div className="h-60">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#a1a1aa" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#a1a1aa" }} axisLine={false} tickLine={false} />
+                    <CartesianGrid
+                      strokeDasharray="4 4"
+                      stroke="var(--border)"
+                      strokeOpacity={0.7}
+                    />
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <Tooltip
                       contentStyle={{
-                          backgroundColor: "#fff",
-                          border: "1px solid #e4e4e7",
-                          borderRadius: "12px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                          fontSize: "12px",
+                        backgroundColor: "var(--card)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "10px",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                        fontSize: "12px",
+                        color: "var(--foreground)",
                       }}
+                      labelStyle={{ color: "var(--foreground)", fontWeight: 600 }}
+                      itemStyle={{ color: "var(--muted-foreground)" }}
+                      cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="Enrollments"
-                      stroke="#18181b"
+                      stroke="#D9252A"
                       strokeWidth={2.5}
-                      dot={{ fill: "#18181b", r: 3 }}
-                      activeDot={{ r: 5, fill: "#18181b" }}
+                      dot={{ fill: "#D9252A", stroke: "#D9252A", r: 3.5 }}
+                      activeDot={{ r: 6, fill: "#D9252A", stroke: "var(--card)", strokeWidth: 2 }}
                       animationDuration={800}
                     />
                   </LineChart>
@@ -260,33 +319,41 @@ export function InstructorDashboardClient({
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-medium text-zinc-700 uppercase tracking-wider">Active Quizzes</h3>
+              <HelpCircle className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Active Quizzes</h3>
             </div>
-            <Link href="/instructor#courses" className="text-xs font-medium text-blue-600 hover:text-blue-700">
-              See All &rarr;
-            </Link>
+            
           </div>
-          <Card className="border-zinc-200 shadow-sm">
-            <CardContent className="p-0 divide-y divide-zinc-100">
+          <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
+            <CardContent className="p-0" style={{ borderColor: "var(--border)" }}>
               {allQuizzes.length === 0 ? (
-                <div className="p-8 text-center text-zinc-400 text-sm">
-                  <HelpCircle className="w-8 h-8 mx-auto mb-2 text-zinc-200" />
+                <div className="p-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  <HelpCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
                   No quizzes created yet.
                 </div>
               ) : (
-                allQuizzes.map((quiz) => (
-                  <div key={quiz.id} className="flex items-center gap-4 p-4 hover:bg-zinc-50 transition-colors">
-                    <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                      <HelpCircle className="w-4 h-4 text-amber-600" />
+                <div className="divide-y" style={{ borderColor: "var(--border)" }}>
+                  {allQuizzes.map((quiz) => (
+                    <div
+                      key={quiz.id}
+                      className="flex items-center gap-4 p-4 transition-colors"
+                      onMouseEnter={e => (e.currentTarget.style.background = "var(--muted)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
+                      >
+                        <HelpCircle className="w-4 h-4" style={{ color: "var(--foreground)" }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>{quiz.title}</p>
+                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{quiz.courseTitle} &middot; {quiz.questionCount} questions</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4" style={{ color: "var(--border)" }} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-zinc-900 truncate">{quiz.title}</p>
-                      <p className="text-xs text-zinc-500">{quiz.courseTitle} &middot; {quiz.questionCount} questions</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-zinc-300" />
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </CardContent>
           </Card>
@@ -300,49 +367,82 @@ export function InstructorDashboardClient({
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Video className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-medium text-zinc-700 uppercase tracking-wider">Upcoming Live Classes</h3>
+              <Video className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Upcoming Live Classes</h3>
             </div>
-            <Link href="/instructor#courses" className="text-xs font-medium text-blue-600 hover:text-blue-700">
-              Create Quiz &rarr;
-            </Link>
+            
           </div>
-          <Card className="border-zinc-200 shadow-sm">
-            <CardContent className="p-0 divide-y divide-zinc-100">
+          <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
+            <CardContent className="p-0">
               {allLiveSessions.length === 0 ? (
-                <div className="p-8 text-center text-zinc-400 text-sm">
-                  <Video className="w-8 h-8 mx-auto mb-2 text-zinc-200" />
+                <div className="p-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  <Video className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
                   No live classes scheduled.
                 </div>
               ) : (
-                allLiveSessions.map((session) => {
-                  const isLive = session.status === "ONGOING";
-                  const statusColor = isLive ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700";
-                  return (
-                    <div key={session.id} className="flex items-center gap-4 p-4 hover:bg-zinc-50 transition-colors">
-                      <div className={`w-9 h-9 rounded-lg ${isLive ? "bg-red-100" : "bg-zinc-100"} flex items-center justify-center shrink-0`}>
-                        <Video className={`w-4 h-4 ${isLive ? "text-red-600" : "text-zinc-500"}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-zinc-900 truncate">{session.title}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs text-zinc-500">{session.courseTitle}</span>
-                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
-                            {format(new Date(session.scheduledAt), "MMM d, h:mm a")}
-                          </span>
+                <div className="divide-y" style={{ borderColor: "var(--border)" }}>
+                  {allLiveSessions.map((session) => {
+                    const isLive = session.status === "ONGOING";
+                    return (
+                      <div
+                        key={session.id}
+                        className="flex items-center gap-4 p-4 transition-colors"
+                        onMouseEnter={e => (e.currentTarget.style.background = "var(--muted)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                      >
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                          style={isLive
+                            ? { background: "rgba(217,37,42,0.12)", border: "1px solid rgba(217,37,42,0.25)" }
+                            : { background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }
+                          }
+                        >
+                          <Video
+                            className="w-4 h-4"
+                            style={{ color: isLive ? "#D9252A" : "var(--foreground)" }}
+                          />
                         </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>{session.title}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{session.courseTitle}</span>
+                            <span
+                              className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                              style={{
+                                background: "rgba(255,255,255,0.08)",
+                                color: "var(--foreground)",
+                                border: "1px solid var(--border)",
+                              }}
+                            >
+                              {format(new Date(session.scheduledAt), "MMM d, h:mm a")}
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          className="text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0"
+                          style={isLive
+                            ? { background: "rgba(217,37,42,0.12)", color: "#D9252A" }
+                            : { background: "rgba(255,255,255,0.06)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }
+                          }
+                        >
+                          {isLive ? "Active" : "Upcoming"}
+                        </span>
+                        <Link href={`/meet/${session.roomId}`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="transition-colors"
+                            style={{ color: "var(--muted-foreground)" }}
+                            onMouseEnter={e => (e.currentTarget.style.color = "#D9252A")}
+                            onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
+                          >
+                            <ArrowRight className="w-4 h-4" />
+                          </Button>
+                        </Link>
                       </div>
-                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${statusColor}`}>
-                        {isLive ? "Active" : "Upcoming"}
-                      </span>
-                      <Link href={`/meet/${session.roomId}`}>
-                        <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-blue-600">
-                          <ArrowRight className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               )}
             </CardContent>
           </Card>

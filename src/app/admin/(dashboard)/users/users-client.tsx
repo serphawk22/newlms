@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Search, Download, Plus, Trash2, X, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Users, Search, Download, Plus, Trash2, X, AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
-import type { UsersData, StudentRow, InstructorRow } from "./page";
+import type { UsersData, StudentRow, InstructorRow, PendingUserRow } from "./page";
 
 interface Props {
   data: UsersData;
@@ -61,7 +61,7 @@ function downloadCSV(csv: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function StudentAvatar({ name }: { name: string | null }) {
+function Avatar({ name }: { name: string | null }) {
   const initial = (name || "?").charAt(0).toUpperCase();
   return (
     <div className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-sm font-medium text-zinc-600 shrink-0">
@@ -368,7 +368,7 @@ function StudentsTab({ students, onRefresh }: { students: StudentRow[]; onRefres
               <tr key={s.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <StudentAvatar name={s.name} />
+                    <Avatar name={s.name} />
                     <span className="text-sm font-medium text-zinc-900">{s.name || "Unnamed"}</span>
                   </div>
                 </td>
@@ -513,7 +513,7 @@ function InstructorsTab({ instructors, onRefresh }: { instructors: InstructorRow
               <tr key={inst.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <StudentAvatar name={inst.name} />
+                    <Avatar name={inst.name} />
                     <span className="text-sm font-medium text-zinc-900">{inst.name || "Unnamed"}</span>
                   </div>
                 </td>
@@ -565,9 +565,113 @@ function InstructorsTab({ instructors, onRefresh }: { instructors: InstructorRow
   );
 }
 
+function PendingTab({ pendingStudents, pendingInstructors, onRefresh }: {
+  pendingStudents: PendingUserRow[];
+  pendingInstructors: PendingUserRow[];
+  onRefresh: () => void;
+}) {
+  const allPending = useMemo(() => [...pendingStudents, ...pendingInstructors], [pendingStudents, pendingInstructors]);
+  const [approving, setApproving] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(() => {
+    if (!search) return allPending;
+    const q = search.toLowerCase();
+    return allPending.filter((u) => u.name?.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+  }, [allPending, search]);
+
+  const handleApprove = useCallback(async (user: PendingUserRow) => {
+    setApproving(user.id);
+    try {
+      const res = await fetch("/api/admin/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, role: user.role }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to approve user");
+      }
+      onRefresh();
+    } catch (err) {
+      console.error("Approve failed:", err);
+    }
+    setApproving(null);
+  }, [onRefresh]);
+
+  if (allPending.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-zinc-400">
+        <Clock className="w-10 h-10 mb-3" />
+        <p className="text-sm font-medium">No pending requests</p>
+        <p className="text-xs mt-1">All signup requests have been reviewed.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Input
+            placeholder="Search pending users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 border-zinc-200"
+          />
+        </div>
+        <span className="text-xs text-zinc-500">{filtered.length} pending</span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-zinc-100 bg-zinc-50">
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Name</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Email</th>
+              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Intended Role</th>
+              <th className="text-right text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((u) => (
+              <tr key={u.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar name={u.name} />
+                    <span className="text-sm font-medium text-zinc-900">{u.name || "Unnamed"}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-zinc-500">{u.email}</td>
+                <td className="px-4 py-3">
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                    u.role === "STUDENT" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"
+                  }`}>
+                    {u.role === "STUDENT" ? "Student" : "Instructor"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={() => handleApprove(u)}
+                    disabled={approving === u.id}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {approving === u.id && <Loader size="sm" variant="bars" />}
+                    {approving === u.id ? "Approving..." : "Approve"}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export function UsersPageClient({ data }: Props) {
   const router = useRouter();
-  const [tab, setTab] = useState<"students" | "instructors">("students");
+  const [tab, setTab] = useState<"students" | "instructors" | "pending">("students");
 
   const handleRefresh = useCallback(() => {
     router.refresh();
@@ -602,13 +706,27 @@ export function UsersPageClient({ data }: Props) {
         >
           Instructors ({data.totalInstructors})
         </button>
+        <button
+          onClick={() => setTab("pending")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            tab === "pending" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+          }`}
+        >
+          Pending ({data.totalPendingStudents + data.totalPendingInstructors})
+        </button>
       </div>
 
       <Card className="border-zinc-200 shadow-sm p-4">
         {tab === "students" ? (
           <StudentsTab students={data.students} onRefresh={handleRefresh} />
-        ) : (
+        ) : tab === "instructors" ? (
           <InstructorsTab instructors={data.instructors} onRefresh={handleRefresh} />
+        ) : (
+          <PendingTab
+            pendingStudents={data.pendingStudents}
+            pendingInstructors={data.pendingInstructors}
+            onRefresh={handleRefresh}
+          />
         )}
       </Card>
     </motion.div>

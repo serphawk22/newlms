@@ -36,56 +36,111 @@ export default async function InstructorDirectoryPage() {
     orderBy: { role: "asc" },
   });
 
-  const roleColor = (role: string) => {
-    if (role === "ADMIN") return "bg-violet-100 text-violet-700";
-    if (role === "INSTRUCTOR") return "bg-blue-100 text-blue-700";
-    return "bg-emerald-100 text-emerald-700";
+  const getRoleStyle = (role: string) => {
+    if (role === "ADMIN") {
+      return {
+        background: "rgba(217,37,42,0.12)",
+        color: "#D9252A",
+        borderColor: "rgba(217,37,42,0.25)",
+      };
+    }
+    if (role === "INSTRUCTOR") {
+      return {
+        background: "rgba(255,255,255,0.06)",
+        color: "var(--foreground)",
+        borderColor: "var(--border)",
+      };
+    }
+    return {
+      background: "rgba(255,255,255,0.04)",
+      color: "var(--muted-foreground)",
+      borderColor: "var(--border)",
+    };
   };
 
   return (
     <div className="container-page space-y-6">
       <div className="flex items-center gap-2">
-        <Users className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Workspace Directory</h1>
-        <span className="ml-auto text-xs text-zinc-400">{allMembers.length} members</span>
+        <Users className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Workspace Directory</h1>
+        <span className="ml-auto text-xs" style={{ color: "var(--muted-foreground)" }}>{allMembers.length} members</span>
       </div>
 
-      <Card className="border-violet-200 bg-violet-50 shadow-none">
+      <Card
+        style={{
+          background: "rgba(217,37,42,0.12)",
+          borderColor: "rgba(217,37,42,0.25)",
+          boxShadow: "none",
+        }}
+        className="border"
+      >
         <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-violet-900 text-sm font-bold">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold" style={{ color: "#D9252A" }}>
             <KeyRound className="w-4 h-4" /> Workspace Invite Code
           </CardTitle>
-          <p className="text-xs text-violet-600">Share this with co-instructors and students to join your workspace.</p>
+          <p className="text-xs" style={{ color: "var(--foreground)" }}>Share this with co-instructors and students to join your workspace.</p>
         </CardHeader>
         <CardContent>
-          <code className="bg-white px-4 py-2.5 rounded-lg border border-violet-200 font-mono text-lg text-violet-900 block w-full text-center tracking-widest font-bold">
+          <code
+            style={{
+              background: "var(--card)",
+              borderColor: "rgba(217,37,42,0.25)",
+              color: "#D9252A",
+            }}
+            className="px-4 py-2.5 rounded-lg border font-mono text-lg block w-full text-center tracking-widest font-bold"
+          >
             {ctx.orgId}
           </code>
         </CardContent>
       </Card>
 
-      <Card className="border-zinc-200 shadow-sm">
+      <Card
+        style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+        className="overflow-hidden"
+      >
         <CardContent className="p-0">
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y animate-fade-in" style={{ borderColor: "var(--border)" }}>
             {allMembers.map((mem) => (
-              <div key={mem.id} className="flex items-center justify-between px-5 py-3 hover:bg-zinc-50 transition-colors">
+              <div
+                key={mem.id}
+                className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-[rgba(217,37,42,0.04)]"
+                style={{ borderBottom: "1px solid var(--border)" }}
+              >
                 <div>
-                  <p className="font-medium text-zinc-900 text-sm flex items-center gap-2">
+                  <p className="font-semibold text-sm flex items-center gap-2" style={{ color: "var(--foreground)" }}>
                     {mem.user.name || "Unnamed"}
                     {mem.user.id === ctx.userId && (
-                      <span className="text-[9px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold">You</span>
+                      <span
+                        className="text-[9px] px-2 py-0.5 rounded-full font-bold border"
+                        style={{
+                          background: "rgba(217,37,42,0.12)",
+                          color: "#D9252A",
+                          borderColor: "rgba(217,37,42,0.25)",
+                        }}
+                      >
+                        You
+                      </span>
                     )}
                   </p>
-                  <p className="text-xs text-zinc-400 mt-0.5">{mem.user.email}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{mem.user.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${roleColor(mem.role)}`}>
+                  <span
+                    className="text-[10px] font-bold px-2 py-1 rounded-md border uppercase tracking-wider"
+                    style={getRoleStyle(mem.role)}
+                  >
                     {mem.role}
                   </span>
                   {mem.user.id !== ctx.userId && (
                     <form action={removeMember}>
                       <input type="hidden" name="memberId" value={mem.id} />
-                      <Button type="submit" variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50">
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 transition-colors hover:bg-[rgba(217,37,42,0.08)]"
+                        style={{ color: "#D9252A" }}
+                      >
                         <UserMinus className="w-3.5 h-3.5" />
                       </Button>
                     </form>

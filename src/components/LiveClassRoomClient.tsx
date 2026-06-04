@@ -11,18 +11,16 @@
  */
 
 import dynamic from "next/dynamic";
-import { Video } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 const LiveClassRoom = dynamic(() => import("@/components/LiveClassRoom"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-slate-950">
-      <div className="flex flex-col items-center gap-4 text-white">
-        <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center animate-pulse">
-          <Video className="w-8 h-8 text-blue-400" />
-        </div>
-        <p className="text-sm text-slate-400">Connecting to live classroom…</p>
-      </div>
+    <div
+      className="w-full h-full flex items-center justify-center"
+      style={{ background: "var(--background)" }}
+    >
+      <RingLoader size="lg" label="Connecting to live classroom…" />
     </div>
   ),
 });

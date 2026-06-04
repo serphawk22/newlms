@@ -2,24 +2,11 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { SignJWT } from "jose";
-import { cookies } from "next/headers";
 import type { Role } from "@prisma/client";
+import { issueAuthSession } from "@/lib/auth";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules.
 export const runtime = "nodejs";
-
-const ROLE_COOKIE: Record<Role, string> = {
-  STUDENT: "student_token",
-  INSTRUCTOR: "instructor_token",
-  ADMIN: "admin_token",
-};
-
-const ROLE_REDIRECT: Record<Role, string> = {
-  STUDENT: "/student",
-  INSTRUCTOR: "/instructor",
-  ADMIN: "/admin",
-};
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +14,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "JWT_SECRET not configured" }, { status: 500 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { email, password, loginCode, requestedRole } = await req.json();
     const expectedRole = typeof requestedRole === "string" ? requestedRole.toUpperCase() as Role : null;
 
@@ -54,17 +40,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // ── 4. Check organisation membership ──────────────────────────────────
+    // ── 3b. Check membership status ───────────────────────────────────────
     const primaryMembership =
       (expectedRole ? user.memberships.find((membership) => membership.role === expectedRole) : null) ??
       user.memberships[0];
 
     if (!primaryMembership) {
-      return NextResponse.json({ error: "No organization assigned" }, { status: 403 });
-    }
-
-    if (expectedRole && primaryMembership.role !== expectedRole) {
-      return NextResponse.json({ error: `This account is not authorized for ${expectedRole.toLowerCase()} access` }, { status: 403 });
+      if (user.memberships.length === 0) {
+        return NextResponse.json({ error: "Your account is awaiting administrator approval." }, { status: 403 });
+      }
+      return NextResponse.json({ error: `This account is not authorized for ${expectedRole!.toLowerCase()} access` }, { status: 403 });
     }
 
     // ── 4. Validate login code ─────────────────────────────────────────────
@@ -91,63 +76,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 6. Track daily login streak (after successful auth) ───────────────
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const existingLogin = await prisma.notification.findFirst({
-      where: { userId: user.id, type: "LOGIN", createdAt: { gte: today } },
-    });
-
-    if (!existingLogin) {
-      await prisma.notification.create({
-        data: { userId: user.id, message: "Daily Login", type: "LOGIN" },
-      });
-    }
-
-    // Reuse an existing session token so signing into another role does not
-    // invalidate a role session that is already open in this browser.
-    const sessionToken = user.sessionToken ?? crypto.randomUUID();
-
-    if (!user.sessionToken) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { sessionToken },
-      });
-    }
-
-    // ── 8. Issue JWT (with sessionToken embedded in payload) ───────────────
-    const org = await prisma.organization.findUnique({
-      where: { id: primaryMembership.organizationId },
-      select: { name: true },
-    });
-
-    const token = await new SignJWT({
-      userId: user.id,
-      email: user.email,
-      name: user.name ?? "",
-      role: primaryMembership.role,
-      organizationId: primaryMembership.organizationId,
-      organizationName: org?.name ?? "",
-      sessionToken,
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("24h")
-      .sign(secret);
-
-    const cookieStore = await cookies();
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24,
-      path: "/",
-    } as const;
-
-    cookieStore.set(ROLE_COOKIE[primaryMembership.role], token, cookieOptions);
-    cookieStore.set("token", token, cookieOptions);
-
-    const redirectTo = ROLE_REDIRECT[primaryMembership.role];
+    const redirectTo = await issueAuthSession(user, primaryMembership);
 
     return NextResponse.json(
       { message: "Login successful", role: primaryMembership.role, redirect: redirectTo },

@@ -126,6 +126,45 @@ export async function POST(req: NextRequest) {
   }
 }
 
+/* PATCH /api/admin/students  body: { userId, role, orgId } — approve pending user */
+export async function PATCH(req: NextRequest) {
+  let body: { userId?: string; role?: string; orgId?: string };
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  const { userId, role: roleBody, orgId: orgIdBody } = body;
+  if (!userId) return NextResponse.json({ error: "userId is required" }, { status: 400 });
+
+  const admin = orgIdBody ? await getAdminForOrg(orgIdBody) : await getAdminAnyOrg();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const orgId = orgIdBody || admin.orgId;
+  const targetRole = (roleBody?.toUpperCase() as "STUDENT" | "INSTRUCTOR") || "STUDENT";
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    const existing = await prisma.organizationMember.findUnique({
+      where: { userId_organizationId: { userId, organizationId: orgId } },
+    });
+    if (existing) return NextResponse.json({ error: "User is already a member of this organization" }, { status: 409 });
+
+    const member = await prisma.organizationMember.create({
+      data: { userId, organizationId: orgId, role: targetRole },
+      include: { user: { select: { id: true, name: true, email: true, loginCode: true } } },
+    });
+
+    return NextResponse.json({
+      success: true,
+      memberId: member.id,
+      userId: member.user.id,
+      name: member.user.name,
+      email: member.user.email,
+    }, { status: 200 });
+  } catch (err) {
+    console.error("[PATCH /api/admin/students]", err);
+    return NextResponse.json({ error: "Failed to approve user" }, { status: 500 });
+  }
+}
+
 /* DELETE /api/admin/students  body: { memberId, orgId } */
 export async function DELETE(req: NextRequest) {
   let body: { memberId?: string; orgId?: string };
