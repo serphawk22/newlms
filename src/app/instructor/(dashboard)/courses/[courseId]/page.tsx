@@ -24,6 +24,7 @@ import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
 import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
 import { QuizPdfImporter } from "@/components/QuizPdfImporter";
+import { CourseCommentsTab } from "@/components/CourseCommentsTab";
 
 // --- SERVER ACTIONS ---
 
@@ -692,6 +693,7 @@ export default async function CourseBuilderPage({
             <Link href={`?tab=reading`}><Button variant={tab === "reading" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reading" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><FileText className="w-4 h-4 mr-2" /> Reading Materials</Button></Link>
             <Link href={`?tab=assignments`}><Button variant={tab === "assignments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "assignments" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><CheckCircle className="w-4 h-4 mr-2" /> Assignments</Button></Link>
             <Link href={`?tab=quizzes`}><Button variant={tab === "quizzes" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "quizzes" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><HelpCircle className="w-4 h-4 mr-2" /> Quizzes & Tests</Button></Link>
+            <Link href={`?tab=comments`}><Button variant={tab === "comments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "comments" ? "bg-blue-100 text-blue-700 font-semibold" : "text-slate-600"}`}><MessageSquare className="w-4 h-4 mr-2" /> Q&A Discussions</Button></Link>
 
             <Link href={`?tab=students`}><Button variant={tab === "students" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "students" ? "bg-emerald-100 text-emerald-700 font-semibold" : "text-slate-600"}`}><Users className="w-4 h-4 mr-2" /> Students Info {pendingEnrollments.length > 0 && <span className="ml-auto bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{pendingEnrollments.length}</span>}</Button></Link>
             <Link href={`?tab=adminfeedback`}><Button variant={tab === "adminfeedback" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "adminfeedback" ? "bg-violet-100 text-violet-700 font-semibold" : "text-slate-600"}`}>
@@ -1327,6 +1329,11 @@ export default async function CourseBuilderPage({
             {/* ADMIN FEEDBACK TAB — client component fetches live data */}
             {tab === "adminfeedback" && (
               <InstructorFeedbackTab courseId={courseId} />
+            )}
+
+            {/* Q&A DISCUSSIONS TAB */}
+            {tab === "comments" && (
+              <CourseCommentsTab courseId={courseId} />
             )}
 
           </div>

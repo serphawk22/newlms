@@ -306,7 +306,7 @@ function OfficeViewer({ url, fileName }: { url: string; fileName: string }) {
 // Fallback: download card.
 
 function SpreadsheetViewer({ url, fileName }: { url: string; fileName: string }) {
-  const [engine, setEngine] = useState<"microsoft" | "google" | "none">("google");
+  const [engine, setEngine] = useState<"microsoft" | "google" | "none">("microsoft");
   const [loaded, setLoaded] = useState(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -314,9 +314,9 @@ function SpreadsheetViewer({ url, fileName }: { url: string; fileName: string })
     if (engine === "none") return;
     setLoaded(false);
     clearTimeout(timeoutRef.current);
-    if (engine === "google") {
+    if (engine === "microsoft") {
       timeoutRef.current = setTimeout(() => {
-        setEngine("microsoft");
+        setEngine("google");
       }, 20_000);
     }
     return () => clearTimeout(timeoutRef.current);

@@ -328,7 +328,7 @@ export function InstructorProfileClient({
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-6"
+        className={`grid grid-cols-1 ${isAdmin ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-6`}
       >
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
           <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
@@ -346,21 +346,23 @@ export function InstructorProfileClient({
           </Card>
         </motion.div>
 
-        <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-          <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50/50 flex items-center justify-center shrink-0">
-                <Star className="w-6 h-6 text-amber-600" />
+        {!isAdmin && (
+          <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
+            <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50/50 flex items-center justify-center shrink-0">
+                  <Star className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-zinc-900">
+                    {avgRating !== null ? avgRating.toFixed(1) : "N/A"}
+                  </p>
+                  <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Average Rating</p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-black text-zinc-900">
-                  {avgRating !== null ? avgRating.toFixed(1) : "N/A"}
-                </p>
-                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Average Rating</p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
+            </Card>
+          </motion.div>
+        )}
 
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
           <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
@@ -386,8 +388,8 @@ export function InstructorProfileClient({
         variants={fadeBottom}
         className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in duration-300"
       >
-        {/* Left Column (2/3 width) - Published Courses */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Left Column (Published Courses) */}
+        <div className={`space-y-6 ${isAdmin ? "lg:col-span-3" : "lg:col-span-2"}`}>
           <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-bold text-zinc-900">My Published Courses</CardTitle>
@@ -445,46 +447,48 @@ export function InstructorProfileClient({
           </Card>
         </div>
 
-        {/* Right Column (1/3 width) - Recent Feedback */}
-        <div className="space-y-6">
-          <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-bold text-zinc-900">Recent Feedback</CardTitle>
-            </CardHeader>
-            <Separator className="bg-zinc-100" />
-            <CardContent className="p-6 space-y-5">
-              {reviews.length === 0 ? (
-                <div className="text-center py-4 text-zinc-400 text-sm">
-                  <GraduationCap className="w-8 h-8 mx-auto mb-2 text-zinc-300" />
-                  No reviews yet for your courses.
-                </div>
-              ) : (
-                reviews.map((review, i) => (
-                  <div key={review.id}>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-sm border border-blue-100">
-                        {review.studentInitial}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <div>
-                            <span className="text-sm font-bold text-zinc-800 truncate block max-w-[120px]">{review.studentName}</span>
-                            <span className="text-[10px] text-zinc-400 truncate block max-w-[120px]">{review.courseTitle}</span>
-                          </div>
-                          <StarRating rating={review.rating} />
-                        </div>
-                        <p className="text-xs text-zinc-500 italic mt-2 bg-zinc-50/50 p-3 rounded-xl border border-zinc-100">
-                          &ldquo;{review.comment}&rdquo;
-                        </p>
-                      </div>
-                    </div>
-                    {i < reviews.length - 1 && <Separator className="mt-5 bg-zinc-100" />}
+        {/* Right Column (Recent Feedback) - Hidden for Admin */}
+        {!isAdmin && (
+          <div className="space-y-6">
+            <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg font-bold text-zinc-900">Recent Feedback</CardTitle>
+              </CardHeader>
+              <Separator className="bg-zinc-100" />
+              <CardContent className="p-6 space-y-5">
+                {reviews.length === 0 ? (
+                  <div className="text-center py-4 text-zinc-400 text-sm">
+                    <GraduationCap className="w-8 h-8 mx-auto mb-2 text-zinc-300" />
+                    No reviews yet for your courses.
                   </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                ) : (
+                  reviews.map((review, i) => (
+                    <div key={review.id}>
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-sm border border-blue-100">
+                          {review.studentInitial}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <div>
+                              <span className="text-sm font-bold text-zinc-800 truncate block max-w-[120px]">{review.studentName}</span>
+                              <span className="text-[10px] text-zinc-400 truncate block max-w-[120px]">{review.courseTitle}</span>
+                            </div>
+                            <StarRating rating={review.rating} />
+                          </div>
+                          <p className="text-xs text-zinc-500 italic mt-2 bg-zinc-50/50 p-3 rounded-xl border border-zinc-100">
+                            &ldquo;{review.comment}&rdquo;
+                          </p>
+                        </div>
+                      </div>
+                      {i < reviews.length - 1 && <Separator className="mt-5 bg-zinc-100" />}
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </motion.div>
 
       {/* Unified Account Settings / Edit Profile Modal */}
