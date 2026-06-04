@@ -81,18 +81,22 @@ export default async function MeetPage({ params }: PageProps) {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--background)", color: "var(--foreground)" }}>
         <div className="text-center space-y-6 p-8">
-          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto">
-            <Video className="w-10 h-10 text-slate-400" />
+          <div
+            className="w-20 h-20 rounded-full flex items-center justify-center mx-auto border"
+            style={{ background: "var(--card)", borderColor: "var(--border)" }}
+          >
+            <Video className="w-10 h-10" style={{ color: "var(--muted-foreground)" }} />
           </div>
           <div>
             <h1 className="text-2xl font-bold mb-2">Room Not Found</h1>
-            <p className="text-slate-400">This live session doesn&apos;t exist or has ended.</p>
+            <p style={{ color: "var(--muted-foreground)" }}>This live session doesn&apos;t exist or has ended.</p>
           </div>
           <Link
             href="/student"
-            className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors text-sm"
+            className="inline-flex items-center gap-2 transition-colors text-sm"
+            style={{ color: "var(--muted-foreground)" }}
           >
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </Link>
@@ -106,10 +110,13 @@ export default async function MeetPage({ params }: PageProps) {
   const instructorName = session.course.creator?.name || "Instructor";
 
   return (
-    <div className="flex flex-col h-screen bg-slate-950">
+    <div className="flex flex-col h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
 
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 shrink-0 gap-4">
+      <div
+        className="flex items-center justify-between px-4 py-2 shrink-0 gap-4"
+        style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}
+      >
 
         {/* Left: back / leave */}
         {isHost ? (
@@ -119,7 +126,12 @@ export default async function MeetPage({ params }: PageProps) {
             <input type="hidden" name="courseId"  value={session.course.id} />
             <button
               type="submit"
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors"
+              className="flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors border"
+              style={{
+                background: "rgba(217,37,42,0.12)",
+                borderColor: "rgba(217,37,42,0.25)",
+                color: "var(--foreground)",
+              }}
             >
               <PhoneOff className="w-4 h-4" />
               End Class
@@ -129,20 +141,21 @@ export default async function MeetPage({ params }: PageProps) {
           /* Student: just navigates away */
           <Link
             href="/student"
-            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm shrink-0"
+            className="flex items-center gap-2 transition-colors text-sm shrink-0"
+            style={{ color: "var(--muted-foreground)" }}
           >
             <ArrowLeft className="w-4 h-4" /> Leave Class
           </Link>
         )}
 
         {/* Centre: session info */}
-        <div className="flex items-center gap-3 text-white min-w-0">
+        <div className="flex items-center gap-3 min-w-0" style={{ color: "var(--foreground)" }}>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+            <div className="w-2 h-2 rounded-full animate-pulse shrink-0" style={{ background: "var(--accent)" }} />
             <span className="text-sm font-semibold truncate">{session.title}</span>
           </div>
-          <span className="text-slate-600 hidden sm:block">|</span>
-          <div className="hidden sm:flex items-center gap-1 text-slate-400 text-xs min-w-0">
+          <span className="hidden sm:block" style={{ color: "var(--border)" }}>|</span>
+          <div className="hidden sm:flex items-center gap-1 text-xs min-w-0" style={{ color: "var(--muted-foreground)" }}>
             <BookOpen className="w-3 h-3 shrink-0" />
             <span className="truncate">{session.course.title}</span>
           </div>
@@ -151,11 +164,25 @@ export default async function MeetPage({ params }: PageProps) {
         {/* Right: role badge */}
         <div className="text-xs shrink-0">
           {isHost ? (
-            <span className="bg-amber-500/20 text-amber-400 font-semibold px-2 py-1 rounded-full border border-amber-500/30">
+            <span
+              className="font-semibold px-2 py-1 rounded-full border"
+              style={{
+                background: "rgba(217,37,42,0.10)",
+                borderColor: "rgba(217,37,42,0.25)",
+                color: "var(--foreground)",
+              }}
+            >
               ● Host
             </span>
           ) : (
-            <span className="bg-blue-500/20 text-blue-400 font-semibold px-2 py-1 rounded-full border border-blue-500/30">
+            <span
+              className="font-semibold px-2 py-1 rounded-full border"
+              style={{
+                background: "rgba(33,37,41,0.04)",
+                borderColor: "var(--border)",
+                color: "var(--foreground)",
+              }}
+            >
               ● Student
             </span>
           )}

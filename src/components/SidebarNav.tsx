@@ -71,7 +71,7 @@ export function SidebarNav({
   const navContent = (
     <div className="flex flex-col h-full">
       {/* ── Logo + Org ── */}
-      <div className={cn("px-4 pt-5 pb-4 border-b border-zinc-100", collapsed && "px-3")}>
+      <div className={cn("px-4 pt-5 pb-4", collapsed && "px-3") } style={{ borderBottom: '1px solid var(--sidebar-border)', background: 'var(--sidebar)' }}>
         <Logo href={role === "STUDENT" ? "/student" : "/instructor"} />
         {!collapsed && (
           <div className="mt-3 space-y-1.5">
@@ -142,7 +142,7 @@ export function SidebarNav({
       </nav>
 
       {/* ── User section ── */}
-      <div className={cn("px-3 py-4 border-t border-zinc-100 space-y-3 mt-auto", collapsed && "px-2")}>
+      <div className={cn("px-3 py-4 space-y-3 mt-auto", collapsed && "px-2")} style={{ borderTop: '1px solid var(--sidebar-border)' }}>
         {/* Profile dropdown */}
         {userName && (
           <div className="relative">
@@ -214,7 +214,8 @@ export function SidebarNav({
       {/* Collapse toggle button (desktop only) */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-zinc-200 rounded-full items-center justify-center text-zinc-400 hover:text-zinc-900 hover:border-zinc-300 shadow-sm transition-colors z-50"
+        className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center text-zinc-400 shadow-sm transition-colors z-50"
+        style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}

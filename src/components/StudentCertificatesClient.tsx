@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Award, Download, Eye, CheckCircle2, Loader2, Gift } from "lucide-react";
+import { Eye, CheckCircle2, Gift } from "lucide-react";
 import { CertificateViewer } from "./CertificateViewer";
 
 interface Certificate {
@@ -36,12 +36,9 @@ export function StudentCertificatesClient({ certificates, studentName, eligibleC
 
   if (isEmpty) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-        <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-4">
-          <Award className="w-8 h-8 text-emerald-400" />
-        </div>
-        <h3 className="text-base font-semibold text-zinc-800 mb-1">No certificates yet</h3>
-        <p className="text-sm text-zinc-400 max-w-xs">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "4rem 1rem", textAlign: "center" }}>
+        <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>No certificates yet</h3>
+        <p className="text-sm" style={{ color: "var(--muted-foreground)", maxWidth: "16rem" }}>
           Complete a course at 100% to earn your first certificate!
         </p>
       </div>
@@ -55,7 +52,9 @@ export function StudentCertificatesClient({ certificates, studentName, eligibleC
         <div>
           <button
             onClick={() => setSelected(null)}
-            className="mb-4 flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
+            style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.875rem", color: "var(--muted-foreground)", background: "none", border: "none", cursor: "pointer" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--foreground)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
           >
             ← Back to certificates
           </button>
@@ -75,19 +74,39 @@ export function StudentCertificatesClient({ certificates, studentName, eligibleC
       )}
 
       {!selected && (
-        <div className="space-y-3">
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {/* Eligible courses - claim certificate */}
           {pendingCourses.map((course) => (
             <div
               key={course.id}
-              className={`border rounded-2xl p-4 flex items-center gap-4 ${course.status === "DENIED" ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200"}`}
+              style={{
+                border: "1px solid",
+                borderColor: course.status === "DENIED" ? "rgba(217,37,42,0.25)" : "rgba(217,37,42,0.15)",
+                borderRadius: "1rem",
+                padding: "1rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                background: course.status === "DENIED" ? "rgba(217,37,42,0.06)" : "rgba(217,37,42,0.03)",
+              }}
             >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${course.status === "DENIED" ? "bg-red-100" : "bg-amber-100"}`}>
-                <Gift className={`w-5 h-5 ${course.status === "DENIED" ? "text-red-600" : "text-amber-600"}`} />
+              <div
+                style={{
+                  width: "2.5rem",
+                  height: "2.5rem",
+                  borderRadius: "0.75rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  background: course.status === "DENIED" ? "rgba(217,37,42,0.12)" : "rgba(217,37,42,0.08)",
+                }}
+              >
+                <Gift className="w-5 h-5" style={{ color: "#D9252A" }} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-zinc-900 truncate">{course.title}</p>
-                <p className={`text-xs mt-0.5 font-medium ${course.status === "DENIED" ? "text-red-600" : "text-amber-600"}`}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p className="font-semibold text-sm" style={{ color: "var(--foreground)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{course.title}</p>
+                <p className="text-xs mt-0.5 font-medium" style={{ color: "#D9252A" }}>
                   {course.status === "DENIED" ? "Certificate Denied" : "Awaiting Instructor Approval"}
                 </p>
               </div>
@@ -98,26 +117,38 @@ export function StudentCertificatesClient({ certificates, studentName, eligibleC
           {localCerts.map((cert) => (
             <div
               key={cert.id}
-              className="bg-white border border-zinc-100 rounded-2xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
+              style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "1rem", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}
             >
-              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Award className="w-5 h-5 text-emerald-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-zinc-900 truncate">{cert.course.title}</p>
-                <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-xs text-zinc-400">
+              <div style={{ width: "2.5rem", height: "2.5rem", background: "rgba(217,37,42,0.12)", borderRadius: "0.75rem", flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p className="font-semibold text-sm" style={{ color: "var(--foreground)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cert.course.title}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.125rem" }}>
+                  <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
                     {new Date(cert.completionDate).toLocaleDateString("en-US", {
                       month: "short", day: "numeric", year: "numeric",
                     })}
                   </span>
-                  <span className="text-xs font-mono text-indigo-500">{cert.certificateNumber}</span>
+                  <span className="text-xs font-mono" style={{ color: "#D9252A" }}>{cert.certificateNumber}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
                 <button
                   onClick={() => setSelected(cert)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 rounded-lg text-xs font-medium transition-colors border border-zinc-200"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.375rem",
+                    padding: "0.375rem 0.75rem",
+                    background: "var(--secondary-background)",
+                    color: "var(--foreground)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "0.5rem",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(217,37,42,0.08)"; e.currentTarget.style.borderColor = "#D9252A"; e.currentTarget.style.color = "#D9252A"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "var(--secondary-background)"; e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--foreground)"; }}
                 >
                   <Eye className="w-3.5 h-3.5" />
                   View
@@ -126,7 +157,21 @@ export function StudentCertificatesClient({ certificates, studentName, eligibleC
                   href={`/verify-certificate/${cert.certificateNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium transition-colors border border-emerald-200"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.375rem",
+                    padding: "0.375rem 0.75rem",
+                    background: "#D9252A",
+                    color: "#FFFFFF",
+                    border: "none",
+                    borderRadius: "0.5rem",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#EF4444")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "#D9252A")}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Verify

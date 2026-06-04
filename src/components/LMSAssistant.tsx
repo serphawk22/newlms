@@ -19,7 +19,7 @@ interface LMSAssistantProps {
   userName?: string;
 }
 
-// ── Role-specific config ──────────────────────────────────────────────────────
+// ── Role-specific config (unified dark theme) ──────────────────────────────────
 const ROLE_CONFIG: Record<
   string,
   {
@@ -32,9 +32,9 @@ const ROLE_CONFIG: Record<
 > = {
   STUDENT: {
     label: "LMS Student Assistant",
-    gradient: "from-indigo-900 via-violet-900 to-purple-900",
-    btnGradient: "from-indigo-500 to-violet-500",
-    accent: "indigo",
+    gradient: "from-[#0A0A0A] via-[#111111] to-[#161616]",
+    btnGradient: "[#D9252A]",
+    accent: "red",
     prompts: [
       "How do I enroll in a course?",
       "How do I join a live class?",
@@ -44,9 +44,9 @@ const ROLE_CONFIG: Record<
   },
   INSTRUCTOR: {
     label: "LMS Instructor Assistant",
-    gradient: "from-emerald-900 via-teal-900 to-cyan-900",
-    btnGradient: "from-emerald-500 to-teal-500",
-    accent: "emerald",
+    gradient: "from-[#0A0A0A] via-[#111111] to-[#161616]",
+    btnGradient: "[#D9252A]",
+    accent: "red",
     prompts: [
       "How do I create a new course?",
       "How do I schedule a live class?",
@@ -56,9 +56,9 @@ const ROLE_CONFIG: Record<
   },
   ADMIN: {
     label: "LMS Admin Assistant",
-    gradient: "from-rose-900 via-pink-900 to-fuchsia-900",
-    btnGradient: "from-rose-500 to-pink-500",
-    accent: "rose",
+    gradient: "from-[#0A0A0A] via-[#111111] to-[#161616]",
+    btnGradient: "[#D9252A]",
+    accent: "red",
     prompts: [
       "How do I manage users?",
       "How do I generate reports?",
@@ -217,14 +217,13 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
           onClick={toggleOpen}
           aria-label="Open LMS Assistant"
           title="LMS Assistant — Ask me anything!"
-          className={`fixed bottom-6 right-6 z-[60] flex items-center justify-center bg-gradient-to-br ${cfg.btnGradient} text-white w-14 h-14 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300`}
+          className="fixed bottom-6 right-6 z-[60] flex items-center justify-center bg-[#D9252A] text-white w-14 h-14 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
           style={{
             boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1)`,
             animation: "lmsAssistantBounceIn 0.4s cubic-bezier(0.34,1.56,0.64,1)",
           }}
         >
           <MessageCircle className="w-6 h-6" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
           {unreadCount > 0 && (
             <span className="absolute -top-2 -left-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold border border-white">
               {unreadCount}
@@ -237,7 +236,7 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
       {isOpen && (
         <div
           id="lms-assistant-window"
-          className={`fixed right-6 z-[60] flex flex-col rounded-2xl overflow-hidden shadow-2xl transition-all duration-300`}
+          className={`fixed right-6 z-[60] flex flex-col rounded-2xl overflow-hidden transition-all duration-300`}
           style={{
             bottom: "24px",
             width: "380px",
@@ -249,24 +248,24 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
         >
           {/* Dark gradient layer as CSS custom property workaround */}
           <div
-            className={`absolute inset-0 bg-gradient-to-br ${cfg.gradient} rounded-2xl`}
+            className="absolute inset-0 bg-gradient-to-br from-[#0A0A0A] via-[#111111] to-[#161616] rounded-2xl"
             style={{ zIndex: -1 }}
           />
 
           {/* ── Header ── */}
           <div
-            className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5 shrink-0 cursor-pointer"
+            className="flex items-center gap-2 px-4 py-3 border-b border-[#2A2A2A] bg-[#0A0A0A] shrink-0 cursor-pointer"
             onClick={isMinimized ? maximize : undefined}
           >
             <div
-              className={`w-8 h-8 rounded-full bg-gradient-to-br ${cfg.btnGradient} flex items-center justify-center shadow-lg`}
+              className="w-8 h-8 rounded-full bg-[#D9252A] flex items-center justify-center"
             >
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white font-bold text-sm leading-tight truncate">{cfg.label}</p>
               <p className="text-white/50 text-[10px] flex items-center gap-1">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#D9252A] animate-pulse" />
                 Online · Role: {userRole}
               </p>
             </div>
@@ -322,7 +321,7 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
                       className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                         msg.role === "user"
                           ? "bg-gradient-to-br from-blue-500 to-cyan-500"
-                          : `bg-gradient-to-br ${cfg.btnGradient}`
+                          : "bg-[rgba(217,37,42,0.12)]"
                       }`}
                     >
                       {msg.role === "user" ? (
@@ -349,7 +348,7 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
                 {isLoading && (
                   <div className="flex gap-2">
                     <div
-                      className={`w-6 h-6 rounded-full bg-gradient-to-br ${cfg.btnGradient} flex items-center justify-center shrink-0`}
+                      className="w-6 h-6 rounded-full bg-[rgba(217,37,42,0.12)] flex items-center justify-center shrink-0"
                     >
                       <Bot className="w-3 h-3 text-white" />
                     </div>
@@ -412,7 +411,7 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
                     onClick={() => sendMessage()}
                     disabled={isLoading || !input.trim()}
                     aria-label="Send message to LMS Assistant"
-                    className={`w-8 h-8 rounded-lg bg-gradient-to-br ${cfg.btnGradient} flex items-center justify-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all`}
+                    className="w-8 h-8 rounded-lg bg-[#D9252A] flex items-center justify-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all"
                   >
                     <Send className="w-3.5 h-3.5 text-white" />
                   </button>

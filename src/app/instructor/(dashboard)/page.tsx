@@ -4,9 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  TrendingUp,
-} from "lucide-react";
+
 import { AdminInstructorTable, AdminCourseTable } from "@/components/admin/AdminAnalyticsTables";
 import { AdminStudentSection } from "@/components/admin/AdminStudentSection";
 import { AdminCommentsPanel } from "@/components/admin/AdminCommentsPanel";
@@ -286,26 +284,21 @@ async function InstructorDashboardContent() {
       {/* Admin section (server rendered) */}
       {isFounder && (
         <div className="px-4 sm:px-6 lg:px-8 pb-8 space-y-6" id="admin-analytics">
-          <div className="flex items-center gap-2 pt-4 border-t border-zinc-200">
-            <TrendingUp className="w-5 h-5 text-zinc-500" />
-            <h2 className="text-base font-medium text-zinc-800">Organization Overview</h2>
-          </div>
+          <h2 className="text-base font-medium pt-4 border-t border-zinc-200" style={{ color: "var(--foreground)" }}>Organization Overview</h2>
 
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {[
-              { label: "Total Students", value: adminStats.totalStudents, color: "bg-blue-100 text-blue-600" },
-              { label: "Instructors", value: adminStats.activeInstructors, color: "bg-emerald-100 text-emerald-600" },
-              { label: "Total Courses", value: adminStats.totalCourses, color: "bg-amber-100 text-amber-600" },
-              { label: "Published", value: adminStats.publishedCourses, color: "bg-purple-100 text-purple-600" },
-              { label: "Enrollments", value: adminStats.totalEnrollments, color: "bg-rose-100 text-rose-600" },
+              { label: "Total Students", value: adminStats.totalStudents, color: "rgba(217,37,42,0.12)" },
+              { label: "Instructors", value: adminStats.activeInstructors, color: "rgba(217,37,42,0.12)" },
+              { label: "Total Courses", value: adminStats.totalCourses, color: "rgba(217,37,42,0.12)" },
+              { label: "Published", value: adminStats.publishedCourses, color: "rgba(217,37,42,0.12)" },
+              { label: "Enrollments", value: adminStats.totalEnrollments, color: "rgba(217,37,42,0.12)" },
             ].map((stat) => (
-              <Card key={stat.label} className="border-zinc-200 shadow-sm">
+              <Card key={stat.label} style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
                 <CardContent className="p-4">
-                  <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-2`}>
-                    <TrendingUp className="w-4 h-4" />
-                  </div>
-                  <p className="text-xl font-medium text-zinc-900">{stat.value}</p>
-                  <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+
+                  <p className="text-xl font-medium" style={{ color: "var(--foreground)" }}>{stat.value}</p>
+                  <p className="text-[10px] font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
                 </CardContent>
               </Card>
             ))}

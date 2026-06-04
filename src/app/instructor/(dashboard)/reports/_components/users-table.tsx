@@ -3,7 +3,8 @@
 import { Fragment, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, ChevronUp, Download, Loader2, Plus, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Plus, Search, X } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 interface UserRow {
   id: string;
@@ -67,10 +68,26 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
     else { setSortKey(key); setSortDir("asc"); }
   };
 
-  const roleColor = (role: string) => {
-    if (role === "ADMIN") return "bg-violet-100 text-violet-700";
-    if (role === "INSTRUCTOR") return "bg-blue-100 text-blue-700";
-    return "bg-emerald-100 text-emerald-700";
+  const getRoleStyle = (role: string) => {
+    if (role === "ADMIN") {
+      return {
+        background: "rgba(217,37,42,0.12)",
+        color: "#D9252A",
+        borderColor: "rgba(217,37,42,0.25)",
+      };
+    }
+    if (role === "INSTRUCTOR") {
+      return {
+        background: "rgba(255,255,255,0.06)",
+        color: "var(--foreground)",
+        borderColor: "var(--border)",
+      };
+    }
+    return {
+      background: "rgba(255,255,255,0.04)",
+      color: "var(--muted-foreground)",
+      borderColor: "var(--border)",
+    };
   };
 
   async function handleAdd(e: React.FormEvent) {
@@ -125,13 +142,18 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
           <input
             type="text"
             placeholder="Search users..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+            style={{
+              background: "var(--secondary-background)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)",
+            }}
+            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
           />
         </div>
         <select
@@ -143,7 +165,12 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
             }
             setPage(0);
           }}
-          className="px-3 py-2 text-sm border border-zinc-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+          style={{
+            background: "var(--secondary-background)",
+            border: "1px solid var(--border)",
+            color: "var(--foreground)",
+          }}
+          className="px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
         >
           <option value="all">All</option>
           <option value="active">Active</option>
@@ -151,14 +178,19 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
         </select>
         <button
           onClick={exportCSV}
-          data-export-csv
-          className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-600 hover:text-zinc-900 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+          style={{
+            background: "var(--secondary-background)",
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
+          }}
+          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A] transition-all"
         >
           <Download className="w-3.5 h-3.5" /> Export CSV
         </button>
         <button
           onClick={() => { setShowAdd(!showAdd); setAddError(""); setAddSuccess(""); }}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors ml-auto"
+          style={{ background: "#D9252A", color: "#FFFFFF" }}
+          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg hover:bg-[#C21F24] transition-colors ml-auto"
         >
           {showAdd ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
           {showAdd ? "Cancel" : "Add User"}
@@ -166,35 +198,54 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
       </div>
 
       {showAdd && (
-        <form onSubmit={handleAdd} className="mb-4 p-4 border border-zinc-200 rounded-lg bg-zinc-50/50">
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-zinc-500 mb-1">Name (optional)</label>
+        <form
+          onSubmit={handleAdd}
+          className="mb-4 p-4 border rounded-lg"
+          style={{ borderColor: "var(--border)", background: "var(--secondary-background)" }}
+        >
+          <div className="flex flex-col sm:flex-row items-end gap-3">
+            <div className="flex-1 w-full">
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--muted-foreground)" }}>Name (optional)</label>
               <input
                 type="text"
                 value={addName}
                 onChange={(e) => setAddName(e.target.value)}
                 placeholder="Full name"
-                className="w-full text-sm px-3 py-2 rounded-lg border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+                className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A] placeholder:text-[var(--muted-foreground)]"
               />
             </div>
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-zinc-500 mb-1">Email *</label>
+            <div className="flex-1 w-full">
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--muted-foreground)" }}>Email *</label>
               <input
                 type="email"
                 value={addEmail}
                 onChange={(e) => setAddEmail(e.target.value)}
                 placeholder="user@example.com"
                 required
-                className="w-full text-sm px-3 py-2 rounded-lg border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+                className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A] placeholder:text-[var(--muted-foreground)]"
               />
             </div>
-            <div className="w-32">
-              <label className="block text-xs font-medium text-zinc-500 mb-1">Role</label>
+            <div className="w-full sm:w-32">
+              <label className="block text-xs font-semibold mb-1" style={{ color: "var(--muted-foreground)" }}>Role</label>
               <select
                 value={addRole}
                 onChange={(e) => setAddRole(e.target.value as "STUDENT" | "INSTRUCTOR")}
-                className="w-full text-sm px-3 py-2 rounded-lg border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+                className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
               >
                 <option value="STUDENT">Student</option>
                 <option value="INSTRUCTOR">Instructor</option>
@@ -203,96 +254,106 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
             <button
               type="submit"
               disabled={adding}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50"
+              style={{ background: "#D9252A", color: "#FFFFFF" }}
+              className="flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg hover:bg-[#C21F24] transition-colors disabled:opacity-50 w-full sm:w-auto justify-center"
             >
-              {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
+              {adding ? <RingLoader size="sm" className="inline-flex" /> : "Add"}
             </button>
           </div>
-          {addError && <p className="text-xs text-red-600 mt-2">{addError}</p>}
-          {addSuccess && <p className="text-xs text-emerald-600 mt-2">{addSuccess}</p>}
+          {addError && <p className="text-xs text-red-600 mt-2 font-medium">{addError}</p>}
+          {addSuccess && <p className="text-xs mt-2 font-medium" style={{ color: "#D9252A" }}>{addSuccess}</p>}
         </form>
       )}
 
-      <Card className="border-zinc-200 shadow-sm overflow-hidden">
+      <Card
+        className="overflow-hidden"
+        style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-zinc-100 bg-zinc-50/50">
-                <th className="w-10 px-4 py-3">
-                  <input type="checkbox" className="rounded border-zinc-300" />
+              <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                <th className="w-10 px-4 py-3 text-center">
+                  <input type="checkbox" className="rounded border-zinc-300 accent-[#D9252A]" />
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer select-none" onClick={() => toggleSort("name")}>
+                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("name")}>
                   Name {sortKey === "name" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer select-none" onClick={() => toggleSort("email")}>
+                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("email")}>
                   Email {sortKey === "email" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer select-none" onClick={() => toggleSort("role")}>
+                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("role")}>
                   Role {sortKey === "role" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-center px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer select-none" onClick={() => toggleSort("coursesEnrolled")}>
+                <th className="text-center px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("coursesEnrolled")}>
                   Enrolled {sortKey === "coursesEnrolled" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-center px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer select-none" onClick={() => toggleSort("coursesCompleted")}>
+                <th className="text-center px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("coursesCompleted")}>
                   Completed {sortKey === "coursesCompleted" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Last Login</th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider cursor-pointer select-none" onClick={() => toggleSort("registeredAt")}>
+                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Last Login</th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("registeredAt")}>
                   Registered {sortKey === "registeredAt" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
                 <th className="w-10 px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
               <AnimatePresence>
                 {pageUsers.map((user) => (
                   <Fragment key={user.id}>
                     <motion.tr
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="hover:bg-zinc-50 transition-colors cursor-pointer"
-                    onClick={() => setExpanded(expanded === user.id ? null : user.id)}
-                  >
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <input type="checkbox" className="rounded border-zinc-300" />
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center shrink-0">
-                          <span className="text-[9px] font-bold text-white">{initials(user.name)}</span>
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="transition-colors cursor-pointer"
+                      style={{ borderBottom: "1px solid var(--border)" }}
+                      onClick={() => setExpanded(expanded === user.id ? null : user.id)}
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" className="rounded border-zinc-300 accent-[#D9252A]" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}>
+                            <span className="text-[9px] font-bold" style={{ color: "var(--foreground)" }}>{initials(user.name)}</span>
+                          </div>
+                          <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{user.name || "Unnamed"}</span>
                         </div>
-                        <span className="text-sm font-medium text-zinc-900">{user.name || "Unnamed"}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-zinc-500">{user.email}</td>
-                    <td className="px-4 py-3">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${roleColor(user.role)}`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center text-sm text-zinc-900 font-medium">{user.coursesEnrolled}</td>
-                    <td className="px-4 py-3 text-center text-sm text-zinc-900 font-medium">{user.coursesCompleted}</td>
-                    <td className="px-4 py-3 text-sm text-zinc-400">N/A</td>
-                    <td className="px-4 py-3 text-sm text-zinc-500">{user.registeredAt}</td>
-                    <td className="px-4 py-3">
-                      {expanded === user.id ? <ChevronUp className="w-4 h-4 text-zinc-400" /> : <ChevronDown className="w-4 h-4 text-zinc-400" />}
-                    </td>
+                      </td>
+                      <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{user.email}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider"
+                          style={getRoleStyle(user.role)}
+                        >
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm font-semibold" style={{ color: "var(--foreground)" }}>{user.coursesEnrolled}</td>
+                      <td className="px-4 py-3 text-center text-sm font-semibold" style={{ color: "var(--foreground)" }}>{user.coursesCompleted}</td>
+                      <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>N/A</td>
+                      <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{user.registeredAt}</td>
+                      <td className="px-4 py-3">
+                        {expanded === user.id ? <ChevronUp className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> : <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />}
+                      </td>
                     </motion.tr>
                     {expanded === user.id && (
-                      <tr className="bg-zinc-50/70">
-                        <td colSpan={9} className="px-6 py-3">
-                          <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">
+                      <tr style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
+                        <td colSpan={9} className="px-6 py-4">
+                          <p className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--muted-foreground)" }}>
                             Enrolled Courses
                           </p>
                           {user.enrolledCourses.length === 0 ? (
-                            <p className="text-sm text-zinc-400">No enrolled courses.</p>
+                            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No enrolled courses.</p>
                           ) : (
-                            <div className="space-y-1.5">
+                            <div className="space-y-1.5 max-w-md">
                               {user.enrolledCourses.map((course) => (
-                                <div key={`${user.id}-${course.title}`} className="flex items-center justify-between text-sm">
-                                  <span className="text-zinc-600">{course.title}</span>
-                                  <span className="text-zinc-900 font-medium">{Math.round(course.progress)}%</span>
+                                <div key={`${user.id}-${course.title}`} className="flex items-center justify-between text-sm py-1 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                                  <span style={{ color: "var(--foreground)" }}>{course.title}</span>
+                                  <span className="font-semibold" style={{ color: "#D9252A" }}>{Math.round(course.progress)}%</span>
                                 </div>
                               ))}
                             </div>
@@ -305,7 +366,7 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
               </AnimatePresence>
               {pageUsers.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="text-center py-12 text-sm text-zinc-400">
+                  <td colSpan={9} className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>
                     No users found
                   </td>
                 </tr>
@@ -316,7 +377,7 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
       </Card>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 text-sm text-zinc-500">
+        <div className="flex items-center justify-between mt-4 text-sm" style={{ color: "var(--muted-foreground)" }}>
           <span>
             Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of{" "}
             {filtered.length}
@@ -325,14 +386,24 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
             <button
               disabled={page === 0}
               onClick={() => setPage(page - 1)}
-              className="px-3 py-1.5 rounded-lg border border-zinc-200 text-xs font-medium disabled:opacity-40 hover:bg-zinc-50 transition-colors"
+              style={{
+                background: "var(--secondary-background)",
+                color: "var(--foreground)",
+                border: "1px solid var(--border)",
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A] transition-all cursor-pointer"
             >
               Prev
             </button>
             <button
               disabled={page >= totalPages - 1}
               onClick={() => setPage(page + 1)}
-              className="px-3 py-1.5 rounded-lg border border-zinc-200 text-xs font-medium disabled:opacity-40 hover:bg-zinc-50 transition-colors"
+              style={{
+                background: "var(--secondary-background)",
+                color: "var(--foreground)",
+                border: "1px solid var(--border)",
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40 hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A] transition-all cursor-pointer"
             >
               Next
             </button>

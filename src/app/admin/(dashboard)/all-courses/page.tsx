@@ -21,17 +21,17 @@ export default async function AdminAllCoursesPage() {
   return (
     <div className="container-page space-y-6">
       <div className="flex items-center gap-2">
-        <FolderKanban className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">All Courses</h1>
-        <span className="ml-auto text-xs font-semibold bg-zinc-100 text-zinc-600 px-2.5 py-1 rounded-full">
+        <FolderKanban className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>All Courses</h1>
+        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: "var(--secondary-background)", color: "var(--muted-foreground)" }}>
           {courses.length} courses
         </span>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm overflow-hidden bg-white">
+      <Card className="overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <CoursesClient courses={courses} />
         {courses.length === 0 && (
-          <div className="text-center py-12 text-zinc-400 text-sm">No courses found.</div>
+          <div className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>No courses found.</div>
         )}
       </Card>
     </div>

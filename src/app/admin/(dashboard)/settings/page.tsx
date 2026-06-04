@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { uploadToCloudinaryDirect } from "@/lib/uploads";
-import { Settings, CheckCircle2, AlertCircle, Upload, X, Loader2 } from "lucide-react";
+import { Settings, CheckCircle2, AlertCircle, Upload, X } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { cn } from "@/lib/utils";
 
 interface OrgSettings {
@@ -149,7 +150,7 @@ export default function AdminSettingsPage() {
   }
 
   if (!settings) {
-    return <div className="text-center py-12 text-zinc-500">Organization not found.</div>;
+    return <div className="text-center py-12" style={{ color: "var(--muted-foreground)" }}>Organization not found.</div>;
   }
 
   return (
@@ -178,14 +179,14 @@ export default function AdminSettingsPage() {
       )}
 
       <div className="flex items-center gap-2">
-        <Settings className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Organization Settings</h1>
+        <Settings className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Organization Settings</h1>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm p-6">
+      <Card className="p-6" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="name" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Organization Name
             </Label>
             <Input
@@ -193,25 +194,26 @@ export default function AdminSettingsPage() {
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
               required
-              className="border-zinc-200 focus-visible:ring-zinc-900"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+              className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="slug" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Slug
             </Label>
             <Input
               id="slug"
               value={settings.slug}
               disabled
-              className="border-zinc-200 bg-zinc-50 text-zinc-500"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--muted-foreground)" }}
             />
-            <p className="text-[10px] text-zinc-400">Slug cannot be changed.</p>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Slug cannot be changed.</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="logo" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Organization Logo
             </Label>
             {logoUrl && (
@@ -219,12 +221,14 @@ export default function AdminSettingsPage() {
                 <img
                   src={logoUrl}
                   alt="Organization Logo"
-                  className="w-24 h-24 object-cover rounded-lg border border-zinc-200"
+                  className="w-24 h-24 object-cover rounded-lg"
+                  style={{ border: "1px solid var(--border)" }}
                 />
                 <button
                   type="button"
                   onClick={removeLogo}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow hover:bg-red-600"
+                  className="absolute -top-2 -right-2 text-white rounded-full p-0.5 shadow hover:bg-red-600"
+                  style={{ background: "#D9252A" }}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -238,24 +242,25 @@ export default function AdminSettingsPage() {
                 accept="image/*"
                 disabled={uploading}
                 onChange={handleLogoUpload}
-                className="border-zinc-200 focus-visible:ring-zinc-900 file:cursor-pointer"
+                style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] file:cursor-pointer"
               />
               {uploading && (
-                <div className="flex items-center gap-2 text-xs text-zinc-500 shrink-0">
+                <div className="flex items-center gap-2 text-xs shrink-0" style={{ color: "var(--muted-foreground)" }}>
                   <Upload className="w-4 h-4 animate-pulse" />
                   <span>{uploadProgress}%</span>
                 </div>
               )}
             </div>
-            <p className="text-[10px] text-zinc-400">Max 2MB. Uploads directly to Cloudinary.</p>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Max 2MB. Uploads directly to Cloudinary.</p>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Registration Mode
             </Label>
             <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
                 <input
                   type="radio"
                   name="regMode"
@@ -266,7 +271,7 @@ export default function AdminSettingsPage() {
                 />
                 Open Registration
               </label>
-              <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
                 <input
                   type="radio"
                   name="regMode"
@@ -280,16 +285,19 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-zinc-100">
+          <div className="pt-4" style={{ borderTop: "1px solid var(--border)" }}>
             <Button
               type="button"
               onClick={handleSave}
               disabled={saving || uploading}
-              className="bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-50"
+              style={{ background: "#D9252A", color: "#FFFFFF" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#EF4444")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#D9252A")}
+              className="disabled:opacity-50"
             >
               {saving ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <RingLoader size="sm" className="inline-flex" />
                   Saving...
                 </>
               ) : (

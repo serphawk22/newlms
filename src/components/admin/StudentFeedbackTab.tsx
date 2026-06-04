@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { MessageSquare, Loader2 } from "lucide-react";
+import { MessageSquare } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 interface FeedbackItem {
   id: string;
@@ -48,7 +49,7 @@ export function StudentFeedbackTab({ courseId }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+        <RingLoader size="md" />
         <span className="ml-3 text-sm text-slate-400">Loading feedback…</span>
       </div>
     );

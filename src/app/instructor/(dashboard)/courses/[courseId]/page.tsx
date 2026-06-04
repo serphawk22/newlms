@@ -24,6 +24,7 @@ import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
 import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
 import { QuizPdfImporter } from "@/components/QuizPdfImporter";
+import { getCourseBannerUrl } from "@/lib/course-images";
 import { CourseCommentsTab } from "@/components/CourseCommentsTab";
 
 // --- SERVER ACTIONS ---
@@ -290,9 +291,7 @@ async function createLiveSession(_state: LiveSessionActionState, formData: FormD
     });
 
     // ── Notifications (email + in-app) ─────────────────────────────────────
-    // Wrapped in try/catch so any failure is logged but NEVER breaks room creation
     try {
-      // 1. Collect enrolled student emails for this course
       let studentEmails: string[] = [];
       const enrollments = await prisma.enrollment.findMany({
         where: { courseId },
@@ -302,7 +301,6 @@ async function createLiveSession(_state: LiveSessionActionState, formData: FormD
       if (enrollments.length > 0) {
         studentEmails = enrollments.map((e) => e.user.email);
       } else {
-        // Fallback: all STUDENT members of the same organisation
         const orgMembers = await prisma.organizationMember.findMany({
           where: {
             organizationId: session.course.organizationId,
@@ -319,7 +317,6 @@ async function createLiveSession(_state: LiveSessionActionState, formData: FormD
       const courseName = session.course.title;
 
       if (studentEmails.length > 0) {
-        // 2. Rich HTML email — subject: "New Live Class Scheduled"
         await sendLiveClassEmail({
           to: studentEmails,
           courseName,
@@ -328,25 +325,17 @@ async function createLiveSession(_state: LiveSessionActionState, formData: FormD
           instructorName,
           joinLink,
         });
-        console.log(
-          `[createLiveSession] 📧 Email sent to ${studentEmails.length} student(s) for session "${title}"`
-        );
 
-        // 3. In-app notification for all enrolled students
         await notifyEnrolledStudents({
           courseId,
-          message: `📡 New live class "${title}" scheduled for ${courseName}. Scheduled: ${scheduledAt.toLocaleString("en-IN")}. Join: ${joinLink}`,
+          message: `New live class "${title}" scheduled for ${courseName}. Scheduled: ${scheduledAt.toLocaleString("en-IN")}. Join: ${joinLink}`,
           type: "LIVE_CLASS",
           link: `/meet/${roomId}`,
         });
-      } else {
-        console.log("[createLiveSession] No enrolled students found to notify.");
       }
     } catch (notifErr) {
-      // Log but never re-throw — session creation succeeds regardless
       console.error("[createLiveSession] Notification step failed (non-fatal):", notifErr);
     }
-    // ───────────────────────────────────────────────────────────────────────
 
     revalidatePath(`/instructor/courses/${courseId}`);
     return { success: true };
@@ -409,7 +398,7 @@ async function enrollStudent(formData: FormData) {
     try {
       await prisma.enrollment.create({ data: { userId: studentId, courseId, progress: 0 } });
     } catch {
-      // unique constraint — already enrolled, ignore
+      // already enrolled, ignore
     }
     revalidatePath(`/instructor/courses/${courseId}`);
   }
@@ -501,7 +490,6 @@ export default async function CourseBuilderPage({
   const { courseId } = await params;
   const { tab = "modules" } = await searchParams;
 
-  // Get logged-in role from JWT cookie
   let role: "INSTRUCTOR" | "ADMIN" = "INSTRUCTOR";
   try {
     const cookieStore = await cookies();
@@ -514,7 +502,7 @@ export default async function CourseBuilderPage({
         role = "ADMIN";
       }
     }
-  } catch { /* default to INSTRUCTOR */ }
+  } catch { }
   
   const course = await prisma.course.findUnique({
     where: { id: courseId },
@@ -535,8 +523,8 @@ export default async function CourseBuilderPage({
   });
 
   if (!course) redirect("/instructor");
+  const courseImageUrl = getCourseBannerUrl(course.title);
 
-  // Fetch submissions for all assignments in this course
   type SubmissionWithStudent = {
     id: string; assignmentId: string; studentId: string;
     driveLink: string;
@@ -561,18 +549,14 @@ export default async function CourseBuilderPage({
       if (!submissionsMap.has(s.assignmentId)) submissionsMap.set(s.assignmentId, []);
       submissionsMap.get(s.assignmentId)!.push(s);
     }
-  } catch {
-    // silently degrade — submissions show as empty
-  }
+  } catch { }
 
-  // Fetch enrolled students for Students Info tab (ACTIVE only)
   const enrollments = await prisma.enrollment.findMany({
     where: { courseId, status: "ACTIVE" },
     include: { user: { select: { id: true, name: true, email: true } } },
     orderBy: { id: "asc" },
   });
 
-  // Fetch pending enrollment requests
   const pendingEnrollments = await prisma.enrollment.findMany({
     where: { courseId, status: "PENDING" },
     include: { user: { select: { id: true, name: true, email: true } } },
@@ -597,7 +581,6 @@ export default async function CourseBuilderPage({
     orderBy: { id: "desc" },
   });
 
-  // Fetch per-student activity stats for enriched Students Info
   const studentIds = enrollments.map((e) => e.userId);
   const [assignmentSubs, quizSubs] = await Promise.all([
     prisma.assignmentSubmission.findMany({
@@ -609,7 +592,6 @@ export default async function CourseBuilderPage({
       select: { studentId: true },
     }),
   ]);
-  // Material views — count distinct materials viewed per student
   let materialViews: { studentId: string; materialId: string }[] = [];
   try {
     materialViews = await prisma.materialView.findMany({
@@ -618,27 +600,12 @@ export default async function CourseBuilderPage({
     });
   } catch (err) {
     console.error("[StudentsInfo] materialView query failed:", err);
-    /* degrade gracefully — materials column will show 0 */
   }
 
   const totalAssignments = course.assignments.length;
   const totalQuizzes = course.quizzes.length;
   const totalMaterials = course.readingMaterials.length;
   const totalActivities = totalAssignments + totalQuizzes + totalMaterials;
-
-  const menuItems = [
-    { label: 'Back to Workspace', ariaLabel: 'Go back to workspace', link: '/instructor' },
-    { label: 'Curriculum Builder', ariaLabel: 'View modules', link: `?tab=modules` },
-    { label: 'Reading Materials', ariaLabel: 'View materials', link: `?tab=reading` },
-    { label: 'Assignments', ariaLabel: 'View assignments', link: `?tab=assignments` },
-    { label: 'Quizzes & Tests', ariaLabel: 'View quizzes', link: `?tab=quizzes` },
-    { label: 'Students Info', ariaLabel: 'View enrolled students', link: `?tab=students` },
-  ];
-
-  const socialItems = [
-    { label: 'Admin Hub', link: '/admin' },
-    { label: 'Support', link: '/support' }
-  ];
 
   const seenLiveSessionTimes = new Set<number>();
   const duplicateLiveSessionCount = course.liveSessions.reduce((count, session) => {
@@ -650,72 +617,170 @@ export default async function CourseBuilderPage({
     return count;
   }, 0);
 
+  const getTabStyle = (currentTab: string) => {
+    const isActive = tab === currentTab;
+    return {
+      background: isActive ? "rgba(217,37,42,0.12)" : "transparent",
+      color: isActive ? "#D9252A" : "var(--muted-foreground)",
+      fontWeight: isActive ? 600 : 500,
+    };
+  };
+
   return (
-    <div className="container-page space-y-8">
+    <div className="course-theme-scope container-page space-y-8">
       {/* Course Title Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Link href="/instructor">
-          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 px-0">
+          <Button
+            variant="ghost"
+            style={{ color: "var(--muted-foreground)" }}
+            className="hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] px-0 transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Workspace
           </Button>
         </Link>
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-zinc-900">{course.title}</h1>
-          <span className={`status-badge ${course.published ? 'status-badge--success' : 'status-badge--warning'}`}>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{course.title}</h1>
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider border whitespace-nowrap"
+            style={
+              course.published
+                ? { background: "rgba(217,37,42,0.12)", color: "#D9252A", borderColor: "rgba(217,37,42,0.25)" }
+                : { background: "rgba(255,255,255,0.06)", color: "var(--muted-foreground)", borderColor: "var(--border)" }
+            }
+          >
             {course.published ? 'PUBLISHED' : 'DRAFT'}
           </span>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-8 space-y-6">
+      <div className="max-w-6xl mx-auto p-4 sm:p-8 space-y-6">
+        {/* Course banner */}
+        <div
+          className="overflow-hidden rounded-2xl"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          <img
+            src={courseImageUrl}
+            alt=""
+            className="w-full h-[240px] object-cover"
+          />
+        </div>
         
-      <div className="flex justify-end gap-3 pb-6 border-b border-zinc-200">
-        <form action={togglePublish}>
-          <input type="hidden" name="courseId" value={course.id} />
-          <input type="hidden" name="isPublished" value={course.published.toString()} />
-          <Button type="submit" className={course.published ? "bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider" : "bg-zinc-900 text-white hover:bg-zinc-800 font-bold text-xs uppercase tracking-wider"}>
-            {course.published ? "Unpublish" : "Publish"}
-          </Button>
-        </form>
-      </div>
+        <div className="flex justify-end gap-3 pb-6 border-b" style={{ borderColor: "var(--border)" }}>
+          <form action={togglePublish}>
+            <input type="hidden" name="courseId" value={course.id} />
+            <input type="hidden" name="isPublished" value={course.published.toString()} />
+            <Button
+              type="submit"
+              style={
+                course.published
+                  ? { background: "var(--secondary-background)", color: "var(--foreground)", border: "1px solid var(--border)" }
+                  : { background: "#D9252A", color: "#FFFFFF" }
+              }
+              className="font-bold text-xs uppercase tracking-wider transition-colors hover:opacity-90"
+            >
+              {course.published ? "Unpublish" : "Publish"}
+            </Button>
+          </form>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4">
           
           {/* SIDEBAR */}
           <div className="space-y-4">
             <Link href={`/instructor/courses/${course.id}/roadmap`}>
-              <Button className="w-full justify-start bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 shadow-lg shadow-indigo-500/20 mb-4 rounded-xl border border-indigo-400">
+              <Button
+                style={{ background: "#D9252A", color: "#FFFFFF" }}
+                className="w-full justify-start hover:bg-[#C21F24] font-semibold py-6 mb-4 rounded-xl shadow-md transition-colors"
+              >
                 <MapIcon className="w-5 h-5 mr-3" /> View Interactive Roadmap
               </Button>
             </Link>
             <div className="space-y-2">
-              <Link href={`?tab=modules`}><Button variant={tab === "modules" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "modules" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><LayoutList className="w-4 h-4 mr-2" /> Modules</Button></Link>
-            <Link href={`?tab=reading`}><Button variant={tab === "reading" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reading" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><FileText className="w-4 h-4 mr-2" /> Reading Materials</Button></Link>
-            <Link href={`?tab=assignments`}><Button variant={tab === "assignments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "assignments" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><CheckCircle className="w-4 h-4 mr-2" /> Assignments</Button></Link>
-            <Link href={`?tab=quizzes`}><Button variant={tab === "quizzes" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "quizzes" ? "bg-slate-200 text-slate-900 font-semibold" : "text-slate-600"}`}><HelpCircle className="w-4 h-4 mr-2" /> Quizzes & Tests</Button></Link>
-            <Link href={`?tab=comments`}><Button variant={tab === "comments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "comments" ? "bg-blue-100 text-blue-700 font-semibold" : "text-slate-600"}`}><MessageSquare className="w-4 h-4 mr-2" /> Q&A Discussions</Button></Link>
-
-            <Link href={`?tab=students`}><Button variant={tab === "students" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "students" ? "bg-emerald-100 text-emerald-700 font-semibold" : "text-slate-600"}`}><Users className="w-4 h-4 mr-2" /> Students Info {pendingEnrollments.length > 0 && <span className="ml-auto bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{pendingEnrollments.length}</span>}</Button></Link>
-            <Link href={`?tab=adminfeedback`}><Button variant={tab === "adminfeedback" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "adminfeedback" ? "bg-violet-100 text-violet-700 font-semibold" : "text-slate-600"}`}>
-              <MessageSquare className="w-4 h-4 mr-2" /> Admin Feedback
-            </Button></Link>
+              <Link href={`?tab=modules`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("modules")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <LayoutList className="w-4 h-4 mr-2" /> Modules
+                </Button>
+              </Link>
+              <Link href={`?tab=reading`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("reading")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <FileText className="w-4 h-4 mr-2" /> Reading Materials
+                </Button>
+              </Link>
+              <Link href={`?tab=assignments`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("assignments")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" /> Assignments
+                </Button>
+              </Link>
+              <Link href={`?tab=quizzes`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("quizzes")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <HelpCircle className="w-4 h-4 mr-2" /> Quizzes & Tests
+                </Button>
+              </Link>
+              <Link href={`?tab=comments`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("comments")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" /> Q&A Discussions
+                </Button>
+              </Link>
+              <Link href={`?tab=students`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("students")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <Users className="w-4 h-4 mr-2" /> Students Info{" "}
+                  {pendingEnrollments.length > 0 && (
+                    <span className="ml-auto bg-[#D9252A] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      {pendingEnrollments.length}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+              <Link href={`?tab=adminfeedback`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("adminfeedback")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" /> Admin Feedback
+                </Button>
+              </Link>
             </div>
           </div>
 
           <div className="md:col-span-3">
             
-            {/* ROADMAP TAB IS REMOVED - standalone page now */}
-
             {/* MODULES TAB */}
             {tab === "modules" && (
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <LayoutList className="w-6 h-6 text-slate-700" />
-                  <h3 className="text-2xl font-bold text-slate-800">Course Modules</h3>
+                  <LayoutList className="w-6 h-6" style={{ color: "var(--muted-foreground)" }} />
+                  <h3 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Course Modules</h3>
                   {duplicateLiveSessionCount > 0 && (
                     <form action={deleteDuplicateLiveSessions} className="ml-auto">
                       <input type="hidden" name="courseId" value={courseId} />
-                      <Button type="submit" variant="outline" size="sm" className="h-8 text-red-600 hover:bg-red-50 hover:text-red-700">
+                      <Button type="submit" variant="outline" size="sm" className="h-8 text-[#D9252A] hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]">
                         <Trash2 className="w-3.5 h-3.5 mr-1" />
                         Delete All Duplicates
                       </Button>
@@ -723,80 +788,161 @@ export default async function CourseBuilderPage({
                   )}
                 </div>
                 {course.modules.length === 0 ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">No modules yet.</div>
+                  <div
+                    className="text-center py-16 text-sm rounded-lg border"
+                    style={{ color: "var(--muted-foreground)", background: "var(--card)", borderColor: "var(--border)" }}
+                  >
+                    No modules yet.
+                  </div>
                 ) : (
                   <div className="space-y-4">
                     {course.modules.map((mod, idx) => (
-                      <Card key={mod.id} className="border-slate-200 shadow-sm">
-                        <CardHeader className="bg-slate-50 border-b border-slate-100 pb-3">
+                      <Card key={mod.id} style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
+                        <CardHeader
+                          style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}
+                          className="pb-3"
+                        >
                           <CardTitle className="text-lg font-bold flex items-center justify-between">
-                            <span className="flex items-center gap-2 text-slate-800">
-                              <span className="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-xs">Module {idx + 1}</span>
+                            <span className="flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+                              <span
+                                className="px-2 py-0.5 rounded text-xs border"
+                                style={{
+                                  background: "rgba(255,255,255,0.06)",
+                                  borderColor: "var(--border)",
+                                  color: "var(--foreground)",
+                                }}
+                              >
+                                Module {idx + 1}
+                              </span>
                               {mod.title}
                             </span>
                             <form action={deleteModule}>
                               <input type="hidden" name="moduleId" value={mod.id} />
                               <input type="hidden" name="courseId" value={courseId} />
-                              <Button type="submit" variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 hover:text-red-600 h-8">Delete Module</Button>
+                              <Button
+                                type="submit"
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 transition-colors hover:bg-[rgba(217,37,42,0.08)]"
+                                style={{ color: "#D9252A" }}
+                              >
+                                Delete Module
+                              </Button>
                             </form>
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-4 space-y-4">
                           {/* Lessons Section */}
-                          <details className="group border border-slate-200 rounded-md bg-slate-50" open>
-                            <summary className="font-semibold text-sm cursor-pointer p-3 outline-none hover:bg-slate-100 transition-colors list-none flex justify-between">
-                              Lessons
-                              <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
-                            </summary>
-                            <div className="p-3 pt-0 space-y-2 bg-white">
+                          <details
+                            className="group border rounded-md"
+                            style={{ borderColor: "var(--border)", background: "var(--secondary-background)" }}
+                            open
+                          >
+                              <summary
+                                className="font-semibold text-sm cursor-pointer p-3 outline-none transition-colors list-none flex justify-between hover:bg-[rgba(217,37,42,0.04)] hover:text-[#D9252A]"
+                                style={{ color: "var(--foreground)" }}
+                              >
+                                Lessons
+                                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                              </summary>
+                            <div className="p-3 pt-0 space-y-2" style={{ background: "var(--card)" }}>
                               {mod.lessons.map(l => (
-                                <div key={l.id} className="flex items-center justify-between text-sm border-b border-slate-100 pb-2 last:border-0 last:pb-0">
-                                  <span className="text-slate-700">{l.title}</span>
+                                <div
+                                  key={l.id}
+                                  className="flex items-center justify-between text-sm pb-2 last:border-0 last:pb-0"
+                                  style={{ borderBottom: "1px solid var(--border)" }}
+                                >
+                                  <span style={{ color: "var(--foreground)" }}>{l.title}</span>
                                 </div>
                               ))}
-                              {mod.lessons.length === 0 && <div className="text-xs text-slate-400">No lessons.</div>}
+                              {mod.lessons.length === 0 && <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>No lessons.</div>}
                               <div className="pt-2">
-                                <form action={createLesson} className="flex gap-2">
+                                <form action={createLesson} className="flex flex-col sm:flex-row gap-2">
                                   <input type="hidden" name="moduleId" value={mod.id} />
                                   <input type="hidden" name="courseId" value={courseId} />
-                                  <Input name="title" placeholder="New lesson title..." className="h-8 text-sm" required />
-                                  <Input name="videoUrl" placeholder="Video URL (optional)" className="h-8 text-sm" />
-                                  <Button type="submit" size="sm" className="h-8 bg-slate-900 text-white">Add Lesson</Button>
+                                  <Input
+                                    name="title"
+                                    placeholder="New lesson title..."
+                                    required
+                                    style={{
+                                      background: "var(--secondary-background)",
+                                      border: "1px solid var(--border)",
+                                      color: "var(--foreground)",
+                                    }}
+                                    className="h-8 text-sm focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                                  />
+                                  <Input
+                                    name="videoUrl"
+                                    placeholder="Video URL (optional)"
+                                    style={{
+                                      background: "var(--secondary-background)",
+                                      border: "1px solid var(--border)",
+                                      color: "var(--foreground)",
+                                    }}
+                                    className="h-8 text-sm focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                                  />
+                                  <Button
+                                    type="submit"
+                                    size="sm"
+                                    style={{ background: "#D9252A", color: "#FFFFFF" }}
+                                    className="h-8 hover:bg-[#C21F24] transition-colors"
+                                  >
+                                    Add Lesson
+                                  </Button>
                                 </form>
                               </div>
                             </div>
                           </details>
 
                           {/* Live Classes Section */}
-                          <details className="group border border-slate-200 rounded-md bg-slate-50">
-                            <summary className="font-semibold text-sm cursor-pointer p-3 outline-none hover:bg-slate-100 transition-colors list-none flex justify-between">
-                              Live Classes
-                              <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
-                            </summary>
-                            <div className="p-3 pt-0 space-y-2 bg-white">
-                              {mod.liveSessions.map(l => (
-                                <div key={l.id} className="flex flex-col gap-2 text-sm border border-slate-200 p-3 rounded-md mb-2">
-                                  <div className="flex justify-between items-center">
-                                    <div className="flex flex-col">
-                                      <span className="font-bold text-slate-800">{l.title}</span>
-                                      <span className="text-xs text-slate-500">{new Date(l.scheduledAt).toLocaleString()}</span>
+                          <details
+                            className="group border rounded-md"
+                            style={{ borderColor: "var(--border)", background: "var(--secondary-background)" }}
+                          >
+                              <summary
+                                className="font-semibold text-sm cursor-pointer p-3 outline-none transition-colors list-none flex justify-between hover:bg-[rgba(217,37,42,0.04)] hover:text-[#D9252A]"
+                                style={{ color: "var(--foreground)" }}
+                              >
+                                Live Classes
+                                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                              </summary>
+                            <div className="p-3 pt-0 space-y-2" style={{ background: "var(--card)" }}>
+                              {mod.liveSessions.map(l => {
+                                const isOngoing = l.status === "ONGOING";
+                                const isCompleted = l.status === "COMPLETED";
+                                return (
+                                  <div key={l.id} className="flex flex-col gap-2 text-sm p-3 rounded-md mb-2 border" style={{ borderColor: "var(--border)" }}>
+                                    <div className="flex justify-between items-center">
+                                      <div className="flex flex-col">
+                                        <span className="font-bold" style={{ color: "var(--foreground)" }}>{l.title}</span>
+                                        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{new Date(l.scheduledAt).toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span
+                                          className="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded border"
+                                          style={
+                                            isOngoing
+                                              ? { background: "rgba(217,37,42,0.12)", color: "#D9252A", borderColor: "rgba(217,37,42,0.25)" }
+                                              : isCompleted
+                                              ? { background: "rgba(255,255,255,0.04)", color: "var(--muted-foreground)", borderColor: "var(--border)" }
+                                              : { background: "rgba(255,255,255,0.06)", color: "var(--foreground)", borderColor: "var(--border)" }
+                                          }
+                                        >
+                                          {l.status}
+                                        </span>
+                                        <DeleteLiveSessionButton sessionId={l.id} />
+                                      </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className={`text-xs font-bold uppercase tracking-widest px-2 py-1 rounded ${l.status === "ONGOING" ? "bg-red-100 text-red-700" : l.status === "COMPLETED" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
-                                        {l.status}
-                                      </span>
-                                      <DeleteLiveSessionButton sessionId={l.id} />
-                                    </div>
+                                    {l.status !== "COMPLETED" && (
+                                      <div className="mt-2">
+                                        <StartClassButton sessionId={l.id} roomId={l.roomId} />
+                                      </div>
+                                    )}
                                   </div>
-                                  {l.status !== "COMPLETED" && (
-                                    <div className="mt-2">
-                                      <StartClassButton sessionId={l.id} roomId={l.roomId} />
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                              {mod.liveSessions.length === 0 && <div className="text-xs text-slate-400">No live classes scheduled.</div>}
-                              <div className="pt-2 border-t border-slate-100 mt-2">
+                                );
+                              })}
+                              {mod.liveSessions.length === 0 && <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>No live classes scheduled.</div>}
+                              <div className="pt-2 border-t mt-2" style={{ borderColor: "var(--border)" }}>
                                 <LiveSessionScheduleForm
                                   courseId={courseId}
                                   moduleId={mod.id}
@@ -807,28 +953,49 @@ export default async function CourseBuilderPage({
                           </details>
 
                           {/* Recorded Videos Section */}
-                          <details className="group border border-slate-200 rounded-md bg-slate-50">
-                            <summary className="font-semibold text-sm cursor-pointer p-3 outline-none hover:bg-slate-100 transition-colors list-none flex justify-between">
-                              Recorded Videos
-                              <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
-                            </summary>
-                            <div className="p-3 pt-0 space-y-2 bg-white">
+                          <details
+                            className="group border rounded-md"
+                            style={{ borderColor: "var(--border)", background: "var(--secondary-background)" }}
+                          >
+                              <summary
+                                className="font-semibold text-sm cursor-pointer p-3 outline-none transition-colors list-none flex justify-between hover:bg-[rgba(217,37,42,0.04)] hover:text-[#D9252A]"
+                                style={{ color: "var(--foreground)" }}
+                              >
+                                Recorded Videos
+                                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                              </summary>
+                            <div className="p-3 pt-0 space-y-2" style={{ background: "var(--card)" }}>
                               {mod.recordedClasses.map(l => (
-                                <div key={l.id} className="flex items-center justify-between text-sm border-b border-slate-100 pb-2 last:border-0 last:pb-0">
+                                <div
+                                  key={l.id}
+                                  className="flex items-center justify-between text-sm pb-2 last:border-0 last:pb-0"
+                                  style={{ borderBottom: "1px solid var(--border)" }}
+                                >
                                   <VideoPlayerModal videoUrl={l.videoUrl} title={l.title} duration={l.duration}>
-                                    <span className="flex items-center gap-2 text-slate-700 hover:text-indigo-600 transition-colors cursor-pointer">
-                                      <PlayCircle className="w-4 h-4 text-indigo-400" />
+                                    <span
+                                      style={{ color: "var(--foreground)" }}
+                                      className="flex items-center gap-2 hover:text-[#D9252A] transition-colors cursor-pointer"
+                                    >
+                                      <PlayCircle className="w-4 h-4" style={{ color: "#D9252A" }} />
                                       {l.title}
                                     </span>
                                   </VideoPlayerModal>
                                   <form action={deleteRecordedClass}>
                                     <input type="hidden" name="id" value={l.id} />
                                     <input type="hidden" name="courseId" value={courseId} />
-                                    <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 hover:text-red-600 h-8">Delete</Button>
+                                    <Button
+                                      type="submit"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 transition-colors hover:bg-[rgba(217,37,42,0.08)]"
+                                      style={{ color: "#D9252A" }}
+                                    >
+                                      Delete
+                                    </Button>
                                   </form>
                                 </div>
                               ))}
-                              {mod.recordedClasses.length === 0 && <div className="text-xs text-slate-400">No recorded videos.</div>}
+                              {mod.recordedClasses.length === 0 && <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>No recorded videos.</div>}
                             </div>
                           </details>
                         </CardContent>
@@ -836,26 +1003,42 @@ export default async function CourseBuilderPage({
                     ))}
                   </div>
                 )}
-                <Card className="border-dashed border-2 p-6 bg-transparent">
+                <Card
+                  className="border-dashed border-2 p-6"
+                  style={{ borderColor: "var(--border)", background: "transparent", boxShadow: "none" }}
+                >
                   <form action={createModule} className="flex gap-4 items-end">
                     <input type="hidden" name="courseId" value={courseId} />
-                    <div className="flex-1 space-y-2"><Label>New Module</Label><Input name="title" required placeholder="Week 1..."/></div>
-                    <Button type="submit" className="bg-slate-900 text-white">Create Module</Button>
+                    <div className="flex-1 space-y-2">
+                      <Label style={{ color: "var(--muted-foreground)" }}>New Module</Label>
+                      <Input
+                        name="title"
+                        required
+                        placeholder="Week 1..."
+                        style={{
+                          background: "var(--secondary-background)",
+                          border: "1px solid var(--border)",
+                          color: "var(--foreground)",
+                        }}
+                        className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      style={{ background: "#D9252A", color: "#FFFFFF" }}
+                      className="hover:bg-[#C21F24] transition-colors"
+                    >
+                      Create Module
+                    </Button>
                   </form>
                 </Card>
               </div>
             )}
 
-            {/* READING TAB — now uses local file upload via Cloudinary */}
+            {/* READING TAB */}
             {tab === "reading" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold">Reading Materials</h2>
-                {/* ReadingMaterialUpload is a client component that:
-                    - fetches the materials list via GET /api/reading-materials
-                    - uploads files via POST /api/reading-materials/upload (XHR for real progress)
-                    - deletes via DELETE /api/reading-materials (also cleans Cloudinary)
-                    - shows analytics via the existing MaterialAnalyticsButton
-                */}
+                <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Reading Materials</h2>
                 <ReadingMaterialUpload courseId={courseId} />
               </div>
             )}
@@ -863,34 +1046,93 @@ export default async function CourseBuilderPage({
             {/* ASSIGNMENTS TAB */}
             {tab === "assignments" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold">Course Assignments</h2>
-                <Card className="border-slate-200 shadow-sm">
-                  <CardHeader><CardTitle className="text-lg">Create Assignment</CardTitle></CardHeader>
+                <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Course Assignments</h2>
+                <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
+                  <CardHeader><CardTitle className="text-lg" style={{ color: "var(--foreground)" }}>Create Assignment</CardTitle></CardHeader>
                   <CardContent>
                     <form action={createAssignment} className="space-y-4">
                       <input type="hidden" name="courseId" value={courseId} />
-                      <div className="space-y-2"><Label>Title</Label><Input name="title" required placeholder="Final Project"/></div>
-                      <div className="space-y-2"><Label>Description</Label><Textarea name="description" placeholder="Instructions..."/></div>
-                      <div className="space-y-2"><Label>Problem Statement (Drive)</Label><Input name="driveLink" placeholder="https://drive..."/></div>
                       <div className="space-y-2">
-                        <Label>Deadline <span className="text-slate-400 font-normal">(optional — defaults to 7 days)</span></Label>
-                        <Input name="deadline" type="datetime-local" className="bg-white"/>
+                        <Label style={{ color: "var(--muted-foreground)" }}>Title</Label>
+                        <Input
+                          name="title"
+                          required
+                          placeholder="Final Project"
+                          style={{
+                            background: "var(--secondary-background)",
+                            border: "1px solid var(--border)",
+                            color: "var(--foreground)",
+                          }}
+                          className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                        />
                       </div>
-                      <Button type="submit" className="w-full bg-blue-600 text-white">Add Assignment</Button>
+                      <div className="space-y-2">
+                        <Label style={{ color: "var(--muted-foreground)" }}>Description</Label>
+                        <Textarea
+                          name="description"
+                          placeholder="Instructions..."
+                          style={{
+                            background: "var(--secondary-background)",
+                            border: "1px solid var(--border)",
+                            color: "var(--foreground)",
+                          }}
+                          className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label style={{ color: "var(--muted-foreground)" }}>Problem Statement (Drive)</Label>
+                        <Input
+                          name="driveLink"
+                          placeholder="https://drive..."
+                          style={{
+                            background: "var(--secondary-background)",
+                            border: "1px solid var(--border)",
+                            color: "var(--foreground)",
+                          }}
+                          className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label style={{ color: "var(--muted-foreground)" }}>
+                          Deadline <span style={{ color: "var(--muted-foreground)" }} className="font-normal">(optional — defaults to 7 days)</span>
+                        </Label>
+                        <Input
+                          name="deadline"
+                          type="datetime-local"
+                          style={{
+                            background: "var(--secondary-background)",
+                            border: "1px solid var(--border)",
+                            color: "var(--foreground)",
+                          }}
+                          className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        style={{ background: "#D9252A", color: "#FFFFFF" }}
+                        className="w-full hover:bg-[#C21F24] transition-colors"
+                      >
+                        Add Assignment
+                      </Button>
                     </form>
                   </CardContent>
                 </Card>
                 {course.assignments.map((asgn) => (
-                  <Card key={asgn.id} className="p-0 bg-white border-slate-200 shadow-sm overflow-hidden">
-                    <div className="h-1 w-full bg-amber-400" />
+                  <Card key={asgn.id} className="p-0 overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
+                    <div className="h-1 w-full" style={{ background: "#D9252A" }} />
                     <div className="p-5">
                       <div className="flex justify-between items-start gap-4">
                         <div className="min-w-0">
-                          <h3 className="font-bold text-lg">{asgn.title}</h3>
-                          {asgn.description && <p className="text-sm text-slate-500 mt-1">{asgn.description}</p>}
+                          <h3 className="font-bold text-lg" style={{ color: "var(--foreground)" }}>{asgn.title}</h3>
+                          {asgn.description && <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>{asgn.description}</p>}
                           {asgn.driveLink && (
-                            <a href={asgn.driveLink} target="_blank" rel="noopener noreferrer"
-                              className="text-xs text-blue-600 hover:underline mt-1 flex items-center gap-1">
+                            <a
+                              href={asgn.driveLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs hover:underline mt-1 flex items-center gap-1 font-semibold"
+                              style={{ color: "#D9252A" }}
+                            >
                               <ExternalLink className="w-3 h-3" /> View Problem Statement
                             </a>
                           )}
@@ -899,7 +1141,14 @@ export default async function CourseBuilderPage({
                           <input type="hidden" name="id" value={asgn.id} />
                           <input type="hidden" name="type" value="assignment" />
                           <input type="hidden" name="courseId" value={courseId} />
-                          <Button type="submit" variant="ghost" className="text-red-500"><Trash2 className="w-4 h-4"/></Button>
+                          <Button
+                            type="submit"
+                            variant="ghost"
+                            className="transition-colors hover:bg-[rgba(217,37,42,0.08)]"
+                            style={{ color: "#D9252A" }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </form>
                       </div>
 
@@ -907,14 +1156,12 @@ export default async function CourseBuilderPage({
                       <SubmissionsPanel
                         assignmentId={asgn.id}
                         assignmentTitle={asgn.title}
-                        initialSubmissions={(submissionsMap.get(asgn.id) ?? []).map((s: any) => ({
+                        initialSubmissions={(submissionsMap.get(asgn.id) ?? []).map((s: SubmissionWithStudent) => ({
                           id: s.id,
                           studentId: s.studentId,
                           driveLink: s.driveLink,
-                          // New normalized file relation
                           fileId: (s as unknown as { fileId?: string | null }).fileId ?? null,
                           file:   (s as unknown as { file?: unknown }).file as never ?? null,
-                          // Legacy fallback fields
                           fileUrl:          s.fileUrl          ?? null,
                           fileType:         s.fileType         ?? null,
                           mimeType:         s.mimeType         ?? null,
@@ -931,47 +1178,77 @@ export default async function CourseBuilderPage({
                     </div>
                   </Card>
                 ))}
-                {course.assignments.length === 0 && <p className="text-center py-12 text-slate-400">No assignments created yet.</p>}
+                {course.assignments.length === 0 && <p className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>No assignments created yet.</p>}
               </div>
             )}
 
             {/* QUIZZES TAB */}
             {tab === "quizzes" && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold">Quiz Management</h2>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Quiz Management</h2>
                   <form action={createQuiz} className="flex gap-2">
                     <input type="hidden" name="courseId" value={courseId} />
-                    <Input name="title" required placeholder="Quiz Name..." className="w-64 bg-white" />
-                    <Button type="submit" size="sm" className="bg-blue-600">Create Quiz</Button>
+                    <Input
+                      name="title"
+                      required
+                      placeholder="Quiz Name..."
+                      style={{
+                        background: "var(--secondary-background)",
+                        border: "1px solid var(--border)",
+                        color: "var(--foreground)",
+                      }}
+                      className="w-64 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+                    />
+                    <Button
+                      type="submit"
+                      size="sm"
+                      style={{ background: "#D9252A", color: "#FFFFFF" }}
+                      className="hover:bg-[#C21F24] font-semibold transition-colors shrink-0"
+                    >
+                      Create Quiz
+                    </Button>
                   </form>
                 </div>
 
                 {course.quizzes.map((quiz) => (
-                  <Card key={quiz.id} className="border-slate-200 shadow-sm overflow-hidden">
-                    <CardHeader className="bg-slate-50 border-b flex flex-row justify-between items-center py-4">
-                      <div>
-                        <CardTitle className="text-lg">{quiz.title}</CardTitle>
-                        <CardDescription>{quiz.questions.length} Questions total</CardDescription>
+                  <Card key={quiz.id} style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }} className="overflow-hidden">
+                    <CardHeader
+                      style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}
+                      className="py-4"
+                    >
+                      <div className="flex flex-row justify-between items-center w-full">
+                        <div>
+                          <CardTitle className="text-lg" style={{ color: "var(--foreground)" }}>{quiz.title}</CardTitle>
+                          <CardDescription style={{ color: "var(--muted-foreground)" }}>{quiz.questions.length} Questions total</CardDescription>
+                        </div>
+                        <form action={deleteQuiz}>
+                          <input type="hidden" name="id" value={quiz.id} />
+                          <input type="hidden" name="courseId" value={courseId} />
+                          <Button
+                            type="submit"
+                            variant="ghost"
+                            size="sm"
+                            className="transition-colors hover:bg-[rgba(217,37,42,0.08)]"
+                            style={{ color: "#D9252A" }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </form>
                       </div>
-                      <form action={deleteQuiz}>
-                        <input type="hidden" name="id" value={quiz.id} />
-                        <input type="hidden" name="courseId" value={courseId} />
-                        <Button type="submit" variant="ghost" size="sm" className="text-red-500"><Trash2 className="w-4 h-4" /></Button>
-                      </form>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       
                       {/* List Questions */}
                       <div className="space-y-4">
                         {quiz.questions.map((q, qIdx) => (
-                          <div key={q.id} className="p-4 border rounded-md bg-white relative group">
+                          <div key={q.id} className="p-4 border rounded-md relative group" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
                             <div className="flex justify-between items-start">
                               <div>
-                                <span className="text-xs font-bold uppercase text-blue-600 tracking-wider">
+                                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#D9252A" }}>
                                   {q.type === "MCQ" ? "Single Choice" : q.type === "MULTIPLE" ? "Multiple Choice" : q.type}
                                 </span>
-                                <span className="ml-2 text-xs text-slate-400">1 Mark</span>
+                                <span className="ml-2 text-xs" style={{ color: "var(--muted-foreground)" }}>1 Mark</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <form action={deleteQuestion}>
@@ -983,12 +1260,25 @@ export default async function CourseBuilderPage({
                                 </form>
                               </div>
                             </div>
-                            <p className="font-medium mt-1">{qIdx + 1}. {q.text}</p>
+                            <p className="font-medium mt-1" style={{ color: "var(--foreground)" }}>{qIdx + 1}. {q.text}</p>
                             {q.type === "MCQ" && (
                               <div className="grid grid-cols-2 gap-2 mt-3">
                                 {q.options.map((opt, oIdx) => (
-                                  <div key={oIdx} className={`flex items-center gap-2 text-sm p-2 rounded border ${q.correctOption === oIdx ? 'bg-green-50 border-green-200 text-green-700' : 'bg-slate-50 border-slate-100'}`}>
-                                    <input type="radio" checked={q.correctOption === oIdx} readOnly className="accent-green-600" />
+                                  <div
+                                    key={oIdx}
+                                    style={
+                                      q.correctOption === oIdx
+                                        ? { background: "rgba(217,37,42,0.12)", borderColor: "rgba(217,37,42,0.25)", color: "#D9252A" }
+                                        : { background: "var(--secondary-background)", borderColor: "var(--border)", color: "var(--foreground)" }
+                                    }
+                                    className="flex items-center gap-2 text-sm p-2 rounded border font-medium"
+                                  >
+                                    <input
+                                      type="radio"
+                                      checked={q.correctOption === oIdx}
+                                      readOnly
+                                      className="accent-[#D9252A]"
+                                    />
                                     <span>{opt}</span>
                                   </div>
                                 ))}
@@ -1007,28 +1297,47 @@ export default async function CourseBuilderPage({
                       </div>
 
                       {/* Add Question Form */}
-                      <div className="pt-6 border-t border-slate-100">
-                        <p className="text-sm font-bold mb-4">Add New Question</p>
+                      <div className="pt-6 border-t" style={{ borderColor: "var(--border)" }}>
+                        <p className="text-sm font-bold mb-4" style={{ color: "var(--foreground)" }}>Add New Question</p>
                         <form action={addQuestion} className="space-y-4">
                           <input type="hidden" name="quizId" value={quiz.id} />
                           <input type="hidden" name="courseId" value={courseId} />
                           
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <Label>Question Type</Label>
-                              <select name="type" defaultValue="MCQ" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+                              <Label style={{ color: "var(--muted-foreground)" }}>Question Type</Label>
+                              <select
+                                name="type"
+                                defaultValue="MCQ"
+                                style={{
+                                  background: "var(--secondary-background)",
+                                  borderColor: "var(--border)",
+                                  color: "var(--foreground)",
+                                }}
+                                className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
+                              >
                                 <option value="MCQ">Single Choice</option>
                                 <option value="ESSAY">Essay (Manual)</option>
                               </select>
                             </div>
                             <div className="space-y-2">
-                              <Label>Question Text</Label>
-                              <Input name="text" required placeholder="What is the capital of..." />
+                              <Label style={{ color: "var(--muted-foreground)" }}>Question Text</Label>
+                              <Input
+                                name="text"
+                                required
+                                placeholder="What is the capital of..."
+                                style={{
+                                  background: "var(--secondary-background)",
+                                  borderColor: "var(--border)",
+                                  color: "var(--foreground)",
+                                }}
+                                className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
+                              />
                             </div>
                           </div>
 
-                          <div className="bg-slate-50 p-4 rounded-md space-y-3">
-                            <Label className="text-xs font-bold text-slate-600">Answer Options</Label>
+                          <div className="p-4 rounded-md space-y-3" style={{ background: "var(--secondary-background)" }}>
+                            <Label className="text-xs font-bold" style={{ color: "var(--muted-foreground)" }}>Answer Options</Label>
                             {[0, 1, 2, 3].map((i) => (
                               <div key={i} className="flex items-center gap-3">
                                 <input
@@ -1036,21 +1345,34 @@ export default async function CourseBuilderPage({
                                   name="correctOption"
                                   value={i}
                                   defaultChecked={i === 0}
-                                  className="accent-zinc-900 shrink-0"
+                                  className="accent-[#D9252A] shrink-0"
                                 />
                                 <Input
                                   name={`opt${i}`}
                                   placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                                  className="bg-white"
+                                  style={{
+                                    background: "var(--card)",
+                                    borderColor: "var(--border)",
+                                    color: "var(--foreground)",
+                                  }}
+                                  className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
                                 />
                               </div>
                             ))}
-                            <p className="text-[11px] text-slate-400 font-medium mt-1">
+                            <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
                               Select the radio button next to the correct answer
                             </p>
                           </div>
                           
-                          <Button type="submit" variant="outline" className="w-full">
+                          <Button
+                            type="submit"
+                            style={{
+                              background: "var(--secondary-background)",
+                              color: "var(--foreground)",
+                              border: "1px solid var(--border)",
+                            }}
+                            className="w-full hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A]"
+                          >
                             <HelpCircle className="w-4 h-4 mr-2" /> Save Question to Quiz
                           </Button>
                         </form>
@@ -1058,7 +1380,7 @@ export default async function CourseBuilderPage({
                     </CardContent>
                   </Card>
                 ))}
-                {course.quizzes.length === 0 && <p className="text-center py-12 text-slate-400">No quizzes created yet.</p>}
+                {course.quizzes.length === 0 && <p className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>No quizzes created yet.</p>}
               </div>
             )}
 
@@ -1069,37 +1391,51 @@ export default async function CourseBuilderPage({
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Users className="w-6 h-6 text-emerald-600" />
-                    <h2 className="text-xl font-bold">Students Info</h2>
+                    <Users className="w-6 h-6" style={{ color: "#D9252A" }} />
+                    <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Students Info</h2>
                   </div>
-                  <span className="text-sm font-semibold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">
+                  <span
+                    className="text-xs font-semibold px-3 py-1 rounded-full border"
+                    style={{
+                      background: "rgba(217,37,42,0.12)",
+                      borderColor: "rgba(217,37,42,0.25)",
+                      color: "#D9252A",
+                    }}
+                  >
                     {enrollments.length} enrolled
                   </span>
                 </div>
 
-                {/* ── Pending Enrollment Requests Section ── */}
+                {/* Pending Requests Section */}
                 {pendingEnrollments.length > 0 && (
-                  <div className="bg-white rounded-xl border border-amber-200 shadow-sm overflow-hidden">
-                    <div className="flex items-center gap-2 px-5 py-3 bg-amber-50 border-b border-amber-100">
-                      <Clock className="w-4 h-4 text-amber-600" />
-                      <h3 className="text-sm font-bold text-amber-800">Pending Requests</h3>
-                      <span className="ml-auto text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--card)", borderColor: "rgba(217,37,42,0.25)" }}>
+                    <div className="flex items-center gap-2 px-5 py-3 border-b" style={{ background: "rgba(217,37,42,0.06)", borderColor: "rgba(217,37,42,0.15)" }}>
+                      <Clock className="w-4 h-4" style={{ color: "#D9252A" }} />
+                      <h3 className="text-sm font-bold" style={{ color: "#D9252A" }}>Pending Requests</h3>
+                      <span
+                        className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full border"
+                        style={{
+                          background: "rgba(217,37,42,0.12)",
+                          borderColor: "rgba(217,37,42,0.25)",
+                          color: "#D9252A",
+                        }}
+                      >
                         {pendingEnrollments.length} waiting
                       </span>
                     </div>
                     <div className="p-3">
                       <div className="space-y-2">
                         {pendingEnrollments.map((enr) => (
-                          <div key={enr.id} className="flex items-center gap-3 p-3 rounded-lg border border-amber-100 hover:border-amber-200 hover:bg-amber-50/50 transition-colors">
-                            <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                              <span className="text-sm font-bold text-amber-700">
+                          <div key={enr.id} className="flex items-center gap-3 p-3 rounded-lg border hover:bg-[rgba(217,37,42,0.04)] transition-colors" style={{ borderColor: "var(--border)" }}>
+                            <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}>
+                              <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>
                                 {(enr.user.name ?? enr.user.email)[0].toUpperCase()}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-slate-800">{enr.user.name ?? "—"}</p>
-                              <p className="text-xs text-slate-400">{enr.user.email}</p>
-                              <p className="text-xs text-amber-600 mt-0.5">
+                              <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{enr.user.name ?? "—"}</p>
+                              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{enr.user.email}</p>
+                              <p className="text-xs mt-0.5" style={{ color: "#D9252A" }}>
                                 Requested {new Date(enr.enrolledAt).toLocaleDateString()}
                               </p>
                             </div>
@@ -1111,7 +1447,6 @@ export default async function CourseBuilderPage({
                                   where: { id: enrollmentId },
                                   data: { status: "ACTIVE" }
                                 });
-                                // Send notification to student
                                 const enrollment = await prisma.enrollment.findUnique({
                                   where: { id: enrollmentId },
                                   include: { course: true, user: true }
@@ -1131,7 +1466,12 @@ export default async function CourseBuilderPage({
                                 <input type="hidden" name="enrollmentId" value={enr.id} />
                                 <button
                                   type="submit"
-                                  className="text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-md transition-colors"
+                                  style={{
+                                    background: "rgba(217,37,42,0.12)",
+                                    borderColor: "rgba(217,37,42,0.25)",
+                                    color: "#D9252A",
+                                  }}
+                                  className="text-xs font-semibold px-3 py-1.5 rounded-md border transition-colors hover:bg-[rgba(217,37,42,0.18)] cursor-pointer"
                                 >
                                   Accept
                                 </button>
@@ -1143,7 +1483,6 @@ export default async function CourseBuilderPage({
                                   where: { id: enrollmentId },
                                   data: { status: "REJECTED" }
                                 });
-                                // Send notification to student
                                 const enrollment = await prisma.enrollment.findUnique({
                                   where: { id: enrollmentId },
                                   include: { course: true, user: true }
@@ -1163,7 +1502,12 @@ export default async function CourseBuilderPage({
                                 <input type="hidden" name="enrollmentId" value={enr.id} />
                                 <button
                                   type="submit"
-                                  className="text-xs font-semibold text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-md transition-colors"
+                                  style={{
+                                    background: "var(--secondary-background)",
+                                    color: "var(--foreground)",
+                                    border: "1px solid var(--border)",
+                                  }}
+                                  className="text-xs font-semibold px-3 py-1.5 rounded-md transition-colors hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A] cursor-pointer"
                                 >
                                   Reject
                                 </button>
@@ -1176,32 +1520,46 @@ export default async function CourseBuilderPage({
                   </div>
                 )}
 
-                {/* ── Add Students Section ── */}
+                {/* Add Students Section */}
                 {unenrolledMembers.length > 0 && (
-                  <div className="bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden">
-                    <div className="flex items-center gap-2 px-5 py-3 bg-emerald-50 border-b border-emerald-100">
-                      <Users className="w-4 h-4 text-emerald-600" />
-                      <h3 className="text-sm font-bold text-emerald-800">Add Students</h3>
-                      <span className="ml-auto text-xs font-semibold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
+                    <div className="flex items-center gap-2 px-5 py-3 border-b" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
+                      <Users className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+                      <h3 className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Add Students</h3>
+                      <span
+                        className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full border"
+                        style={{
+                          background: "rgba(255,255,255,0.06)",
+                          borderColor: "var(--border)",
+                          color: "var(--muted-foreground)",
+                        }}
+                      >
                         {unenrolledMembers.length} available
                       </span>
                     </div>
                     <div className="p-3 max-h-48 overflow-y-auto">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {unenrolledMembers.map((m) => (
-                          <form key={m.id} action={enrollStudent} className="flex items-center gap-2 p-2 rounded-lg border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition-colors">
+                          <form key={m.id} action={enrollStudent} className="flex items-center gap-2 p-2 rounded-lg border hover:bg-[rgba(217,37,42,0.04)] transition-colors" style={{ borderColor: "var(--border)" }}>
                             <input type="hidden" name="courseId" value={courseId} />
                             <input type="hidden" name="studentId" value={m.user.id} />
-                            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                              <span className="text-[10px] font-bold text-slate-600">
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}>
+                              <span className="text-[10px] font-bold" style={{ color: "var(--foreground)" }}>
                                 {(m.user.name ?? m.user.email)[0].toUpperCase()}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium text-slate-800 truncate">{m.user.name ?? "—"}</p>
-                              <p className="text-[10px] text-slate-400 truncate">{m.user.email}</p>
+                              <p className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>{m.user.name ?? "—"}</p>
+                              <p className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>{m.user.email}</p>
                             </div>
-                            <button type="submit" className="text-[10px] font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-2.5 py-1 rounded-md transition-colors shrink-0 cursor-pointer">
+                            <button
+                              type="submit"
+                              style={{
+                                background: "rgba(217,37,42,0.12)",
+                                color: "#D9252A",
+                              }}
+                              className="text-[10px] font-bold px-2.5 py-1 rounded-md transition-colors shrink-0 cursor-pointer"
+                            >
                               + Enroll
                             </button>
                           </form>
@@ -1212,27 +1570,30 @@ export default async function CourseBuilderPage({
                 )}
 
                 {enrollments.length === 0 ? (
-                  <div className="text-center py-16 bg-white rounded-xl border border-slate-200 shadow-sm text-slate-400">
-                    <Users className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                    <p className="text-lg font-semibold text-slate-500">No students enrolled yet.</p>
+                  <div
+                    className="text-center py-16 rounded-xl border"
+                    style={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--muted-foreground)" }}
+                  >
+                    <Users className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--border)" }} />
+                    <p className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>No students enrolled yet.</p>
                     <p className="text-sm mt-1">Students will appear here once they enrol in this course.</p>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--card)", borderColor: "var(--border)", boxShadow: "none" }}>
                     <table className="w-full text-sm min-w-[1000px]">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">#</th>
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">Student</th>
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">Email</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Assignments</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Quizzes</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Materials</th>
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">Progress</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Certificate Status</th>
+                        <tr style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
+                          <th className="text-left px-5 py-3 font-semibold w-12" style={{ color: "var(--muted-foreground)" }}>#</th>
+                          <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Student</th>
+                          <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Assignments</th>
+                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Quizzes</th>
+                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Materials</th>
+                          <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Progress</th>
+                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Certificate Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
                         {enrollments.map((enr, idx) => {
                           const asgDone = assignmentSubs.filter(s => s.studentId === enr.userId).length;
                           const qzDone  = quizSubs.filter(s => s.studentId === enr.userId).length;
@@ -1244,44 +1605,67 @@ export default async function CourseBuilderPage({
                           const done    = asgDone + qzDone + matDone;
                           const pct     = totalActivities > 0 ? Math.round((done / totalActivities) * 100) : 0;
                           return (
-                            <tr key={enr.id} className="hover:bg-slate-50 transition-colors">
-                              <td className="px-5 py-3 text-slate-400 font-mono text-xs">{idx + 1}</td>
+                            <tr
+                              key={enr.id}
+                              className="transition-colors hover:bg-[rgba(217,37,42,0.04)]"
+                            >
+                              <td className="px-5 py-3 font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{idx + 1}</td>
                               <td className="px-5 py-3">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                                    <span className="text-xs font-bold text-emerald-700">
+                                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}>
+                                    <span className="text-xs font-bold" style={{ color: "var(--foreground)" }}>
                                       {(enr.user.name ?? enr.user.email)[0].toUpperCase()}
                                     </span>
                                   </div>
-                                  <span className="font-medium text-slate-800">{enr.user.name ?? "—"}</span>
+                                  <span className="font-semibold" style={{ color: "var(--foreground)" }}>{enr.user.name ?? "—"}</span>
                                 </div>
                               </td>
-                              <td className="px-5 py-3 text-slate-500 text-xs">{enr.user.email}</td>
+                              <td className="px-5 py-3 text-xs" style={{ color: "var(--muted-foreground)" }}>{enr.user.email}</td>
                               <td className="px-5 py-3 text-center">
-                                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                                  asgDone === totalAssignments && totalAssignments > 0
-                                    ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"
-                                }`}>{asgDone}/{totalAssignments}</span>
+                                <span
+                                  className="text-xs font-semibold px-2 py-0.5 rounded-full border"
+                                  style={
+                                    asgDone === totalAssignments && totalAssignments > 0
+                                      ? { background: "rgba(217,37,42,0.12)", color: "#D9252A", borderColor: "rgba(217,37,42,0.25)" }
+                                      : { background: "rgba(255,255,255,0.06)", color: "var(--foreground)", borderColor: "var(--border)" }
+                                  }
+                                >
+                                  {asgDone}/{totalAssignments}
+                                </span>
                               </td>
                               <td className="px-5 py-3 text-center">
-                                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                                  qzDone === totalQuizzes && totalQuizzes > 0
-                                    ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"
-                                }`}>{qzDone}/{totalQuizzes}</span>
+                                <span
+                                  className="text-xs font-semibold px-2 py-0.5 rounded-full border"
+                                  style={
+                                    qzDone === totalQuizzes && totalQuizzes > 0
+                                      ? { background: "rgba(217,37,42,0.12)", color: "#D9252A", borderColor: "rgba(217,37,42,0.25)" }
+                                      : { background: "rgba(255,255,255,0.06)", color: "var(--foreground)", borderColor: "var(--border)" }
+                                  }
+                                >
+                                  {qzDone}/{totalQuizzes}
+                                </span>
                               </td>
                               <td className="px-5 py-3 text-center">
-                                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                                  matDone === totalMaterials && totalMaterials > 0
-                                    ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"
-                                }`}>{matDone}/{totalMaterials}</span>
+                                <span
+                                  className="text-xs font-semibold px-2 py-0.5 rounded-full border"
+                                  style={
+                                    matDone === totalMaterials && totalMaterials > 0
+                                      ? { background: "rgba(217,37,42,0.12)", color: "#D9252A", borderColor: "rgba(217,37,42,0.25)" }
+                                      : { background: "rgba(255,255,255,0.06)", color: "var(--foreground)", borderColor: "var(--border)" }
+                                  }
+                                >
+                                  {matDone}/{totalMaterials}
+                                </span>
                               </td>
                               <td className="px-5 py-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div className="h-2 bg-emerald-500 rounded-full transition-all"
-                                      style={{ width: `${pct}%` }} />
+                                  <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
+                                    <div
+                                      className="h-full rounded-full transition-all"
+                                      style={{ width: `${pct}%`, background: pct >= 50 ? "#D9252A" : "var(--muted-foreground)" }}
+                                    />
                                   </div>
-                                  <span className="text-xs text-slate-600 font-bold w-8">{pct}%</span>
+                                  <span className="text-xs font-bold w-8" style={{ color: "var(--foreground)" }}>{pct}%</span>
                                 </div>
                               </td>
                               <td className="px-5 py-3 text-center">
@@ -1326,7 +1710,7 @@ export default async function CourseBuilderPage({
               </div>
             )}
 
-            {/* ADMIN FEEDBACK TAB — client component fetches live data */}
+            {/* ADMIN FEEDBACK TAB */}
             {tab === "adminfeedback" && (
               <InstructorFeedbackTab courseId={courseId} />
             )}

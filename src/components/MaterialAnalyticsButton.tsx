@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Eye, X, Loader2, CheckCircle2, XCircle, BarChart2, RefreshCw } from "lucide-react";
+import { Eye, X, CheckCircle2, XCircle, BarChart2, RefreshCw } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 
 interface StudentAnalytic {
@@ -126,7 +127,7 @@ export function MaterialAnalyticsButton({ materialId, materialTitle, courseId }:
             <div className="overflow-y-auto flex-1">
               {loading && (
                 <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
-                  <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
+                  <RingLoader size="sm" />
                   <span>Loading analytics…</span>
                 </div>
               )}

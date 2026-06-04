@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, X, Pencil, Check, Loader2 } from "lucide-react";
+import { Plus, X, Pencil, Check } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 interface ExpertiseEditorProps {
   initialSkills: string[];
@@ -110,7 +111,7 @@ export function ExpertiseEditor({ initialSkills }: ExpertiseEditorProps) {
               disabled={saving}
               className="bg-slate-900 hover:bg-slate-800 text-white"
             >
-              {saving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Check className="w-4 h-4 mr-1" />}
+              {saving ? <RingLoader size="sm" className="inline-flex mr-1" /> : <Check className="w-4 h-4 mr-1" />}
               Save
             </Button>
             <Button type="button" size="sm" variant="ghost" onClick={handleCancel} disabled={saving}>

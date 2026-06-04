@@ -109,34 +109,36 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-900 tracking-tight flex items-center gap-2">
-            <Video className="w-6 h-6 text-violet-600" />
+          <h1 className="text-2xl font-black tracking-tight flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+            <Video className="w-6 h-6" style={{ color: "#D9252A" }} />
             Shared Videos
           </h1>
-          <p className="text-xs text-zinc-500 font-medium mt-1">
+          <p className="text-xs font-medium mt-1" style={{ color: "var(--muted-foreground)" }}>
             Manage and view recording submissions shared by students.
           </p>
         </div>
       </div>
 
       {/* Controls: Search, Sort */}
-      <div className="bg-white border border-zinc-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-sm">
+      <div className="rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <div className="relative w-full sm:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
           <Input
             placeholder="Search by student, email, or caption..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-zinc-50 border-zinc-200 h-10 rounded-xl text-xs"
+            className="pl-9 h-10 rounded-xl text-xs"
+            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <span className="text-xs text-zinc-400 font-medium whitespace-nowrap">Sort by:</span>
+          <span className="text-xs font-medium whitespace-nowrap" style={{ color: "var(--muted-foreground)" }}>Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "newest" | "oldest")}
-            className="bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-bold px-3 py-2 text-zinc-700 h-10 focus:outline-none focus:ring-1 focus:ring-zinc-400 cursor-pointer"
+            className="rounded-xl text-xs font-bold px-3 py-2 h-10 focus:outline-none focus:ring-1 cursor-pointer"
+            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -146,10 +148,10 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
 
       {/* Empty State */}
       {filteredVideos.length === 0 && (
-        <div className="bg-white border border-zinc-200 border-dashed rounded-2xl p-12 text-center shadow-sm">
-          <Video className="w-12 h-12 text-zinc-300 mx-auto mb-3" />
-          <p className="text-sm font-bold text-zinc-800">No learning shares found</p>
-          <p className="text-xs text-zinc-400 mt-1">
+        <div className="rounded-2xl p-12 text-center" style={{ background: "var(--card)", border: "1px dashed var(--border)", boxShadow: "none" }}>
+          <Video className="w-12 h-12 mx-auto mb-3" style={{ color: "var(--border)" }} />
+          <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>No learning shares found</p>
+          <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
             {searchQuery ? "Try refining your search terms." : "Student recordings will show up here once submitted."}
           </p>
         </div>
@@ -161,7 +163,8 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
           {filteredVideos.map((video) => (
             <div 
               key={video.id} 
-              className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col"
+              className="rounded-2xl overflow-hidden transition-all group flex flex-col"
+              style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
             >
               {/* Interactive Player Placeholder with Overlay */}
               <div 
@@ -191,31 +194,31 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
                 <div className="space-y-2">
                   {/* Student details */}
                   <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 text-zinc-800 font-black text-sm">
-                      <User className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 font-black text-sm" style={{ color: "var(--foreground)" }}>
+                      <User className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
                       <span className="truncate">{video.studentName}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-zinc-500 text-xs font-semibold">
-                      <Mail className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: "var(--muted-foreground)" }}>
+                      <Mail className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
                       <span className="truncate">{video.email}</span>
                     </div>
                   </div>
 
                   {/* Caption / message */}
                   {video.caption ? (
-                    <div className="bg-zinc-50 border border-zinc-150 rounded-xl p-2.5 flex items-start gap-2 text-zinc-600 text-xs">
-                      <MessageSquare className="w-3.5 h-3.5 mt-0.5 text-zinc-400 shrink-0" />
+                    <div className="rounded-xl p-2.5 flex items-start gap-2 text-xs" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--muted-foreground)" }}>
+                      <MessageSquare className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
                       <p className="leading-normal line-clamp-3">{video.caption}</p>
                     </div>
                   ) : (
-                    <div className="text-[11px] text-zinc-400 italic">No caption provided</div>
+                    <div className="text-[11px] italic" style={{ color: "var(--muted-foreground)" }}>No caption provided</div>
                   )}
                 </div>
 
                 {/* Footer action bar */}
-                <div className="pt-3 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-400 font-semibold">
+                <div className="pt-3 flex items-center justify-between text-[11px] font-semibold" style={{ borderTop: "1px solid var(--border)", color: "var(--muted-foreground)" }}>
                   <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 shrink-0" />
+                    <Calendar className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
                     <span>
                       {new Date(video.createdAt).toLocaleDateString("en-IN", {
                         day: "numeric", month: "short", year: "numeric"
@@ -228,7 +231,9 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
                     onClick={() => handleDelete(video.id)}
                     disabled={deletingId === video.id}
                     variant="outline"
-                    className="h-8 px-2.5 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 border-zinc-200 text-zinc-500 rounded-lg text-xs"
+                    className="h-8 px-2.5 rounded-lg text-xs" style={{ background: "var(--secondary-background)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(217,37,42,0.12)"; e.currentTarget.style.color = "#D9252A"; e.currentTarget.style.borderColor = "rgba(217,37,42,0.25)" }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "var(--secondary-background)"; e.currentTarget.style.color = "var(--muted-foreground)"; e.currentTarget.style.borderColor = "var(--border)" }}
                   >
                     {deletingId === video.id ? (
                       <Loader size="sm" variant="bars" />

@@ -33,34 +33,35 @@ function StudentTable({ students }: { students: StudentUser[] }) {
     <div>
       <div className="flex items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
           <Input
             placeholder="Search students..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 border-zinc-200"
+            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+            className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
           />
         </div>
-        <span className="text-xs text-zinc-500">{filtered.length} students</span>
+        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{filtered.length} students</span>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-zinc-100 bg-zinc-50">
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Name</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Email</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Enrolled Courses</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Last Login</th>
+            <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Name</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Email</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Enrolled Courses</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Last Login</th>
             </tr>
           </thead>
           <tbody>
             {paged.map((s) => (
-              <tr key={s.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-zinc-900">{s.name || "Unnamed"}</td>
-                <td className="px-4 py-3 text-sm text-zinc-500">{s.email}</td>
-                <td className="px-4 py-3 text-sm text-zinc-700">{s.enrolledCourses}</td>
-                <td className="px-4 py-3 text-sm text-zinc-500">{s.lastLogin}</td>
+              <tr key={s.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                <td className="px-4 py-3 text-sm font-medium" style={{ color: "var(--foreground)" }}>{s.name || "Unnamed"}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{s.email}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--foreground)" }}>{s.enrolledCourses}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{s.lastLogin}</td>
               </tr>
             ))}
           </tbody>
@@ -68,19 +69,21 @@ function StudentTable({ students }: { students: StudentUser[] }) {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-100">
+        <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: "1px solid var(--border)" }}>
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+            className="text-xs disabled:opacity-40"
+            style={{ color: "var(--muted-foreground)" }}
           >
             Previous
           </button>
-          <span className="text-xs text-zinc-500">Page {page} of {totalPages}</span>
+          <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+            className="text-xs disabled:opacity-40"
+            style={{ color: "var(--muted-foreground)" }}
           >
             Next
           </button>
@@ -133,18 +136,22 @@ function InstructorTable({ instructors, orgId }: { instructors: InstructorUser[]
     <div>
       <div className="flex items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
           <Input
             placeholder="Search instructors..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 border-zinc-200"
+            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+            className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
           />
         </div>
-        <span className="text-xs text-zinc-500">{filtered.length} instructors</span>
+        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{filtered.length} instructors</span>
         <Button
           onClick={() => setShowAdd(!showAdd)}
-          className="bg-zinc-900 text-white hover:bg-zinc-800 text-sm"
+          style={{ background: "#D9252A", color: "#FFFFFF" }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#EF4444")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#D9252A")}
+          className="text-sm"
         >
           {showAdd ? <X className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
           {showAdd ? "Cancel" : "Add Instructor"}
@@ -152,25 +159,29 @@ function InstructorTable({ instructors, orgId }: { instructors: InstructorUser[]
       </div>
 
       {showAdd && (
-        <Card className="border-zinc-200 shadow-sm p-4 mb-4 bg-zinc-50">
+        <Card className="p-4 mb-4" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <div className="flex flex-col sm:flex-row gap-3">
             <Input
               placeholder="Name"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="border-zinc-200 flex-1"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+              className="flex-1 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
             />
             <Input
               placeholder="Email"
               type="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="border-zinc-200 flex-1"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+              className="flex-1 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
             />
             <Button
               onClick={handleAdd}
               disabled={adding || !newEmail.trim()}
-              className="bg-zinc-900 text-white hover:bg-zinc-800"
+              style={{ background: "#D9252A", color: "#FFFFFF" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#EF4444")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#D9252A")}
             >
               {adding ? "Adding..." : "Add"}
             </Button>
@@ -181,22 +192,22 @@ function InstructorTable({ instructors, orgId }: { instructors: InstructorUser[]
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-zinc-100 bg-zinc-50">
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Name</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Email</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Courses Created</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Students</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Joined</th>
+            <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Name</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Email</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Courses Created</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Students</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Joined</th>
             </tr>
           </thead>
           <tbody>
             {paged.map((inst) => (
-              <tr key={inst.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-zinc-900">{inst.name || "Unnamed"}</td>
-                <td className="px-4 py-3 text-sm text-zinc-500">{inst.email}</td>
-                <td className="px-4 py-3 text-sm text-zinc-700">{inst.coursesCreated}</td>
-                <td className="px-4 py-3 text-sm text-zinc-700">{inst.studentsCount}</td>
-                <td className="px-4 py-3 text-sm text-zinc-500">{inst.joinedDate}</td>
+              <tr key={inst.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                <td className="px-4 py-3 text-sm font-medium" style={{ color: "var(--foreground)" }}>{inst.name || "Unnamed"}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{inst.email}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--foreground)" }}>{inst.coursesCreated}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--foreground)" }}>{inst.studentsCount}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{inst.joinedDate}</td>
               </tr>
             ))}
           </tbody>
@@ -204,19 +215,21 @@ function InstructorTable({ instructors, orgId }: { instructors: InstructorUser[]
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-100">
+        <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: "1px solid var(--border)" }}>
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+            className="text-xs disabled:opacity-40"
+            style={{ color: "var(--muted-foreground)" }}
           >
             Previous
           </button>
-          <span className="text-xs text-zinc-500">Page {page} of {totalPages}</span>
+          <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="text-xs text-zinc-500 disabled:opacity-40 hover:text-zinc-900"
+            className="text-xs disabled:opacity-40"
+            style={{ color: "var(--muted-foreground)" }}
           >
             Next
           </button>
@@ -232,30 +245,28 @@ export function UsersPageClient({ data, orgId }: Props) {
   return (
     <div className="container-page space-y-6">
       <div className="flex items-center gap-2">
-        <Users className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Users</h1>
+        <Users className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Users</h1>
       </div>
 
-      <div className="flex gap-1 bg-zinc-100 rounded-lg p-0.5 w-fit">
+      <div className="flex gap-1 rounded-lg p-0.5 w-fit" style={{ background: "var(--secondary-background)" }}>
         <button
           onClick={() => setTab("students")}
-          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            tab === "students" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
-          }`}
+          className="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+          style={tab === "students" ? { background: "var(--card)", color: "var(--foreground)", boxShadow: "none" } : { background: "transparent", color: "var(--muted-foreground)" }}
         >
           Students ({data.totalStudents})
         </button>
         <button
           onClick={() => setTab("instructors")}
-          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-            tab === "instructors" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
-          }`}
+          className="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+          style={tab === "instructors" ? { background: "var(--card)", color: "var(--foreground)", boxShadow: "none" } : { background: "transparent", color: "var(--muted-foreground)" }}
         >
           Instructors ({data.totalInstructors})
         </button>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm overflow-hidden">
+      <Card className="overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         {tab === "students" ? (
           <StudentTable students={data.students} />
         ) : (

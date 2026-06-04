@@ -25,7 +25,7 @@ export default function ReportsLayout({ children }: { children: React.ReactNode 
   return (
     <div className="flex gap-6">
       <nav className="w-[200px] shrink-0 space-y-1 hidden lg:block">
-        <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3 px-1">
+        <div className="text-[10px] font-bold uppercase tracking-widest mb-3 px-1" style={{ color: "var(--muted-foreground)" }}>
           Reports
         </div>
         {reportLinks.map((link) => {
@@ -35,12 +35,23 @@ export default function ReportsLayout({ children }: { children: React.ReactNode 
             <Link
               key={link.href}
               href={link.href}
-              className={cn(
-                "flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                active
-                  ? "bg-zinc-900 text-white"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-              )}
+              className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors"
+              style={{
+                background: active ? "#D9252A" : "transparent",
+                color: active ? "#FFFFFF" : "var(--muted-foreground)",
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = "rgba(217,37,42,0.08)";
+                  e.currentTarget.style.color = "#D9252A";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "var(--muted-foreground)";
+                }
+              }}
             >
               <Icon className="w-4 h-4 shrink-0" />
               <span className="truncate">{link.label}</span>
@@ -55,7 +66,10 @@ export default function ReportsLayout({ children }: { children: React.ReactNode 
               const csvLinks = document.querySelectorAll("[data-export-csv]");
               csvLinks.forEach((el) => (el as HTMLElement).click());
             }}
-            className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg transition-colors"
+            style={{ background: "#D9252A", color: "#FFFFFF" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#EF4444" }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#D9252A" }}
           >
             <DownloadCloud className="w-4 h-4" />
             Training Progress

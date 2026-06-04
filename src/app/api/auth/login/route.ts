@@ -5,21 +5,10 @@ import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import type { Role } from "@prisma/client";
+import { ROLE_COOKIE, ROLE_REDIRECT } from "@/lib/auth";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules.
 export const runtime = "nodejs";
-
-const ROLE_COOKIE: Record<Role, string> = {
-  STUDENT: "student_token",
-  INSTRUCTOR: "instructor_token",
-  ADMIN: "admin_token",
-};
-
-const ROLE_REDIRECT: Record<Role, string> = {
-  STUDENT: "/student",
-  INSTRUCTOR: "/instructor",
-  ADMIN: "/admin",
-};
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +16,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "JWT_SECRET not configured" }, { status: 500 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { email, password, loginCode, requestedRole } = await req.json();
     const expectedRole = typeof requestedRole === "string" ? requestedRole.toUpperCase() as Role : null;
 
@@ -73,11 +61,10 @@ export async function POST(req: Request) {
       user.memberships[0];
 
     if (!primaryMembership) {
-      return NextResponse.json({ error: "No organization assigned" }, { status: 403 });
-    }
-
-    if (expectedRole && primaryMembership.role !== expectedRole) {
-      return NextResponse.json({ error: `This account is not authorized for ${expectedRole.toLowerCase()} access` }, { status: 403 });
+      if (user.memberships.length === 0) {
+        return NextResponse.json({ error: "Your account is awaiting administrator approval." }, { status: 403 });
+      }
+      return NextResponse.json({ error: `This account is not authorized for ${expectedRole!.toLowerCase()} access` }, { status: 403 });
     }
 
     // ── 4. Validate login code ─────────────────────────────────────────────
@@ -127,6 +114,7 @@ export async function POST(req: Request) {
 
     // ── 8. Issue JWT (with sessionToken embedded in payload) ───────────────
     const org = primaryMembership.organization;
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
     const token = await new SignJWT({
       userId: user.id,

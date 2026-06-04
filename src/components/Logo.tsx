@@ -1,33 +1,39 @@
 "use client";
 
-import Link from 'next/link';
-import TrueFocus from './TrueFocus';
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  color?: string;
-  accentColor?: string;
   href?: string;
+  /** Height of the logo image (default h-9) */
+  size?: "sm" | "md" | "lg";
 }
 
-export const Logo: React.FC<LogoProps> = ({ className = "", color, accentColor = "#5227FF", href }) => {
-  return (
-    <Link href={href || "/"} className={`inline-block ${className}`}>
-      <div 
-        className="font-bold text-xl tracking-tight transition-colors duration-300"
-        style={color ? { color } : undefined}
-      >
-        <TrueFocus 
-          sentence="OG LMS"
-          manualMode={false}
-          blurAmount={3}
-          borderColor={accentColor}
-          glowColor={accentColor + "99"}
-          animationDuration={1}
-          pauseBetweenAnimations={1}
-          fontSize="1.25rem"
-        />
-      </div>
-    </Link>
-  );
+const sizeClasses = {
+  sm: "h-7",
+  md: "h-9",
+  lg: "h-11",
 };
+
+export function Logo({ className = "", href, size = "md" }: LogoProps) {
+  const img = (
+    <img
+      src="/logo.png"
+      alt=""
+      className={cn(sizeClasses[size], "w-auto object-contain")}
+    />
+  );
+
+  const content = <span className="lms-logo-mark">{img}</span>;
+
+  if (href) {
+    return (
+      <Link href={href} className={cn("inline-flex shrink-0", className)}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <span className={cn("inline-flex shrink-0", className)}>{content}</span>;
+}

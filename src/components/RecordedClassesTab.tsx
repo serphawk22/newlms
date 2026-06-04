@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useRef } from "react";
 import {
-  MonitorPlay, Loader2, Play, Pause, Calendar,
+  MonitorPlay, Play, Pause, Calendar,
   Clock, Video, RefreshCw,
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 interface Recording {
   id: string;
@@ -179,7 +180,7 @@ export function RecordedClassesTab({ courseId, isInstructor }: Props) {
       {/* States */}
       {loading && (
         <div className="flex items-center justify-center py-20 text-slate-400 gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+          <RingLoader size="md" />
           <span>Loading recordings…</span>
         </div>
       )}

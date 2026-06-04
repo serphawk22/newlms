@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
 import { StudentCertificatesClient } from "@/components/StudentCertificatesClient";
-import { Award } from "lucide-react";
+
 
 export const dynamic = "force-dynamic";
 
@@ -64,15 +64,12 @@ export default async function StudentCertificatesPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div style={{ background: "var(--background)", minHeight: "100vh", padding: "1.5rem" }}>
       {/* Header */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shadow">
-          <Award className="w-5 h-5 text-white" />
-        </div>
+      <div style={{ marginBottom: "1.5rem" }}>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">My Certificates</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>My Certificates</h1>
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
             {issuedCertificates.length === 0 && eligibleCourses.length === 0
               ? "Complete courses to earn certificates"
               : `${issuedCertificates.length} certificate${issuedCertificates.length !== 1 ? "s" : ""} earned`}
@@ -80,7 +77,7 @@ export default async function StudentCertificatesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "1rem", padding: "1.5rem" }}>
         <StudentCertificatesClient
           certificates={serialized}
           studentName={user?.name ?? "Student"}

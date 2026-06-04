@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Edit2, Trash2, AlertCircle, Loader2, CheckCircle2, MessageSquare } from "lucide-react";
+import { Star, Edit2, Trash2, AlertCircle, CheckCircle2, MessageSquare } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 /* ─── Types ─────────────────────────────────────────────────────────────────── */
 interface ReviewStudent {
@@ -214,7 +215,7 @@ export function CourseReviewSection({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16 text-slate-400 gap-2">
-        <Loader2 className="w-5 h-5 animate-spin" /> Loading reviews…
+        <RingLoader size="sm" className="inline-flex" /> Loading reviews…
       </div>
     );
   }
@@ -312,7 +313,7 @@ export function CourseReviewSection({
                 disabled={submitting}
                 className="bg-slate-900 hover:bg-slate-800 text-white"
               >
-                {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting…</> : "Submit Review"}
+                {submitting ? <><RingLoader size="sm" className="inline-flex mr-2" /> Submitting…</> : "Submit Review"}
               </Button>
             </form>
           </CardContent>
@@ -384,7 +385,7 @@ export function CourseReviewSection({
                           onClick={() => handleDelete(review.id)}
                           disabled={isDeleting}
                         >
-                          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                          {isDeleting ? <RingLoader size="sm" className="inline-flex" /> : <Trash2 className="w-4 h-4" />}
                         </Button>
                       </div>
                     )}
@@ -407,7 +408,7 @@ export function CourseReviewSection({
                           onClick={() => handleEdit(review.id)}
                           disabled={editSubmitting}
                         >
-                          {editSubmitting ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                          {editSubmitting ? <RingLoader size="sm" className="inline-flex mr-1" /> : null}
                           Save Changes
                         </Button>
                         <Button

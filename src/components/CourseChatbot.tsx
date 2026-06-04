@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
-  MessageCircle, X, Send, Bot, User, Loader2, AlertCircle,
+  MessageCircle, X, Send, Bot, User, AlertCircle,
   Sparkles, PlusCircle, Paperclip, FileText, ImageIcon, Trash2,
   ChevronLeft, ChevronRight, MessageSquare, Mic, MicOff,
   Volume2, VolumeX,
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 
 // ---------- Types ----------
 interface Message {
@@ -424,26 +425,25 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
       <button
         onClick={() => setIsOpen((p) => !p)}
         aria-label="Toggle AI Tutor"
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center bg-gradient-to-br from-violet-600 to-indigo-600 text-white w-12 h-12 rounded-full shadow-2xl hover:from-violet-500 hover:to-indigo-500 transition-all duration-300"
-        style={{ boxShadow: "0 8px 32px rgba(109,40,217,0.45)" }}
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-12 w-12 rounded-full border transition-all"
+        style={{
+          background: "#343A40",
+          borderColor: "#D9252A",
+          color: "#E9ECEF",
+        }}
       >
-        {isOpen
-          ? <X className="w-5 h-5" />
-          : <>
-              <Bot className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
-            </>}
+        {isOpen ? <X className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
       </button>
-
       {/* Main chat window */}
       {isOpen && (
         <div
-          className="fixed bottom-24 right-6 z-50 flex rounded-2xl overflow-hidden shadow-2xl"
+          className="fixed bottom-24 right-6 z-50 flex rounded-2xl overflow-hidden"
           style={{
             width: sidebarOpen ? "680px" : "400px",
             height: "580px",
-            background: "linear-gradient(145deg,#1e1b4b 0%,#312e81 100%)",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.3)",
+            background: "#1A1D20",
+            border: "1px solid #D9252A",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
             animation: "chatSlideIn 0.25s cubic-bezier(0.34,1.56,0.64,1)",
             transition: "width 0.3s ease",
           }}
@@ -456,7 +456,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                 <span className="text-white/80 text-xs font-bold uppercase tracking-widest">History</span>
                 <button
                   onClick={startNewChat}
-                  className="flex items-center gap-1 text-[11px] bg-violet-600/60 hover:bg-violet-500/80 text-white px-2 py-1 rounded-md transition-colors"
+                  className="flex items-center gap-1 text-[11px] bg-black-600/60 hover:bg-red-500/80 text-white px-2 py-1 rounded-md transition-colors"
                 >
                   <PlusCircle className="w-3 h-3" /> New Chat
                 </button>
@@ -476,7 +476,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                       onClick={() => loadChat(chat.id)}
                       className={`group flex items-center justify-between px-3 py-2.5 mx-1 my-0.5 rounded-lg cursor-pointer transition-colors ${
                         chat.id === chatId
-                          ? "bg-violet-600/50 text-white"
+                          ? "bg-black-600/50 text-white"
                           : "text-white/60 hover:bg-white/5 hover:text-white/90"
                       }`}
                     >
@@ -498,21 +498,27 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
           )}
 
           {/* ======= MAIN CHAT PANEL ======= */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 bg-[#161616]">
             {/* Header */}
-            <div className="flex items-center gap-2 px-3 py-3 border-b border-white/10 bg-white/5 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-3 border-b border-[#2A2A2A] bg-[#0A0A0A] shrink-0">
               <button
                 onClick={() => setSidebarOpen((p) => !p)}
                 className="text-white/40 hover:text-white/80 transition-colors"
               >
                 {sidebarOpen ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
               </button>
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-400 flex items-center justify-center">
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center border"
+                style={{
+                      background: "#343A40",
+                      borderColor: "#D9252A",
+                    }}
+>
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-bold text-sm leading-tight">AI Course Tutor</p>
-                <p className="text-violet-300 text-[11px] truncate">{courseTitle}</p>
+                <p className="text-[11px] truncate" style={{ color: "#ADB5BD" }}>{courseTitle}</p>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-white/40 hover:text-white/80 transition-colors">
                 <X className="w-4 h-4" />
@@ -526,8 +532,8 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                   {/* Avatar */}
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-1 ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-blue-500 to-cyan-500"
-                      : "bg-gradient-to-br from-violet-500 to-indigo-500"
+                      ? "bg-gradient-to-br from-red-500 to-red-300"
+                      : "bg-gradient-to-br from-red-500 to-red-200"
                   }`}>
                     {msg.role === "user"
                       ? <User className="w-3 h-3 text-white" />
@@ -538,7 +544,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                   <div className={`relative max-w-[80%] rounded-2xl text-sm leading-relaxed space-y-2 group/bubble ${
                     msg.role === "user"
                       ? "bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-tr-sm px-3 py-2"
-                      : "bg-white/10 text-white/90 border border-white/10 rounded-tl-sm px-3 py-2"
+                      : "bg-[#2B3035] text-[#E9ECEF] border border-[#D9252A] rounded-tl-sm px-3 py-2"
                   }`}>
                     {/* File preview if exists */}
                     {msg.filePreview && msg.fileType?.startsWith("image/") && (
@@ -550,8 +556,8 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                     )}
                     {msg.filePreview && !msg.fileType?.startsWith("image/") && (
                       <div className="flex items-center gap-2 bg-white/10 rounded-lg px-2 py-1.5 border border-white/10">
-                        <FileText className="w-3.5 h-3.5 text-violet-300 shrink-0" />
-                        <span className="text-[11px] text-violet-200 truncate">{msg.fileName}</span>
+                        <FileText className="w-3.5 h-3.5 text-[#D9252A] shrink-0" />
+                        <span className="text-[11px] text-red-200 truncate">{msg.fileName}</span>
                       </div>
                     )}
                     {/* Text content */}
@@ -565,7 +571,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                         title={speakingMsgIdx === idx ? "Stop reading" : "Read aloud"}
                         className={`absolute -bottom-2 right-2 flex items-center justify-center w-5 h-5 rounded-full transition-all duration-200 opacity-0 group-hover/bubble:opacity-100 focus:opacity-100 ${
                           speakingMsgIdx === idx
-                            ? "bg-violet-500 text-white shadow-lg shadow-violet-500/40"
+                            ? "bg-[#D9252A] text-white"
                             : "bg-white/15 text-white/50 hover:bg-white/25 hover:text-white"
                         }`}
                       >
@@ -581,12 +587,18 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
               {/* Loading */}
               {isLoading && (
                 <div className="flex gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center shrink-0">
+                  <div
+                       className="w-6 h-6 rounded-full flex items-center justify-center border"
+                       style={{
+                        background: "#343A40",
+                        borderColor: "#D9252A",
+                          }}
+                  >
                     <Bot className="w-3 h-3 text-white" />
                   </div>
                   <div className="bg-white/10 border border-white/10 px-3 py-2 rounded-2xl rounded-tl-sm flex items-center gap-2">
-                    <Loader2 className="w-3.5 h-3.5 text-violet-300 animate-spin" />
-                    <span className="text-xs text-violet-300">Thinking…</span>
+                    <RingLoader size="sm" className="inline-flex" />
+                    <span className="text-xs" style={{ color: "#ADB5BD" }}>Thinking…</span>
                   </div>
                 </div>
               )}
@@ -603,15 +615,21 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
             </div>
 
             {/* Input area */}
-            <div className="shrink-0 p-3 border-t border-white/10 bg-white/5 space-y-2">
+            <div className="shrink-0 p-3 border-t border-[#2A2A2A] bg-[#0A0A0A] space-y-2">
               {/* File preview above input */}
               {attachedFile && filePreviewUrl && (
-                <div className="flex items-center gap-2 bg-white/10 border border-white/15 rounded-xl px-3 py-2">
+                <div
+                    className="flex items-center gap-2 rounded-xl px-3 py-2"
+                    style={{
+                       background: "#2B3035",
+                      border: "1px solid #495057",
+                      }}
+                >
                   {attachedFile.type.startsWith("image/") ? (
                     <img src={filePreviewUrl} alt="preview" className="w-10 h-10 rounded-md object-cover border border-white/20 shrink-0" />
                   ) : (
-                    <div className="w-10 h-10 rounded-md bg-violet-800/60 flex items-center justify-center border border-white/20 shrink-0">
-                      <FileText className="w-5 h-5 text-violet-300" />
+                    <div className="w-10 h-10 rounded-md" style={{ background: "#343A40" }}>
+                      <FileText className="w-5 h-5 text-[#ADB5BD]" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -642,16 +660,16 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
 
               {/* Text input row */}
               <div
-                className={`flex gap-2 items-end rounded-xl border px-3 py-2 transition-all duration-200 ${
-                  isListening
-                    ? "bg-red-500/10 border-red-500/40 focus-within:border-red-400/60"
-                    : "bg-white/10 border-white/15 focus-within:border-violet-400/60"
-                }`}
+                className="flex gap-2 items-end rounded-xl px-3 py-2"
+                style={{
+                  background: "#2B3035",
+                  border: "1px solid #495057",
+                }}
               >
                 {/* File attach button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-white/40 hover:text-violet-300 transition-colors mb-0.5 shrink-0"
+                  className="text-white/40 hover:text-red-400 transition-colors mb-0.5 shrink-0"
                   title="Attach file"
                   aria-label="Attach file"
                 >
@@ -688,7 +706,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                     className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isListening
                         ? "bg-red-500 hover:bg-red-400 mic-pulse"
-                        : "text-white/40 hover:text-violet-300 hover:bg-white/10"
+                        : "text-white/40 hover:text-[#D9252A] hover:bg-white/10"
                     }`}
                   >
                     {isListening
@@ -701,7 +719,11 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                   onClick={sendMessage}
                   disabled={isLoading || (!input.trim() && !attachedFile)}
                   aria-label="Send message"
-                  className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed hover:from-violet-400 hover:to-indigo-400 transition-all"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  style={{
+                    background: "#343A40",
+                    border: "1px solid #D9252A",
+                  }}
                 >
                   <Send className="w-3 h-3 text-white" />
                 </button>

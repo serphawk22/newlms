@@ -7,195 +7,40 @@ import { Mail, Lock, Eye, EyeOff, Key } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BarsLoader from "@/components/ui/bars-loader";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 } as const;
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: "easeOut" as const },
+    transition: { duration: 0.35, ease: "easeOut" as const },
   },
 } as const;
 
-function IllustrationPanel() {
-  const circleCircumference = 2 * Math.PI * 36;
-  const progressPercent = 84;
-  const strokeDashoffset =
-    circleCircumference * (1 - progressPercent / 100);
-
-  const floatingDots = [
-    { cx: "15%", cy: "20%", r: 3, delay: 0 },
-    { cx: "85%", cy: "25%", r: 2, delay: 0.5 },
-    { cx: "20%", cy: "75%", r: 2.5, delay: 1 },
-    { cx: "80%", cy: "70%", r: 3, delay: 1.5 },
-    { cx: "50%", cy: "10%", r: 2, delay: 0.8 },
-    { cx: "10%", cy: "50%", r: 1.5, delay: 2 },
-    { cx: "90%", cy: "50%", r: 2.5, delay: 1.2 },
-    { cx: "35%", cy: "88%", r: 2, delay: 0.3 },
-    { cx: "65%", cy: "12%", r: 1.5, delay: 1.8 },
-  ];
-
-  return (
-    <div className="relative w-full h-full bg-green-50 rounded-2xl flex flex-col items-center justify-center overflow-hidden">
-      <svg
-        className="absolute inset-0 w-full h-full"
-        viewBox="0 0 400 500"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <circle
-          cx="200"
-          cy="250"
-          r="160"
-          fill="none"
-          stroke="#d9e6d9"
-          strokeWidth="1"
-          strokeDasharray="8 6"
-        />
-        <circle
-          cx="200"
-          cy="250"
-          r="120"
-          fill="none"
-          stroke="#d9e6d9"
-          strokeWidth="0.5"
-          strokeDasharray="4 8"
-        />
-        {floatingDots.map((dot, i) => (
-          <motion.circle
-            key={i}
-            cx={dot.cx}
-            cy={dot.cy}
-            r={dot.r}
-            fill="#d9e6d9"
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: [0.4, 0.8, 0.4],
-              y: [0, -6, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: dot.delay,
-            }}
-          />
-        ))}
-      </svg>
-
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 0.5,
-        }}
-        className="absolute top-[18%] right-[15%] w-10 h-10 rounded-full bg-zinc-100 border-2 border-zinc-200 flex items-center justify-center text-xs font-medium text-zinc-700 shadow-sm z-10"
-      >
-        VJ
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1.5,
-        }}
-        className="absolute bottom-[25%] left-[12%] w-10 h-10 rounded-full bg-zinc-100 border-2 border-zinc-200 flex items-center justify-center text-xs font-medium text-zinc-700 shadow-sm z-10"
-      >
-        ST
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
-        className="relative z-10 bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-green-100 p-6 w-56"
-      >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-zinc-900">OG LMS</h3>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-semibold">
-            Learning
-          </span>
-        </div>
-
-        <p className="text-xs text-zinc-500 mb-4">Active Courses: 5</p>
-
-        <div className="flex items-center gap-3">
-          <div className="relative w-16 h-16 shrink-0">
-            <svg className="w-16 h-16 -rotate-90" viewBox="0 0 80 80">
-              <circle
-                cx="40"
-                cy="40"
-                r="36"
-                fill="none"
-                stroke="#e4e4e7"
-                strokeWidth="4"
-              />
-              <motion.circle
-                cx="40"
-                cy="40"
-                r="36"
-                fill="none"
-                stroke="#18181b"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeDasharray={circleCircumference}
-                initial={{ strokeDashoffset: circleCircumference }}
-                animate={{ strokeDashoffset }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
-              />
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-zinc-900">
-              {progressPercent}%
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] text-zinc-500 leading-tight">
-              Overall progress
-            </p>
-            <p className="text-[11px] font-medium text-zinc-900">Keep going!</p>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-        className="absolute bottom-[12%] text-center"
-      >
-        <p className="text-xs text-zinc-400">
-          Learn smarter and achieve more
-          <br />
-          <span className="font-semibold text-zinc-600">with OG LMS</span>
-        </p>
-        <div className="flex items-center justify-center gap-1.5 mt-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-900" />
-        </div>
-      </motion.div>
-    </div>
-  );
+function getSavedStudentEmail() {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("student-remember-email") ?? "";
 }
 
 export default function StudentLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [savedEmail] = useState(getSavedStudentEmail);
+  const [rememberMe, setRememberMe] = useState(() => Boolean(getSavedStudentEmail()));
 
-  // Clear stale error params from URL on mount
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorParam = params.get("error");
+    if (errorParam) {
+      setError(errorParam);
+    }
     if (window.location.search) {
       window.history.replaceState({}, "", window.location.pathname);
     }
@@ -209,9 +54,13 @@ export default function StudentLoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const loginCode = (formData.get("loginCode") as string)
-      ?.trim()
-      .toUpperCase();
+    const loginCode = (formData.get("loginCode") as string)?.trim().toUpperCase();
+
+    if (rememberMe) {
+      localStorage.setItem("student-remember-email", email);
+    } else {
+      localStorage.removeItem("student-remember-email");
+    }
 
     if (!loginCode) {
       setError("Login Code is required.");
@@ -229,186 +78,188 @@ export default function StudentLoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.error || "Login failed. Please check your credentials."
-        );
+        throw new Error(data.error || "Login failed. Please check your credentials.");
       }
 
-      // CRITICAL: Verify role is STUDENT before allowing access
       if (data.role !== "STUDENT") {
-        setError("This login is for students only. Please use the correct login page for your role.");
+        setError(
+          "This login is for students only. Please use the correct login page for your role."
+        );
         setLoading(false);
         return;
       }
 
       setLoading(false);
-      // Force full server navigation to ensure the auth cookie is sent with the request
       window.location.href = data.redirect ?? "/student";
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(String(err));
-      }
+      setError(err instanceof Error ? err.message : String(err));
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border border-zinc-100 overflow-hidden flex flex-col md:flex-row min-h-[600px]"
-      >
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12"
-        >
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="w-full max-w-sm"
+    <AuthPageShell variant="student" logoHref="/">
+      <motion.div variants={containerVariants} initial="hidden" animate="visible">
+        <motion.div variants={itemVariants}>
+          <h1 className="text-2xl font-medium tracking-tight" style={{ color: "var(--foreground)" }}>
+            Sign in
+          </h1>
+          <p className="text-sm mt-1.5" style={{ color: "var(--muted-foreground)" }}>
+            Access your courses, assignments, and live classes
+          </p>
+        </motion.div>
+
+        <motion.div variants={itemVariants} className="mt-6">
+          <button
+            type="button"
+            onClick={() => {
+              window.location.href = "/api/auth/google?role=STUDENT&intent=login";
+            }}
+            className="w-full h-11 rounded-lg text-sm font-medium flex items-center justify-center gap-2 btn-secondary"
           >
-            <motion.div variants={itemVariants}>
-              <h1 className="text-4xl font-bold text-zinc-900">
-                Welcome back!
-              </h1>
-              <p className="text-zinc-500 text-sm mt-2 leading-relaxed">
-                Access your courses, assignments and live classes with OG LMS
-              </p>
-            </motion.div>
+            <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+            </svg>
+            Continue with Google
+          </button>
+        </motion.div>
 
-            <form onSubmit={handleLogin} className="mt-8 space-y-4">
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-red-500 text-sm"
-                >
-                  {error}
-                </motion.div>
-              )}
+        <motion.div variants={itemVariants} className="relative flex items-center justify-center mt-5 mb-1">
+          <div className="border-t w-full" style={{ borderColor: "var(--border)" }}></div>
+          <span className="absolute px-3 text-xs uppercase" style={{ color: "var(--muted-foreground)", backgroundColor: "var(--card)" }}>
+            Or continue with email
+          </span>
+        </motion.div>
 
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <Label htmlFor="student-email" className="sr-only">
-                  Email
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <Input
-                    id="student-email"
-                    name="email"
-                    type="email"
-                    placeholder="Email address"
-                    required
-                    autoComplete="email"
-                    className="pl-12 pr-5 h-12 bg-white border-zinc-200 rounded-full text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-0 focus:outline-none transition-all duration-200 ease-in-out"
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <Label htmlFor="student-password" className="sr-only">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <Input
-                    id="student-password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    required
-                    autoComplete="current-password"
-                    className="pl-12 pr-12 h-12 bg-white border-zinc-200 rounded-full text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-0 focus:outline-none transition-all duration-200 ease-in-out"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="space-y-1.5">
-                <Label htmlFor="student-loginCode" className="sr-only">
-                  Login Code
-                </Label>
-                <div className="relative">
-                  <Key className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <Input
-                    id="student-loginCode"
-                    name="loginCode"
-                    type="text"
-                    placeholder="Login code (e.g. STU4839)"
-                    required
-                    maxLength={10}
-                    className="pl-12 pr-5 h-12 bg-white border-zinc-200 rounded-full text-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-0 focus:outline-none transition-all duration-200 ease-in-out uppercase tracking-widest placeholder:normal-case placeholder:tracking-normal"
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="flex justify-end">
-                <button
-                  type="button"
-                  className="text-zinc-500 text-sm hover:text-zinc-900 transition-colors duration-200"
-                >
-                  Forgot Password?
-                </button>
-              </motion.div>
-
-              <motion.div variants={itemVariants}>
-                <motion.button
-                  type="submit"
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full h-12 bg-zinc-900 text-white rounded-full text-sm font-medium hover:bg-zinc-700 transition-all duration-200 ease-in-out flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  disabled={loading}
-                >
-                  {loading && (
-                    <BarsLoader size="sm" />
-                  )}
-                  {loading ? "Signing in..." : "Login"}
-                </motion.button>
-              </motion.div>
-            </form>
-
-
+        <form onSubmit={handleLogin} className="mt-7 space-y-4">
+          {error && (
             <motion.p
               variants={itemVariants}
-              className="mt-6 text-center text-sm text-zinc-500"
+              className="text-sm px-3 py-2 rounded-lg"
+              style={{
+                color: "var(--accent)",
+                background: "color-mix(in srgb, var(--accent) 10%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--accent) 25%, transparent)",
+              }}
             >
-              Not a member?{" "}
-              <Link
-                href="/student/signup"
-                className="font-medium text-zinc-900 hover:underline"
-              >
-                Register now
-              </Link>
+              {error}
             </motion.p>
-          </motion.div>
-        </motion.div>
+          )}
 
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="hidden md:block w-1/2 p-6"
-        >
-          <IllustrationPanel />
-        </motion.div>
+          <motion.div variants={itemVariants} className="space-y-1.5">
+            <Label htmlFor="student-email">Email</Label>
+            <div className="relative">
+              <Mail
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                style={{ color: "var(--muted-foreground)" }}
+              />
+              <Input
+                id="student-email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+                autoComplete="email"
+                defaultValue={savedEmail}
+                key={savedEmail ? "with-email" : "empty"}
+                className="pl-10 h-11 rounded-lg"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
+              />
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-1.5">
+            <Label htmlFor="student-password">Password</Label>
+            <div className="relative">
+              <Lock
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                style={{ color: "var(--muted-foreground)" }}
+              />
+              <Input
+                id="student-password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete="current-password"
+                className="pl-10 pr-10 h-11 rounded-lg"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                style={{ color: "var(--muted-foreground)" }}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-1.5">
+            <Label htmlFor="student-loginCode">Login code</Label>
+            <div className="relative">
+              <Key
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                style={{ color: "var(--muted-foreground)" }}
+              />
+              <Input
+                id="student-loginCode"
+                name="loginCode"
+                type="text"
+                placeholder="e.g. STU4839"
+                required
+                maxLength={10}
+                className="pl-10 h-11 rounded-lg uppercase tracking-widest"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
+              />
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="rounded border"
+                style={{ borderColor: "var(--border)" }}
+              />
+              Remember me
+            </label>
+            <button type="button" className="hover:underline" style={{ color: "var(--foreground)" }}>
+              Forgot password?
+            </button>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-11 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 btn-primary"
+            >
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <BarsLoader size="sm" /> Signing in…
+                </span>
+              ) : (
+                "Sign in"
+              )}
+            </button>
+          </motion.div>
+        </form>
+
+        <motion.p variants={itemVariants} className="mt-6 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+          Don&apos;t have an account?{" "}
+          <Link href="/student/signup" className="font-medium hover:underline" style={{ color: "var(--foreground)" }}>
+            Create account
+          </Link>
+        </motion.p>
       </motion.div>
-    </div>
+    </AuthPageShell>
   );
 }

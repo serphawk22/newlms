@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  BookOpen, CheckCircle2, HelpCircle, Clock, ChevronRight,
+  CheckCircle2, HelpCircle, Clock, ChevronRight,
   Video, Flame, Zap, LayoutGrid, TrendingUp, Users,
   PlayCircle, ArrowRight,
 } from "lucide-react";
+import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
+import { Card } from "@/components/ui/card";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -71,27 +73,6 @@ interface Props {
   currentYear: number;
 }
 
-// ─── Course colour palette (cycles) ──────────────────────────────────────────
-const COURSE_GRADIENTS = [
-  "from-emerald-700 to-teal-600",
-  "from-purple-700 to-pink-600",
-  "from-blue-700 to-cyan-600",
-  "from-orange-600 to-amber-500",
-  "from-rose-700 to-pink-600",
-  "from-indigo-700 to-violet-600",
-  "from-green-700 to-lime-600",
-  "from-sky-700 to-blue-500",
-];
-
-const CARD_BG_GRADIENTS = [
-  "from-purple-800 to-pink-700",
-  "from-teal-700 to-emerald-600",
-  "from-green-700 to-lime-600",
-  "from-blue-700 to-sky-600",
-  "from-rose-700 to-orange-600",
-  "from-indigo-700 to-purple-600",
-];
-
 const MONTH_NAMES = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December",
@@ -108,23 +89,20 @@ function getFirstDayOfMonth(month: number, year: number) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value, icon: Icon, iconBg, iconColor,
+  label, value,
 }: {
-  label: string; value: number; icon: React.ElementType;
-  iconBg: string; iconColor: string;
+  label: string; value: number;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ease: "easeOut", duration: 0.35 }}
-      className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-5 hover:shadow-md transition-shadow"
+      style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+      className="rounded-2xl p-5 hover:shadow-sm transition-shadow"
     >
-      <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center mb-4`}>
-        <Icon className={`w-5 h-5 ${iconColor}`} />
-      </div>
-      <p className="text-2xl font-semibold text-zinc-900">{value}</p>
-      <p className="text-xs text-zinc-500 mt-0.5">{label}</p>
+      <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{value}</p>
+      <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{label}</p>
     </motion.div>
   );
 }
@@ -160,21 +138,33 @@ function StreakCalendar({
     <div>
       {/* Month nav */}
       <div className="flex items-center justify-between mb-3">
-        <button onClick={prevMonth} className="p-1 hover:bg-zinc-100 rounded-lg transition-colors">
-          <ChevronRight className="w-4 h-4 text-zinc-400 rotate-180" />
+        <button
+          onClick={prevMonth}
+          className="p-1 rounded-lg transition-colors"
+          style={{ color: "var(--muted-foreground)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--foreground)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
+        >
+          <ChevronRight className="w-4 h-4 rotate-180" />
         </button>
-        <span className="text-xs font-medium text-zinc-700">
+        <span className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>
           {MONTH_NAMES[displayMonth]} {displayYear}
         </span>
-        <button onClick={nextMonth} className="p-1 hover:bg-zinc-100 rounded-lg transition-colors">
-          <ChevronRight className="w-4 h-4 text-zinc-400" />
+        <button
+          onClick={nextMonth}
+          className="p-1 rounded-lg transition-colors"
+          style={{ color: "var(--muted-foreground)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--foreground)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
+        >
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
       {/* Day headers */}
-      <div className="grid grid-cols-7 mb-1">
+      <div className="grid grid-cols-7 mb-1 text-center">
         {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
-          <div key={d} className="text-center text-[10px] text-zinc-400 font-medium py-0.5">{d}</div>
+          <div key={d} className="text-[10px] font-semibold uppercase tracking-wider py-0.5" style={{ color: "var(--muted-foreground)" }}>{d}</div>
         ))}
       </div>
 
@@ -182,21 +172,21 @@ function StreakCalendar({
       <div className="grid grid-cols-7 gap-y-0.5">
         {days.map((day, idx) => {
           if (!day) return <div key={`empty-${idx}`} />;
-          const isToday = isCurrentMonth && day === today.getDate();
+          const isTodayDay = isCurrentMonth && day === today.getDate();
           const isActive = activeSet.has(day);
           return (
             <div key={day} className="flex items-center justify-center py-0.5">
               <div
-                className={`
-                  w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-medium
-                  ${isActive
-                    ? "bg-orange-500 text-white"
-                    : isToday
-                    ? "ring-2 ring-orange-400 text-zinc-700"
-                    : "text-zinc-400"}
-                `}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold"
+                style={
+                  isActive
+                    ? { background: "#D9252A", color: "#FFFFFF" }
+                    : isTodayDay
+                    ? { border: "2px solid #D9252A", color: "var(--foreground)" }
+                    : { color: "var(--foreground)" }
+                }
               >
-                {isActive ? "🔥" : day}
+                {day}
               </div>
             </div>
           );
@@ -204,17 +194,17 @@ function StreakCalendar({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3 text-[10px] text-zinc-500">
+      <div className="flex items-center gap-4 mt-3 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block" /> Active
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#D9252A" }} /> Active
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-zinc-200 inline-block" /> Inactive
+          <span className="w-2.5 h-2.5 rounded-full inline-block border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }} /> Inactive
         </span>
       </div>
       {currentStreak > 0 && (
-        <div className="mt-2 text-xs font-medium text-orange-500 flex items-center gap-1">
-          <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak!
+        <div className="mt-2 text-xs font-semibold" style={{ color: "#D9252A" }}>
+          {currentStreak} day streak!
         </div>
       )}
     </div>
@@ -222,14 +212,14 @@ function StreakCalendar({
 }
 
 function TrendingCourseCard({
-  course, index,
+  course,
 }: {
-  course: TrendingCourse; index: number;
+  course: TrendingCourse;
 }) {
   const [enrolling, setEnrolling] = useState(false);
   const [localStatus, setLocalStatus] = useState(course.enrollmentStatus);
   const router = useRouter();
-  const gradient = CARD_BG_GRADIENTS[index % CARD_BG_GRADIENTS.length];
+  const bannerUrl = getCourseBannerUrl(course.title);
 
   const handleEnroll = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -250,13 +240,30 @@ function TrendingCourseCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ease: "easeOut", duration: 0.4 }}
-      whileHover={{ y: -3, boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
-      className="bg-white rounded-2xl border border-zinc-100 overflow-hidden"
+      whileHover={{ y: -3 }}
+      className="rounded-2xl overflow-hidden"
+      style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
     >
-      {/* Banner */}
-      <div className={`h-36 bg-gradient-to-br ${gradient} relative flex items-end justify-end p-3`}>
-        <BookOpen className="w-10 h-10 text-white/20" />
-        <span className="absolute top-3 right-3 text-[10px] font-bold text-white bg-white/20 px-2 py-0.5 rounded-full">
+      <div className="relative h-36 overflow-hidden">
+        <img
+          src={bannerUrl}
+          alt=""
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = DEFAULT_COURSE_BANNER;
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(26,29,32,0.95), transparent 60%)",
+          }}
+        />
+        <span
+          className="absolute top-3 right-3 text-[10px] font-bold text-white px-2 py-0.5 rounded-full"
+          style={{ background: "#D9252A" }}
+        >
           NEW
         </span>
       </div>
@@ -264,10 +271,10 @@ function TrendingCourseCard({
       {/* Info */}
       <div className="p-4 space-y-3">
         <div>
-          <p className="font-semibold text-sm text-zinc-900 leading-tight line-clamp-2">{course.title}</p>
-          <p className="text-xs text-zinc-400 mt-0.5">by {course.instructorName}</p>
+          <p className="font-bold text-sm leading-tight line-clamp-2" style={{ color: "var(--foreground)" }}>{course.title}</p>
+          <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>by {course.instructorName}</p>
         </div>
-        <div className="flex items-center gap-3 text-xs text-zinc-500">
+        <div className="flex items-center gap-3 text-xs" style={{ color: "var(--muted-foreground)" }}>
           <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {course.enrollmentsCount} enrolled</span>
           <span className="flex items-center gap-1"><LayoutGrid className="w-3 h-3" /> {course.modulesCount} modules</span>
         </div>
@@ -275,26 +282,32 @@ function TrendingCourseCard({
           <>
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-zinc-500">Progress</span>
-                <span className="font-medium text-zinc-900">{course.progress}%</span>
+                <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
+                <span className="font-semibold" style={{ color: "var(--foreground)" }}>{course.progress}%</span>
               </div>
-              <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
                 <div
-                  className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${course.progress}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${course.progress}%`, background: "#D9252A" }}
                 />
               </div>
             </div>
             <button
+              type="button"
               onClick={() => router.push(`/student/courses/${course.id}`)}
-              className="w-full flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2 rounded-xl transition-colors"
+              style={{ background: "#D9252A", color: "#FFFFFF" }}
+              className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl transition-colors hover:bg-[#C21F24]"
             >
               Continue Learning <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </>
         )}
         {localStatus === "PENDING" && (
-          <button disabled className="w-full flex items-center justify-center gap-1.5 bg-amber-100 text-amber-700 text-xs font-medium py-2 rounded-xl cursor-not-allowed">
+          <button
+            disabled
+            style={{ background: "rgba(255,255,255,0.06)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }}
+            className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl cursor-not-allowed"
+          >
             <Clock className="w-3.5 h-3.5" /> Request Pending
           </button>
         )}
@@ -302,7 +315,8 @@ function TrendingCourseCard({
           <button
             onClick={handleEnroll}
             disabled={enrolling}
-            className="w-full flex items-center justify-center gap-1.5 border border-zinc-200 hover:border-zinc-300 text-zinc-700 text-xs font-medium py-2 rounded-xl transition-colors"
+            style={{ background: "var(--secondary-background)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+            className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl transition-colors hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A]"
           >
             {enrolling ? "Requesting…" : "Request to Join"}
           </button>
@@ -327,22 +341,21 @@ export function StudentDashboardClient({
   const router = useRouter();
 
   const stats = [
-    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen,      iconBg: "bg-blue-50",   iconColor: "text-blue-500" },
-    { label: "Completed Assignments",  value: completedAssignments,   icon: CheckCircle2,  iconBg: "bg-green-50",  iconColor: "text-green-500" },
-    { label: "Pending Quizzes",        value: pendingQuizzesCount,    icon: HelpCircle,    iconBg: "bg-amber-50",  iconColor: "text-amber-500" },
-    { label: "Study Sessions",         value: studySessions,          icon: Clock,         iconBg: "bg-purple-50", iconColor: "text-purple-500" },
+    { label: "Enrolled Courses",       value: enrolledCoursesCount },
+    { label: "Completed Assignments",  value: completedAssignments },
+    { label: "Pending Quizzes",        value: pendingQuizzesCount },
+    { label: "Study Sessions",         value: studySessions },
   ];
 
-  // Trending tab filter
   const sortedTrending = [...trendingCourses].sort((a, b) => {
     if (trendingTab === "popular") return b.enrollmentsCount - a.enrollmentsCount;
-    return 0; // recent and featured keep original order
+    return 0;
   });
 
   const totalPending = pendingQuizzes.length + pendingAssignments.length;
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50">
+    <div className="flex flex-col lg:flex-row min-h-screen" style={{ background: "var(--background)" }}>
       {/* ── LEFT / MAIN COLUMN ─────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 p-5 lg:p-8 space-y-6">
 
@@ -353,9 +366,11 @@ export function StudentDashboardClient({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="text-2xl font-semibold text-zinc-900">Welcome, {userName}</h1>
-            <p className="text-sm text-zinc-500 mt-0.5">
-              {orgName && <span className="text-blue-500 font-medium">{orgName}</span>}
+            <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>
+              Welcome, {userName}
+            </h1>
+            <p className="text-sm mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+              {orgName && <span className="font-semibold">{orgName}</span>}
               {orgName && " · "}
               Keep pushing your limits!
             </p>
@@ -365,9 +380,14 @@ export function StudentDashboardClient({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.35 }}
-              className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 text-xs font-semibold px-3 py-1.5 rounded-full"
+              style={{
+                background: "rgba(217,37,42,0.12)",
+                color: "#D9252A",
+                borderColor: "rgba(217,37,42,0.25)",
+              }}
+              className="flex items-center gap-1.5 border px-3 py-1 rounded-full text-xs font-bold"
             >
-              <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
+              {currentStreak} day streak
             </motion.div>
           )}
         </div>
@@ -386,29 +406,37 @@ export function StudentDashboardClient({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.4 }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <PlayCircle className="w-4 h-4 text-zinc-400" />
-              <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Continue Learning</span>
-            </div>
-            <div className="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-700 rounded-2xl p-6 flex items-center justify-between gap-4 shadow-lg">
+            <span className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: "var(--muted-foreground)" }}>Continue Learning</span>
+            <div
+              className="rounded-2xl p-6 flex items-center justify-between gap-4"
+              style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+            >
               <div className="flex-1 min-w-0">
-                <span className="text-[10px] text-emerald-200 font-medium uppercase tracking-widest flex items-center gap-1 mb-1">
-                  <PlayCircle className="w-3 h-3" /> Continue Learning
+                <span
+                  className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 mb-1"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  <PlayCircle className="w-3 h-3" style={{ color: "#D9252A" }} /> In progress
                 </span>
-                <h2 className="text-xl font-semibold text-white truncate">{continueLearningCourse.title}</h2>
+                <h2 className="text-xl font-bold truncate" style={{ color: "var(--foreground)" }}>
+                  {continueLearningCourse.title}
+                </h2>
                 <div className="flex items-center gap-3 mt-3">
-                  <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                  <div className="flex-1 rounded-full h-1.5" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
                     <div
-                      className="h-full bg-white rounded-full transition-all duration-700"
-                      style={{ width: `${continueLearningCourse.progress}%` }}
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{ width: `${continueLearningCourse.progress}%`, background: "#D9252A" }}
                     />
                   </div>
-                  <span className="text-xs text-white/80 shrink-0">{continueLearningCourse.progress}% complete</span>
+                  <span className="text-xs font-semibold shrink-0" style={{ color: "var(--muted-foreground)" }}>
+                    {continueLearningCourse.progress}% complete
+                  </span>
                 </div>
               </div>
               <Link
                 href={`/student/courses/${continueLearningCourse.id}`}
-                className="shrink-0 flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors backdrop-blur-sm border border-white/20"
+                style={{ background: "var(--primary)", color: "var(--primary-foreground)", border: "1px solid var(--border)" }}
+                className="shrink-0 flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors hover:bg-[#D9252A]"
               >
                 Resume <ArrowRight className="w-4 h-4" />
               </Link>
@@ -422,18 +450,20 @@ export function StudentDashboardClient({
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="flex items-center justify-between gap-4 bg-red-50 border border-red-200 rounded-2xl px-5 py-4"
+            style={{ background: "rgba(217,37,42,0.12)", borderColor: "rgba(217,37,42,0.25)" }}
+            className="flex items-center justify-between gap-4 border rounded-2xl px-5 py-4"
           >
             <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse shrink-0" />
+              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse shrink-0" style={{ background: "#D9252A" }} />
               <div>
-                <p className="text-sm font-semibold text-red-800">Live class is in progress!</p>
-                <p className="text-xs text-red-600">Your class started — join now.</p>
+                <p className="text-sm font-bold" style={{ color: "#D9252A" }}>Live class is in progress!</p>
+                <p className="text-xs" style={{ color: "var(--foreground)" }}>Your class started — join now.</p>
               </div>
             </div>
             <Link
               href={`/meet/${ongoingSession.roomId}`}
-              className="shrink-0 flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors"
+              style={{ background: "#D9252A", color: "#FFFFFF" }}
+              className="shrink-0 flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-xl transition-colors hover:bg-[#C21F24]"
             >
               <Video className="w-3.5 h-3.5" /> Join Live
             </Link>
@@ -442,55 +472,67 @@ export function StudentDashboardClient({
 
         {/* My Courses */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <BookOpen className="w-4 h-4 text-zinc-400" />
-            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">My Courses</span>
-          </div>
+          <span className="text-xs font-medium uppercase tracking-wider mb-3 block" style={{ color: "var(--muted-foreground)" }}>My Courses</span>
           {enrolledCourses.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-dashed border-zinc-200 p-8 text-center">
-              <BookOpen className="w-8 h-8 mx-auto text-zinc-200 mb-2" />
-              <p className="text-sm text-zinc-400">No enrolled courses yet.</p>
-              <Link href="/student/courses" className="text-xs text-blue-500 hover:underline mt-1 inline-block">
+            <div
+              className="rounded-2xl border-dashed border-2 p-8 text-center"
+              style={{ background: "transparent", borderColor: "var(--border)" }}
+            >
+              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No enrolled courses yet.</p>
+              <Link href="/student/courses" className="text-xs hover:underline mt-1 inline-block font-semibold" style={{ color: "#D9252A" }}>
                 Browse available courses →
               </Link>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm divide-y divide-zinc-50 overflow-hidden">
-              {enrolledCourses.map((course, idx) => (
-                <Link key={course.id} href={`/student/courses/${course.id}`}>
-                  <div className="flex items-center gap-4 px-5 py-4 hover:bg-zinc-50 transition-colors group cursor-pointer">
-                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${COURSE_GRADIENTS[idx % COURSE_GRADIENTS.length]} flex items-center justify-center shrink-0`}>
-                      <BookOpen className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-zinc-900 truncate">{course.title}</p>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <div className="flex-1 h-1 bg-zinc-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-zinc-700 rounded-full transition-all duration-700"
-                            style={{ width: `${course.progress}%` }}
-                          />
-                        </div>
-                        <span className="text-[11px] text-zinc-400 shrink-0">{course.progress}%</span>
+            <Card
+              className="overflow-hidden"
+              style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+            >
+              <div className="divide-y" style={{ borderColor: "var(--border)" }}>
+                {enrolledCourses.map((course) => (
+                  <Link key={course.id} href={`/student/courses/${course.id}`}>
+                    <div
+                      className="flex items-center gap-4 px-5 py-4 transition-colors group cursor-pointer"
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div className="w-12 h-9 rounded-lg overflow-hidden shrink-0" style={{ border: "1px solid var(--border)" }}>
+                        <img
+                          src={getCourseBannerUrl(course.title)}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = DEFAULT_COURSE_BANNER;
+                          }}
+                        />
                       </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>{course.title}</p>
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
+                            <div
+                              className="h-full rounded-full transition-all duration-700"
+                              style={{ width: `${course.progress}%`, background: "#D9252A" }}
+                            />
+                          </div>
+                          <span className="text-[11px] font-semibold shrink-0" style={{ color: "var(--muted-foreground)" }}>{course.progress}%</span>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 transition-all shrink-0" style={{ color: "var(--border)" }} />
                     </div>
-                    <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-zinc-500 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            </Card>
           )}
         </div>
 
         {/* Trending Courses */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-zinc-400" />
-              <span className="text-sm font-semibold text-zinc-800">Trending Courses</span>
-            </div>
+            <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Trending Courses</span>
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1 bg-zinc-900 rounded-full p-0.5 self-start sm:self-auto">
+            <div className="flex items-center gap-1 rounded-full p-0.5 self-start sm:self-auto" style={{ background: "var(--secondary-background)" }}>
               {([
                 { key: "recent",   label: "Recently Added" },
                 { key: "popular",  label: "Most Popular" },
@@ -499,34 +541,35 @@ export function StudentDashboardClient({
                 <button
                   key={tab.key}
                   onClick={() => setTrendingTab(tab.key)}
-                  className={`
-                    text-[11px] font-medium px-3 py-1.5 rounded-full transition-all
-                    ${trendingTab === tab.key
-                      ? "bg-white text-zinc-900"
-                      : "text-zinc-400 hover:text-zinc-200"}
-                  `}
+                  style={{
+                    background: trendingTab === tab.key ? "var(--card)" : "transparent",
+                    color: trendingTab === tab.key ? "#D9252A" : "var(--muted-foreground)",
+                  }}
+                  className="text-[11px] font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer"
                 >
                   {trendingTab === tab.key && (
-                    <span className="inline-flex items-center gap-1">
-                      {tab.key === "recent" && <Zap className="w-3 h-3 text-amber-500" />}
-                      {tab.key === "popular" && <TrendingUp className="w-3 h-3 text-blue-400" />}
-                      {tab.key === "featured" && <Flame className="w-3 h-3 text-orange-400" />}
+                    <span className="inline-flex items-center gap-1 mr-1">
+                      {tab.key === "recent" && <Zap className="w-3 h-3" style={{ color: "#D9252A" }} />}
+                      {tab.key === "popular" && <TrendingUp className="w-3 h-3" style={{ color: "#D9252A" }} />}
+                      {tab.key === "featured" && <Flame className="w-3 h-3" style={{ color: "#D9252A" }} />}
                     </span>
-                  )}{" "}{tab.label}
+                  )}{tab.label}
                 </button>
               ))}
             </div>
           </div>
 
           {trendingCourses.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-dashed border-zinc-200 p-8 text-center">
-              <BookOpen className="w-8 h-8 mx-auto text-zinc-200 mb-2" />
-              <p className="text-sm text-zinc-400">No courses available yet.</p>
+            <div
+              className="rounded-2xl border-dashed border-2 p-8 text-center"
+              style={{ background: "transparent", borderColor: "var(--border)" }}
+            >
+              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No courses available yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sortedTrending.map((course, idx) => (
-                <TrendingCourseCard key={course.id} course={course} index={idx} />
+              {sortedTrending.map((course) => (
+                <TrendingCourseCard key={course.id} course={course} />
               ))}
             </div>
           )}
@@ -541,20 +584,24 @@ export function StudentDashboardClient({
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-5"
+          style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+          className="rounded-2xl p-5"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <Flame className="w-4 h-4 text-orange-500" />
-            <h3 className="text-sm font-semibold text-zinc-800">Learning Streak</h3>
-          </div>
-          <p className="text-[11px] text-zinc-400 mb-4">Stay active every day</p>
+          <h3 className="text-sm font-bold mb-1" style={{ color: "var(--foreground)" }}>Learning Streak</h3>
+          <p className="text-[11px] mb-4" style={{ color: "var(--muted-foreground)" }}>Stay active every day</p>
 
           {/* Streak Stats */}
-          <div className="flex justify-center mb-4">
-            <div className="text-center bg-zinc-50 rounded-xl py-4 px-8 w-full max-w-[200px]">
-              <p className="text-3xl font-bold text-orange-500">{currentStreak}</p>
-              <p className="text-xs text-zinc-500 mt-1 font-medium">Current Streak</p>
-            </div>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {[
+              { label: "Current",     value: currentStreak },
+              { label: "Best",        value: bestStreak },
+              { label: "Active Days", value: activeDays },
+            ].map((s) => (
+              <div key={s.label} className="text-center rounded-xl py-2.5 px-1 border" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
+                <p className="text-xl font-bold" style={{ color: "var(--foreground)" }}>{s.value}</p>
+                <p className="text-[10px] mt-0.5 leading-tight" style={{ color: "var(--muted-foreground)" }}>{s.label}</p>
+              </div>
+            ))}
           </div>
 
           {/* Calendar */}
@@ -571,69 +618,95 @@ export function StudentDashboardClient({
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-5"
+          style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+          className="rounded-2xl p-5"
         >
-          <h3 className="text-sm font-semibold text-zinc-800 mb-4">Pending Items</h3>
+          <h3 className="text-sm font-bold mb-4" style={{ color: "var(--foreground)" }}>Pending Items</h3>
 
           {totalPending === 0 ? (
             <div className="flex flex-col items-center py-4 text-center">
-              <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-3">
-                <CheckCircle2 className="w-6 h-6 text-green-500" />
-              </div>
-              <p className="text-sm font-medium text-zinc-700">All caught up!</p>
-              <p className="text-xs text-zinc-400 mt-0.5">No pending quizzes or assignments</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>All caught up!</p>
+              <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>No pending quizzes or assignments</p>
             </div>
           ) : (
             <div className="space-y-3">
               {pendingQuizzes.length > 0 && (
-                <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <div
+                  className="flex items-center justify-between p-3 rounded-xl border"
+                  style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}
+                >
                   <div className="flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-amber-500" />
-                    <span className="text-xs font-medium text-zinc-700">Pending Quizzes</span>
+                    <HelpCircle className="w-4 h-4" style={{ color: "var(--foreground)" }} />
+                    <span className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Pending Quizzes</span>
                   </div>
-                  <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+                  <span
+                    className="text-xs font-bold px-2 py-0.5 rounded-full border"
+                    style={{
+                      background: "rgba(217,37,42,0.12)",
+                      borderColor: "rgba(217,37,42,0.25)",
+                      color: "#D9252A",
+                    }}
+                  >
                     {pendingQuizzes.length}
                   </span>
                 </div>
               )}
               {pendingAssignments.length > 0 && (
-                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <div
+                  className="flex items-center justify-between p-3 rounded-xl border"
+                  style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}
+                >
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                    <span className="text-xs font-medium text-zinc-700">Pending Assignments</span>
+                    <CheckCircle2 className="w-4 h-4" style={{ color: "var(--foreground)" }} />
+                    <span className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Pending Assignments</span>
                   </div>
-                  <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                  <span
+                    className="text-xs font-bold px-2 py-0.5 rounded-full border"
+                    style={{
+                      background: "rgba(217,37,42,0.12)",
+                      borderColor: "rgba(217,37,42,0.25)",
+                      color: "#D9252A",
+                    }}
+                  >
                     {pendingAssignments.length}
                   </span>
                 </div>
               )}
               {/* List individual items */}
-              <div className="divide-y divide-zinc-50">
+              <div className="divide-y" style={{ borderColor: "var(--border)" }}>
                 {pendingQuizzes.slice(0, 3).map((q) => (
                   <Link key={q.id} href={`/student/courses/${q.courseId}`}>
-                    <div className="flex items-center gap-3 py-2.5 hover:bg-zinc-50 rounded-lg px-1 cursor-pointer group">
-                      <div className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                        <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+                    <div
+                      className="flex items-center gap-3 py-2.5 rounded-lg px-1 cursor-pointer group transition-colors"
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}>
+                        <HelpCircle className="w-3.5 h-3.5" style={{ color: "var(--foreground)" }} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-zinc-800 truncate">{q.title}</p>
-                        <p className="text-[10px] text-zinc-400">{q.questionCount} questions</p>
+                        <p className="text-xs font-semibold truncate group-hover:text-[#D9252A] transition-colors" style={{ color: "var(--foreground)" }}>{q.title}</p>
+                        <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{q.questionCount} questions</p>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-500 shrink-0" />
+                      <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--border)" }} />
                     </div>
                   </Link>
                 ))}
                 {pendingAssignments.slice(0, 3).map((a) => (
                   <Link key={a.id} href={`/student/courses/${a.courseId}`}>
-                    <div className="flex items-center gap-3 py-2.5 hover:bg-zinc-50 rounded-lg px-1 cursor-pointer group">
-                      <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                    <div
+                      className="flex items-center gap-3 py-2.5 rounded-lg px-1 cursor-pointer group transition-colors"
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border" style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}>
+                        <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "var(--foreground)" }} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-zinc-800 truncate">{a.title}</p>
-                        <p className="text-[10px] text-zinc-400">Assignment</p>
+                        <p className="text-xs font-semibold truncate group-hover:text-[#D9252A] transition-colors" style={{ color: "var(--foreground)" }}>{a.title}</p>
+                        <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Assignment</p>
                       </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-500 shrink-0" />
+                      <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--border)" }} />
                     </div>
                   </Link>
                 ))}

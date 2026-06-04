@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,23 @@ export default function StudentCoursesClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [enrollingCourseId, setEnrollingCourseId] = useState<string | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<string>("all");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   // Get unique instructors for filter
   const instructors = Array.from(new Set(allCourses.map(c => c.instructorName))).sort();
@@ -99,7 +116,10 @@ export default function StudentCoursesClient({
         return (
           <Button
             size="sm"
-            className="w-full bg-emerald-700 hover:bg-emerald-800 text-white"
+            className="w-full transition-colors"
+            style={{ background: "#D9252A", color: "#FFFFFF" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#B21E22")}
+            onMouseLeave={e => (e.currentTarget.style.background = "#D9252A")}
             onClick={() => router.push(`/student/courses/${course.id}`)}
           >
             Continue Learning
@@ -107,8 +127,17 @@ export default function StudentCoursesClient({
         );
       case "PENDING":
         return (
-          <Button size="sm" className="w-full bg-amber-100 text-amber-800 cursor-not-allowed" disabled>
-            <Clock className="w-4 h-4 mr-1" />
+          <Button
+            size="sm"
+            className="w-full cursor-not-allowed"
+            style={{
+              background: "rgba(217, 37, 42, 0.12)",
+              border: "1px solid rgba(217, 37, 42, 0.4)",
+              color: "#FFFFFF",
+            }}
+            disabled
+          >
+            <Clock className="w-4 h-4 mr-1" style={{ color: "#FFFFFF" }} />
             Request Pending
           </Button>
         );
@@ -116,7 +145,20 @@ export default function StudentCoursesClient({
         return (
           <Button
             size="sm"
-            className="w-full border border-zinc-300 bg-white hover:bg-zinc-50"
+            className="w-full transition-colors"
+            style={{
+              background: "var(--secondary-background)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "#D9252A";
+              e.currentTarget.style.color = "#FFFFFF";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "var(--secondary-background)";
+              e.currentTarget.style.color = "var(--foreground)";
+            }}
             onClick={() => handleEnrollRequest(course.id)}
           >
             Request Again
@@ -126,7 +168,20 @@ export default function StudentCoursesClient({
         return (
           <Button
             size="sm"
-            className="w-full bg-zinc-900 text-white hover:bg-zinc-700"
+            className="w-full transition-colors"
+            style={{
+              background: "var(--secondary-background)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "#D9252A";
+              e.currentTarget.style.color = "#FFFFFF";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "var(--secondary-background)";
+              e.currentTarget.style.color = "var(--foreground)";
+            }}
             onClick={() => handleEnrollRequest(course.id)}
           >
             Request to Join
@@ -142,27 +197,49 @@ export default function StudentCoursesClient({
         <div className="flex items-center gap-6">
           <button
             onClick={() => setActiveTab("all")}
-            className={`flex items-center gap-2 pb-3 border-b-2 transition-colors ${
+            className="flex items-center gap-2 pb-3 border-b-2 transition-colors"
+            style={
               activeTab === "all"
-                ? "border-zinc-900 text-zinc-900"
-                : "border-transparent text-zinc-400 hover:text-zinc-600"
-            }`}
+                ? { borderColor: "var(--foreground)", color: "var(--foreground)" }
+                : { borderColor: "transparent", color: "var(--muted-foreground)" }
+            }
+            onMouseEnter={e => {
+              if (activeTab !== "all") e.currentTarget.style.color = "var(--foreground)";
+            }}
+            onMouseLeave={e => {
+              if (activeTab !== "all") e.currentTarget.style.color = "var(--muted-foreground)";
+            }}
           >
             <BookOpen className="w-5 h-5" />
             <span className="font-medium">All Courses</span>
-            <span className="text-xs bg-zinc-100 px-2 py-0.5 rounded-full">{allCourses.length}</span>
+            <span
+              className="text-xs px-2 py-0.5 rounded-full"
+              style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
+            >
+              {allCourses.length}
+            </span>
           </button>
           <button
             onClick={() => setActiveTab("my")}
-            className={`flex items-center gap-2 pb-3 border-b-2 transition-colors ${
+            className="flex items-center gap-2 pb-3 border-b-2 transition-colors"
+            style={
               activeTab === "my"
-                ? "border-zinc-900 text-zinc-900"
-                : "border-transparent text-zinc-400 hover:text-zinc-600"
-            }`}
+                ? { borderColor: "var(--foreground)", color: "var(--foreground)" }
+                : { borderColor: "transparent", color: "var(--muted-foreground)" }
+            }
+            onMouseEnter={e => {
+              if (activeTab !== "my") e.currentTarget.style.color = "var(--foreground)";
+            }}
+            onMouseLeave={e => {
+              if (activeTab !== "my") e.currentTarget.style.color = "var(--muted-foreground)";
+            }}
           >
             <BookMarked className="w-5 h-5" />
             <span className="font-medium">My Courses</span>
-            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
+            <span
+              className="text-xs px-2 py-0.5 rounded-full font-bold"
+              style={{ background: "rgba(217, 37, 42, 0.12)", color: "#D9252A" }}
+            >
               {activeCourses.length}
             </span>
           </button>
@@ -175,24 +252,109 @@ export default function StudentCoursesClient({
           {/* Search and Filter */}
           <div className="flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors"
+                style={{ color: searchFocused ? "#D9252A" : "var(--muted-foreground)" }}
+              />
               <Input
                 placeholder="Search courses..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                className="pl-9 transition-all focus-visible:ring-0 focus-visible:border-transparent outline-none"
+                style={{
+                  borderColor: searchFocused ? "#D9252A" : "#5C6670",
+                  boxShadow: searchFocused ? "0 0 0 3px rgba(217, 37, 42, 0.2)" : "none",
+                  background: "var(--input)",
+                  color: "var(--foreground)",
+                }}
               />
             </div>
-            <select
-              value={selectedInstructor}
-              onChange={(e) => setSelectedInstructor(e.target.value)}
-              className="px-3 py-2 border border-zinc-200 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900"
-            >
-              <option value="all">All Instructors</option>
-              {instructors.map(instructor => (
-                <option key={instructor} value={instructor}>{instructor}</option>
-              ))}
-            </select>
+
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none flex items-center justify-between min-w-[160px]"
+                style={{
+                  background: "var(--card)",
+                  color: "var(--foreground)",
+                  borderColor: dropdownOpen ? "#D9252A" : "#5C6670",
+                  boxShadow: dropdownOpen ? "0 0 0 2px rgba(217, 37, 42, 0.2)" : "none",
+                }}
+              >
+                <span>
+                  {selectedInstructor === "all" ? "All Instructors" : selectedInstructor}
+                </span>
+                <span className="ml-2 text-xs opacity-60">▼</span>
+              </button>
+
+              {dropdownOpen && (
+                <div
+                  className="absolute right-0 mt-1 w-full min-w-[200px] rounded-lg border shadow-lg z-50 py-1 overflow-hidden"
+                  style={{
+                    background: "var(--card)",
+                    borderColor: "#5C6670",
+                  }}
+                >
+                  <div
+                    onClick={() => {
+                      setSelectedInstructor("all");
+                      setDropdownOpen(false);
+                    }}
+                    className="px-3 py-2 text-sm cursor-pointer transition-colors"
+                    style={{
+                      background: selectedInstructor === "all" ? "rgba(217, 37, 42, 0.15)" : "transparent",
+                      borderLeft: selectedInstructor === "all" ? "3px solid #D9252A" : "3px solid transparent",
+                      color: "var(--foreground)",
+                    }}
+                    onMouseEnter={e => {
+                      if (selectedInstructor !== "all") {
+                        e.currentTarget.style.background = "rgba(217, 37, 42, 0.08)";
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (selectedInstructor !== "all") {
+                        e.currentTarget.style.background = "transparent";
+                      }
+                    }}
+                  >
+                    All Instructors
+                  </div>
+                  {instructors.map((instructor) => {
+                    const isSelected = selectedInstructor === instructor;
+                    return (
+                      <div
+                        key={instructor}
+                        onClick={() => {
+                          setSelectedInstructor(instructor);
+                          setDropdownOpen(false);
+                        }}
+                        className="px-3 py-2 text-sm cursor-pointer transition-colors"
+                        style={{
+                          background: isSelected ? "rgba(217, 37, 42, 0.15)" : "transparent",
+                          borderLeft: isSelected ? "3px solid #D9252A" : "3px solid transparent",
+                          color: "var(--foreground)",
+                        }}
+                        onMouseEnter={e => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = "rgba(217, 37, 42, 0.08)";
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = "transparent";
+                          }
+                        }}
+                      >
+                        {instructor}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Courses Grid */}
@@ -201,19 +363,33 @@ export default function StudentCoursesClient({
               {filteredCourses.map((course) => (
                 <motion.div
                   key={course.id}
-                  whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                  whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
                 >
-                  <Card className="border-zinc-200 shadow-sm hover:shadow-md transition-shadow">
+                  <Card
+                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                    className="shadow-sm hover:shadow-md transition-shadow ring-0"
+                  >
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-bold text-zinc-900 leading-tight">
+                      <CardTitle
+                        className="text-base font-bold leading-tight"
+                        style={{ color: "var(--foreground)" }}
+                      >
                         {course.title}
                       </CardTitle>
                       {course.description && (
-                        <p className="text-xs text-zinc-500 mt-2 line-clamp-2">{course.description}</p>
+                        <p
+                          className="text-xs mt-2 line-clamp-2"
+                          style={{ color: "var(--muted-foreground)" }}
+                        >
+                          {course.description}
+                        </p>
                       )}
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="flex items-center justify-between text-xs text-zinc-500">
+                      <div
+                        className="flex items-center justify-between text-xs"
+                        style={{ color: "var(--muted-foreground)" }}
+                      >
                         <span className="flex items-center gap-1">
                           <BookOpen className="w-3.5 h-3.5" />
                           {course.modulesCount} modules
@@ -223,7 +399,9 @@ export default function StudentCoursesClient({
                           {course.enrollmentsCount} students
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-400">by {course.instructorName}</p>
+                      <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                        by {course.instructorName}
+                      </p>
                       {getActionButton(course)}
                     </CardContent>
                   </Card>
@@ -233,8 +411,10 @@ export default function StudentCoursesClient({
           ) : (
             <div className="empty-state">
               <BookOpen />
-              <p>No courses found</p>
-              <p className="text-sm text-zinc-400 mt-2">Try adjusting your search or filters</p>
+              <p style={{ color: "var(--foreground)" }}>No courses found</p>
+              <p className="text-sm mt-2" style={{ color: "var(--muted-foreground)" }}>
+                Try adjusting your search or filters
+              </p>
             </div>
           )}
         </div>
@@ -245,8 +425,11 @@ export default function StudentCoursesClient({
         <div className="space-y-6">
           {/* Active Courses */}
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <h2
+              className="text-sm font-semibold flex items-center gap-2"
+              style={{ color: "var(--foreground)" }}
+            >
+              <CheckCircle2 className="w-4 h-4" style={{ color: "#D9252A" }} />
               Active Courses ({activeCourses.length})
             </h2>
             {activeCourses.length > 0 ? (
@@ -254,33 +437,55 @@ export default function StudentCoursesClient({
                 {activeCourses.map((course) => (
                   <motion.div
                     key={course.id}
-                    whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                    whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
                   >
-                    <Card className="border-emerald-200 bg-emerald-50/30 shadow-sm">
+                    <Card
+                      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                      className="shadow-sm ring-0"
+                    >
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-bold text-zinc-900 leading-tight">
+                        <CardTitle
+                          className="text-sm font-bold leading-tight"
+                          style={{ color: "var(--foreground)" }}
+                        >
                           {course.title}
                         </CardTitle>
                         {course.description && (
-                          <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{course.description}</p>
+                          <p
+                            className="text-xs mt-1 line-clamp-2"
+                            style={{ color: "var(--muted-foreground)" }}
+                          >
+                            {course.description}
+                          </p>
                         )}
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-zinc-500">Progress</span>
-                            <span className="font-medium text-zinc-900">{course.progress}%</span>
+                            <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
+                            <span
+                              className="font-medium"
+                              style={{ color: "var(--foreground)" }}
+                            >
+                              {course.progress}%
+                            </span>
                           </div>
-                          <div className="w-full bg-zinc-200 rounded-full h-1.5">
+                          <div
+                            className="w-full rounded-full h-1.5"
+                            style={{ background: "var(--muted)" }}
+                          >
                             <div
-                              className="bg-emerald-600 h-1.5 rounded-full transition-all"
-                              style={{ width: `${course.progress}%` }}
+                              className="h-1.5 rounded-full transition-all"
+                              style={{ width: `${course.progress}%`, background: "var(--foreground)" }}
                             />
                           </div>
                         </div>
                         <Button
                           size="sm"
-                          className="w-full bg-emerald-700 hover:bg-emerald-800 text-white"
+                          className="w-full transition-colors"
+                          style={{ background: "#D9252A", color: "#FFFFFF" }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "#B21E22")}
+                          onMouseLeave={e => (e.currentTarget.style.background = "#D9252A")}
                           onClick={() => router.push(`/student/courses/${course.id}`)}
                         >
                           Continue Learning
@@ -291,7 +496,14 @@ export default function StudentCoursesClient({
                 ))}
               </div>
             ) : (
-              <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-6 text-center text-sm text-zinc-500">
+              <div
+                className="rounded-lg p-6 text-center text-sm"
+                style={{
+                  background: "var(--card)",
+                  border: "1px dashed var(--border)",
+                  color: "var(--muted-foreground)",
+                }}
+              >
                 You are not enrolled in any courses yet. Browse &quot;All Courses&quot; to request enrollment.
               </div>
             )}
@@ -300,18 +512,34 @@ export default function StudentCoursesClient({
           {/* Pending Requests */}
           {pendingCourses.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-600" />
+              <h2
+                className="text-sm font-semibold flex items-center gap-2"
+                style={{ color: "var(--foreground)" }}
+              >
+                <Clock className="w-4 h-4" style={{ color: "#D9252A" }} />
                 Pending Requests ({pendingCourses.length})
               </h2>
               <div className="space-y-2">
                 {pendingCourses.map((course) => (
                   <div
                     key={course.id}
-                    className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg"
+                    className="flex items-center justify-between p-3 rounded-lg"
+                    style={{
+                      background: "var(--card)",
+                      border: "1px solid var(--border)",
+                    }}
                   >
-                    <span className="text-sm text-zinc-900">{course.title}</span>
-                    <span className="text-xs text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+                    <span className="text-sm" style={{ color: "var(--foreground)" }}>
+                      {course.title}
+                    </span>
+                    <span
+                      className="text-xs px-2 py-1 rounded-full"
+                      style={{
+                        background: "rgba(217, 37, 42, 0.12)",
+                        border: "1px solid rgba(217, 37, 42, 0.4)",
+                        color: "#FFFFFF",
+                      }}
+                    >
                       Awaiting approval
                     </span>
                   </div>
@@ -323,20 +551,42 @@ export default function StudentCoursesClient({
           {/* Rejected Requests */}
           {rejectedCourses.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-red-600" />
+              <h2
+                className="text-sm font-semibold flex items-center gap-2"
+                style={{ color: "var(--foreground)" }}
+              >
+                <XCircle className="w-4 h-4" style={{ color: "#D9252A" }} />
                 Not Accepted ({rejectedCourses.length})
               </h2>
               <div className="space-y-2">
                 {rejectedCourses.map((course) => (
                   <div
                     key={course.id}
-                    className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg"
+                    className="flex items-center justify-between p-3 rounded-lg"
+                    style={{
+                      background: "var(--card)",
+                      border: "1px solid var(--border)",
+                    }}
                   >
-                    <span className="text-sm text-zinc-900">{course.title}</span>
+                    <span className="text-sm" style={{ color: "var(--foreground)" }}>
+                      {course.title}
+                    </span>
                     <Button
                       size="sm"
-                      variant="outline"
+                      className="transition-colors"
+                      style={{
+                        background: "var(--secondary-background)",
+                        border: "1px solid var(--border)",
+                        color: "var(--foreground)",
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = "#D9252A";
+                        e.currentTarget.style.color = "#FFFFFF";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = "var(--secondary-background)";
+                        e.currentTarget.style.color = "var(--foreground)";
+                      }}
                       onClick={() => handleEnrollRequest(course.id)}
                       disabled={enrollingCourseId === course.id}
                     >

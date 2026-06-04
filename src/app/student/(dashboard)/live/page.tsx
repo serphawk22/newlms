@@ -57,18 +57,18 @@ export default async function StudentLiveClassesPage() {
   return (
     <div className="container-page space-y-8">
       <div className="flex items-center gap-2">
-        <Video className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Live Classes</h1>
+        <Video className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Live Classes</h1>
       </div>
 
       {/* Ongoing session banner */}
       {ongoingSession && (
-        <div className="rounded-xl bg-red-50 border border-red-200 p-4 flex items-center justify-between gap-4">
+        <div className="rounded-xl p-4 flex items-center justify-between gap-4" style={{ background: "rgba(217,37,42,0.06)", border: "1px solid rgba(217,37,42,0.15)" }}>
           <div className="flex items-center gap-3">
             <span className="live-dot" />
             <div>
-              <p className="font-bold text-red-900 text-sm">Live Now: {ongoingSession.title}</p>
-              <p className="text-xs text-red-700">{ongoingSession.course.title}</p>
+              <p className="font-bold text-sm" style={{ color: "#D9252A" }}>Live Now: {ongoingSession.title}</p>
+              <p className="text-xs" style={{ color: "#D9252A" }}>{ongoingSession.course.title}</p>
             </div>
           </div>
           <Link href={`/meet/${ongoingSession.roomId}`}>
@@ -85,14 +85,14 @@ export default async function StudentLiveClassesPage() {
           <div className="section-divider"><span>Upcoming Classes</span></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {scheduledSessions.map((session) => (
-              <Card key={session.id} className="border-zinc-200 shadow-sm hover:border-zinc-300 transition-all">
+              <Card key={session.id} className="transition-all" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-bold text-zinc-900">{session.title}</CardTitle>
-                  <p className="text-xs text-zinc-500 mt-0.5">{session.course.title}</p>
+                  <CardTitle className="text-sm font-bold" style={{ color: "var(--foreground)" }}>{session.title}</CardTitle>
+                  <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{session.course.title}</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center gap-2 text-xs text-zinc-600">
-                    <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+                  <div className="flex items-center gap-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
+                    <Calendar className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
                     {formatDate(session.scheduledAt)}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-zinc-400">

@@ -31,15 +31,15 @@ const iconMap = {
 };
 
 const colorMap = {
-  success: "bg-emerald-50 border-emerald-200 text-emerald-800",
-  error: "bg-red-50 border-red-200 text-red-800",
-  info: "bg-blue-50 border-blue-200 text-blue-800",
+  success: "border",
+  error: "border",
+  info: "border",
 };
 
 const iconColorMap = {
-  success: "text-emerald-500",
-  error: "text-red-500",
-  info: "text-blue-500",
+  success: "",
+  error: "",
+  info: "",
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -71,9 +71,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 100, scale: 0.9 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg min-w-[280px] max-w-sm ${colorMap[t.type]}`}
+                className={`flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg min-w-[280px] max-w-sm ${colorMap[t.type]}`}
+                style={{
+                  background: "var(--card)",
+                  border: t.type === "error" ? "1px solid rgba(217,37,42,0.25)" : "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
               >
-                <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconColorMap[t.type]}`} />
+                <Icon
+                  className={`w-5 h-5 mt-0.5 shrink-0 ${iconColorMap[t.type]}`}
+                  style={{ color: t.type === "error" ? "var(--accent)" : "var(--muted-foreground)" }}
+                />
                 <p className="text-sm font-medium flex-1">{t.message}</p>
                 <button onClick={() => removeToast(t.id)} className="shrink-0 opacity-60 hover:opacity-100 transition-opacity">
                   <X className="w-4 h-4" />

@@ -1,9 +1,5 @@
-import { Loader } from "@/components/ui/loader";
+import { PageLoader } from "@/components/ui/page-loader";
 
 export default function AllCoursesLoading() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <Loader variant="ring" label="Loading courses…" />
-    </div>
-  );
+  return <PageLoader label="Loading courses…" />;
 }

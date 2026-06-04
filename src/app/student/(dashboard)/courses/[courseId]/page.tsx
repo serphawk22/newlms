@@ -99,13 +99,13 @@ export default async function StudentCourseView({
   // If enrollment is not ACTIVE, show status message instead of full content
   if (enrollmentStatus === "PENDING") {
     return (
-      <div className="container-page flex items-center justify-center min-h-[60vh]">
+      <div className="course-theme-scope container-page flex items-center justify-center min-h-[60vh]">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
-            <Clock className="w-8 h-8 text-amber-600" />
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--secondary-background)] border border-[var(--border)] flex items-center justify-center">
+            <Clock className="w-8 h-8 text-[var(--muted-foreground)]" />
           </div>
-          <h2 className="text-xl font-bold text-zinc-900 mb-2">Request Pending</h2>
-          <p className="text-zinc-500 mb-6">Your request to join {course.title} is pending instructor approval. You will be notified once it is accepted.</p>
+          <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Request Pending</h2>
+          <p className="text-[var(--muted-foreground)] mb-6">Your request to join {course.title} is pending instructor approval. You will be notified once it is accepted.</p>
           <Link href="/student/courses">
             <Button variant="outline">Back to Courses</Button>
           </Link>
@@ -116,13 +116,13 @@ export default async function StudentCourseView({
 
   if (enrollmentStatus === "REJECTED") {
     return (
-      <div className="container-page flex items-center justify-center min-h-[60vh]">
+      <div className="course-theme-scope container-page flex items-center justify-center min-h-[60vh]">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-            <XCircle className="w-8 h-8 text-red-600" />
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--secondary-background)] border border-[var(--border)] flex items-center justify-center">
+            <XCircle className="w-8 h-8 text-[var(--accent)]" />
           </div>
-          <h2 className="text-xl font-bold text-zinc-900 mb-2">Request Not Accepted</h2>
-          <p className="text-zinc-500 mb-6">Your request to join {course.title} was not accepted. Please contact your instructor for more information.</p>
+          <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Request Not Accepted</h2>
+          <p className="text-[var(--muted-foreground)] mb-6">Your request to join {course.title} was not accepted. Please contact your instructor for more information.</p>
           <Link href="/student/courses">
             <Button variant="outline">Back to Courses</Button>
           </Link>
@@ -214,15 +214,15 @@ export default async function StudentCourseView({
   ];
 
   return (
-    <div className="container-page space-y-8">
+    <div className="course-theme-scope container-page space-y-8">
       {/* Preview banner for instructors/admins */}
       {isInstructorOrAdmin && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg flex items-center justify-between">
+        <div className="bg-[var(--secondary-background)] border border-[var(--border)] text-[var(--foreground)] px-4 py-3 rounded-lg flex items-center justify-between">
           <span className="text-sm font-semibold">
             You are previewing this course as {userRole?.toLowerCase()}.
           </span>
           <Link href={`/instructor/courses/${courseId}`}>
-            <Button variant="outline" size="sm" className="text-xs h-7 border-amber-300 text-amber-800 hover:bg-amber-100">
+            <Button variant="outline" size="sm" className="text-xs h-7">
               Back to Instructor Panel
             </Button>
           </Link>
@@ -232,13 +232,13 @@ export default async function StudentCourseView({
       {/* Course Title Header */}
       <div className="flex items-center justify-between">
         <Link href="/student">
-          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 px-0">
+          <Button variant="ghost" className="text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)] px-0">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </Button>
         </Link>
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-zinc-900">{course.title}</h1>
-          <div className="status-badge status-badge--info">Student View</div>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">{course.title}</h1>
+          
         </div>
       </div>
 
@@ -246,42 +246,44 @@ export default async function StudentCourseView({
       <div className="max-w-6xl mx-auto p-8 space-y-6">
         
         {/* Header */}
-        <div className="border-b border-slate-200 pb-6">
-          <h2 className="text-3xl font-bold tracking-tight">Course Content</h2>
-          <p className="text-slate-500 mt-2">Navigate through modules, materials, and live sessions using the sidebar.</p>
+        <div className="border-b border-[var(--border)] pb-6">
+          <h2 className="text-3xl font-bold tracking-tight text-[var(--foreground)]">Course Content</h2>
+          <p className="text-[var(--muted-foreground)] mt-2">Navigate through modules, materials, and live sessions using the sidebar.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-4">
           
           {/* SIDEBAR TABS */}
           <div className="space-y-2">
-            <Link href={`/student/courses/${course.id}/roadmap`}>
-              <Button className="w-full justify-start bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 shadow-lg shadow-indigo-500/20 mb-4 rounded-xl border border-indigo-400">
-                <MapIcon className="w-5 h-5 mr-3" /> View Interactive Roadmap
-              </Button>
-            </Link>
+            <div className="mb-3">
+              <Link href={`/student/courses/${course.id}/roadmap`} className="block w-full">
+                <Button className="w-full justify-start bg-[var(--secondary-background)] hover:bg-[var(--card)] text-[var(--foreground)] font-semibold py-5 rounded-lg border border-[var(--border)] shadow-none">
+                  <MapIcon className="w-4 h-4 mr-3 shrink-0" /> View Interactive Roadmap
+                </Button>
+              </Link>
+            </div>
             <Link href={`?tab=modules`}>
-              <Button variant={tab === "modules" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "modules" ? "bg-blue-100 text-blue-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+              <Button variant={tab === "modules" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "modules" ? "bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <LayoutList className="w-4 h-4 mr-3" /> Modules
               </Button>
             </Link>
             <Link href={`?tab=reading`}>
-              <Button variant={tab === "reading" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reading" ? "bg-violet-100 text-violet-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+              <Button variant={tab === "reading" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reading" ? "bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <BookMarked className="w-4 h-4 mr-3" /> Reading Materials
               </Button>
             </Link>
             <Link href={`?tab=assignments`}>
-              <Button variant={tab === "assignments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "assignments" ? "bg-amber-100 text-amber-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+              <Button variant={tab === "assignments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "assignments" ? "bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <ClipboardList className="w-4 h-4 mr-3" /> Assignments
               </Button>
             </Link>
             <Link href={`?tab=quizzes`}>
-              <Button variant={tab === "quizzes" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "quizzes" ? "bg-emerald-100 text-emerald-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+              <Button variant={tab === "quizzes" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "quizzes" ? "bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <HelpCircle className="w-4 h-4 mr-3" /> Quizzes
               </Button>
             </Link>
             <Link href={`?tab=reviews`}>
-              <Button variant={tab === "reviews" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reviews" ? "bg-amber-100 text-amber-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+              <Button variant={tab === "reviews" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "reviews" ? "bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <Star className="w-4 h-4 mr-3" /> Reviews
               </Button>
             </Link>
@@ -291,7 +293,7 @@ export default async function StudentCourseView({
               </Button>
             </Link>
             <Link href={`?tab=feedback`}>
-              <Button variant={tab === "feedback" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "feedback" ? "bg-violet-100 text-violet-700 font-bold" : "text-zinc-600 hover:bg-zinc-100"}`}>
+              <Button variant={tab === "feedback" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "feedback" ? "bg-[var(--card)] text-[var(--foreground)] font-bold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <MessageSquare className="w-4 h-4 mr-3" /> Feedback
               </Button>
             </Link>
@@ -304,58 +306,60 @@ export default async function StudentCourseView({
             {tab === "modules" && (
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <LayoutList className="w-6 h-6 text-blue-600" />
-                  <h3 className="text-2xl font-bold text-slate-800">Course Modules</h3>
+                  <LayoutList className="w-6 h-6 text-[var(--foreground)]" />
+                  <h3 className="text-2xl font-bold text-[var(--foreground)]">Course Modules</h3>
                 </div>
                 
                 {course.modules.length === 0 ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
+                  <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
                     No modules have been published for this course yet.
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {(course.modules as any[]).map((module, index) => (
-                      <Card key={module.id} className="border-slate-200 shadow-sm overflow-hidden bg-white hover:border-blue-200 transition-colors">
-                        <CardHeader className="bg-slate-50 border-b border-slate-100 py-4">
-                          <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <BookOpen className="w-5 h-5 text-blue-500" />
+                    {course.modules.map((module, index) => (
+                      <Card key={module.id} className="border-[var(--border)] shadow-sm overflow-hidden bg-[var(--card)] hover:border-[var(--accent)]/40 transition-colors">
+                        <CardHeader className="bg-[var(--secondary-background)] border-b border-[var(--border)] py-4">
+                          <CardTitle className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+                            <BookOpen className="w-5 h-5 text-[var(--muted-foreground)]" />
                             Module {index + 1}: {module.title}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
 
                           {/* ── Lessons ── */}
-                          <div className="divide-y divide-slate-100">
-                            {module.lessons?.length === 0 ? (
-                              <div className="p-6 text-sm text-slate-400 text-center bg-slate-50/50">No lessons posted yet.</div>
+                          <div className="divide-y divide-[var(--border)]">
+                            {module.lessons.length === 0 ? (
+                              <div className="p-6 text-sm text-[var(--muted-foreground)] text-center bg-[var(--secondary-background)]/30">No lessons posted yet.</div>
                             ) : (
-                              (module.lessons || []).map((lesson: any, lessonIndex: number) => (
-                                <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-blue-50/50 transition-colors">
+                              module.lessons.map((lesson, lessonIndex) => (
+                                <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-[var(--secondary-background)]/60 transition-colors">
                                   <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                                      <PlayCircle className="w-4 h-4 text-blue-600" />
+                                    <div className="w-8 h-8 rounded-full bg-[var(--secondary-background)] border border-[var(--border)] flex items-center justify-center shrink-0">
+                                      <PlayCircle className="w-4 h-4 text-[var(--muted-foreground)]" />
                                     </div>
-                                    <span className="font-semibold text-slate-700">
+                                    <span className="font-semibold text-[var(--foreground)]">
                                       {lessonIndex + 1}. {lesson.title}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     {lesson.videoUrl && (
                                       <ActivityLink href={lesson.videoUrl} type="VIDEO" message={`Watched video: ${lesson.title}`}>
-                                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                                        <Button size="sm" className="bg-[var(--card)] hover:bg-[var(--secondary-background)] text-[var(--foreground)] ">
+                                                          
+                                                                   
                                           <PlayCircle className="w-4 h-4 mr-2" /> Watch
                                         </Button>
                                       </ActivityLink>
                                     )}
                                     {lesson.driveLink && (
                                       <ActivityLink href={lesson.driveLink} type="MATERIAL" message={`Opened notes: ${lesson.title}`}>
-                                        <Button size="sm" variant="outline" className="border-slate-300">
+                                        <Button size="sm" variant="outline" className="border-[var(--border)] text-[var(--foreground)]">
                                           <FileText className="w-4 h-4 mr-2" /> Notes
                                         </Button>
                                       </ActivityLink>
                                     )}
                                     {!lesson.videoUrl && !lesson.driveLink && (
-                                      <span className="text-xs text-slate-400 font-medium px-3 py-1 bg-slate-100 rounded-full">No Content</span>
+                                      <span className="text-xs text-[var(--muted-foreground)] font-medium px-3 py-1 bg-[var(--secondary-background)] border border-[var(--border)] rounded-full">No Content</span>
                                     )}
                                   </div>
                                 </div>
@@ -364,9 +368,9 @@ export default async function StudentCourseView({
                           </div>
 
                           {/* ── Live Classes ── */}
-                          {module.liveSessions && module.liveSessions.length > 0 && (
-                            <div className="border-t border-slate-100 px-4 py-3">
-                              <p className="text-xs font-bold uppercase tracking-wider text-red-400 mb-2 flex items-center gap-1.5">
+                          {module.liveSessions.length > 0 && (
+                            <div className="border-t border-[var(--border)] px-4 py-3">
+                              <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-2 flex items-center gap-1.5">
                                 <Radio className="w-3.5 h-3.5" /> Live Classes
                               </p>
                               <div className="space-y-2">
@@ -376,20 +380,19 @@ export default async function StudentCourseView({
                                   const isCompleted = session.status === "COMPLETED";
                                   return (
                                     <div key={session.id} className={`flex items-center justify-between p-3 rounded-lg border ${
-                                      isLive ? "border-red-300 bg-red-50" :
-                                      isScheduled ? "border-blue-200 bg-blue-50/40" :
-                                      "border-slate-200 bg-slate-50/40 opacity-80"
+                                      isLive ? "border-[var(--accent)]/50 bg-[var(--accent)]/5" :
+                                      "border-[var(--border)] bg-[var(--secondary-background)]/40"
                                     }`}>
                                       <div className="flex items-center gap-3 min-w-0">
                                         <span className={`text-xs px-2 py-0.5 rounded-full font-bold shrink-0 uppercase ${
-                                          isLive ? "bg-red-100 text-red-700" :
-                                          isScheduled ? "bg-blue-100 text-blue-700" :
-                                          "bg-slate-100 text-slate-500"
+                                          isLive ? "bg-[var(--accent)] text-white" :
+                                          isScheduled ? "bg-[var(--secondary-background)] border border-[var(--border)] text-[var(--foreground)]" :
+                                          "bg-[var(--secondary-background)] text-[var(--muted-foreground)]"
                                         }`}>
                                           {isLive ? "LIVE NOW" : session.status}
                                         </span>
-                                        <span className="text-sm font-semibold truncate text-slate-800">{session.title}</span>
-                                        <span className="text-xs text-slate-400 shrink-0">
+                                        <span className="text-sm font-semibold truncate text-[var(--foreground)]">{session.title}</span>
+                                        <span className="text-xs text-[var(--muted-foreground)] shrink-0">
                                           {new Date(session.scheduledAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
                                         </span>
                                       </div>
@@ -399,15 +402,15 @@ export default async function StudentCourseView({
                                             videoUrl={session.recordingUrl}
                                             title={`Recording: ${session.title}`}
                                           >
-                                            <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 text-xs">
+                                            <Button variant="outline" size="sm" className="border-[var(--border)] text-[var(--foreground)] text-xs hover:bg-[var(--secondary-background)]">
                                               <MonitorPlay className="w-3 h-3 mr-1" /> Recording
                                             </Button>
                                           </VideoPlayerModal>
                                         )}
                                         {(isLive || isScheduled) && (
                                           <Link href={`/meet/${session.roomId}`}>
-                                            <Button size="sm" className={`text-white font-semibold text-xs ${
-                                              isLive ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
+                                            <Button size="sm" className={`font-semibold text-xs ${
+                                              isLive ? "bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white" : "bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-white"
                                             }`}>
                                               <Video className="w-3 h-3 mr-1" />
                                               {isLive ? "Join (LIVE)" : "Join Class"}
@@ -415,7 +418,7 @@ export default async function StudentCourseView({
                                           </Link>
                                         )}
                                         {isCompleted && !session.recordingUrl && (
-                                          <span className="text-xs text-slate-400 px-2 py-1 bg-slate-100 rounded-full">Ended</span>
+                                          <span className="text-xs text-[var(--muted-foreground)] px-2 py-1 bg-[var(--secondary-background)] border border-[var(--border)] rounded-full">Ended</span>
                                         )}
                                       </div>
                                     </div>
@@ -426,19 +429,19 @@ export default async function StudentCourseView({
                           )}
 
                           {/* ── Recorded Videos ── */}
-                          {module.recordedClasses && module.recordedClasses.length > 0 && (
-                            <div className="border-t border-slate-100 px-4 py-3">
-                              <p className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2 flex items-center gap-1.5">
+                          {module.recordedClasses.length > 0 && (
+                            <div className="border-t border-[var(--border)] px-4 py-3">
+                              <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2 flex items-center gap-1.5">
                                 <MonitorPlay className="w-3.5 h-3.5" /> Recorded Videos
                               </p>
                               <div className="space-y-2">
-                                {(module.recordedClasses || []).map((rec: any) => (
-                                  <div key={rec.id} className="flex items-center justify-between p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
+                                {module.recordedClasses.map((rec) => (
+                                  <div key={rec.id} className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--secondary-background)]/40">
                                     <div className="flex items-center gap-3 min-w-0">
-                                      <MonitorPlay className="w-4 h-4 text-indigo-500 shrink-0" />
-                                      <span className="text-sm font-medium truncate text-slate-700">{rec.title}</span>
+                                      <MonitorPlay className="w-4 h-4 text-[var(--muted-foreground)] shrink-0" />
+                                      <span className="text-sm font-medium truncate text-[var(--foreground)]">{rec.title}</span>
                                       {rec.duration && (
-                                        <span className="text-xs text-slate-400 shrink-0">
+                                        <span className="text-xs text-[var(--muted-foreground)] shrink-0">
                                           {Math.floor(rec.duration / 60)}:{String(rec.duration % 60).padStart(2, "0")}
                                         </span>
                                       )}
@@ -448,7 +451,7 @@ export default async function StudentCourseView({
                                       title={rec.title}
                                       duration={rec.duration}
                                     >
-                                      <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs">
+                                      <Button size="sm" className="bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-white text-xs">
                                         <PlayCircle className="w-3 h-3 mr-1" /> Watch
                                       </Button>
                                     </VideoPlayerModal>
@@ -470,12 +473,12 @@ export default async function StudentCourseView({
             {tab === "reading" && (
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <BookMarked className="w-6 h-6 text-violet-600" />
-                  <h3 className="text-2xl font-bold text-slate-800">Reading Materials</h3>
+                  <BookMarked className="w-6 h-6 text-[var(--foreground)]" />
+                  <h3 className="text-2xl font-bold text-[var(--foreground)]">Reading Materials</h3>
                 </div>
 
-                {(!course.readingMaterials || course.readingMaterials.length === 0) ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
+                {course.readingMaterials.length === 0 ? (
+                  <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
                     No reading materials available yet.
                   </div>
                 ) : (
@@ -506,14 +509,14 @@ export default async function StudentCourseView({
                         : "";
 
                       return (
-                        <div key={rm.id} className="bg-white border border-slate-200 rounded-xl shadow-sm hover:border-violet-300 hover:shadow-md transition-all group overflow-hidden">
+                        <div key={rm.id} className="bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-sm hover:border-[var(--accent)]/40 hover:shadow-md transition-all group overflow-hidden">
                           <div className="flex items-center justify-between p-5">
                             <div className="flex items-center gap-4 min-w-0">
-                              {/* File type icon — resolved via getFileIcon from centralized utils */}
+                              {/* File type icon */}
                               {(() => {
                                 const { Icon, color: iconColor, bg: iconBg } = isUploaded
-                                  ? { Icon: FileText, color: "text-violet-500", bg: "bg-violet-50 border-violet-100" }
-                                  : { Icon: Link2, color: "text-slate-400", bg: "bg-slate-50 border-slate-200" };
+                                  ? { Icon: FileText, color: "text-[var(--muted-foreground)]", bg: "bg-[var(--secondary-background)] border-[var(--border)]" }
+                                  : { Icon: Link2, color: "text-[var(--muted-foreground)]", bg: "bg-[var(--secondary-background)] border-[var(--border)]" };
                                 return (
                                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${iconBg} group-hover:opacity-90 transition-opacity`}>
                                     <Icon className={`w-6 h-6 ${iconColor}`} />
@@ -521,21 +524,21 @@ export default async function StudentCourseView({
                                 );
                               })()}
                               <div className="min-w-0">
-                                <p className="font-bold text-lg text-slate-800 truncate">{rm.title}</p>
+                                <p className="font-bold text-lg text-[var(--foreground)] truncate">{rm.title}</p>
                                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                                   {isUploaded && fileName && (
-                                    <span className="text-sm text-slate-400 truncate max-w-[220px]">{fileName}</span>
+                                    <span className="text-sm text-[var(--muted-foreground)] truncate max-w-[220px]">{fileName}</span>
                                   )}
                                   {isUploaded && sizeLabel && (
-                                    <><span className="text-slate-300 text-xs">·</span>
-                                    <span className="text-sm text-slate-400">{sizeLabel}</span></>
+                                    <><span className="text-[var(--border)] text-xs">·</span>
+                                    <span className="text-sm text-[var(--muted-foreground)]">{sizeLabel}</span></>
                                   )}
                                   {isUploaded && ext && (
-                                    <><span className="text-slate-300 text-xs">·</span>
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{ext}</span></>
+                                    <><span className="text-[var(--border)] text-xs">·</span>
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">{ext}</span></>
                                   )}
                                   {!isUploaded && rm.link && (
-                                    <span className="text-sm text-slate-400 truncate max-w-[200px]">{rm.link}</span>
+                                    <span className="text-sm text-[var(--muted-foreground)] truncate max-w-[200px]">{rm.link}</span>
                                   )}
                                 </div>
                               </div>
@@ -551,7 +554,7 @@ export default async function StudentCourseView({
                                 fileSize={fileSize}
                                 materialId={rm.id}
                               >
-                                <Button className="ml-4 shrink-0 bg-violet-600 hover:bg-violet-700 text-white shadow-sm">
+                                <Button className="ml-4 shrink-0 bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-white shadow-sm">
                                   <Eye className="w-4 h-4 mr-2" />
                                   Open Material
                                 </Button>
@@ -571,12 +574,12 @@ export default async function StudentCourseView({
             {tab === "assignments" && (
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <ClipboardList className="w-6 h-6 text-amber-600" />
-                  <h3 className="text-2xl font-bold text-slate-800">Assignments</h3>
+                  <ClipboardList className="w-6 h-6 text-[var(--foreground)]" />
+                  <h3 className="text-2xl font-bold text-[var(--foreground)]">Assignments</h3>
                 </div>
 
-                {(!course.assignments || course.assignments.length === 0) ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
+                {course.assignments.length === 0 ? (
+                  <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
                     No assignments currently due.
                   </div>
                 ) : (
@@ -584,24 +587,24 @@ export default async function StudentCourseView({
                     {(course.assignments as any[]).map((asgn) => {
                       const existingSub = submissionMap.get(asgn.id) ?? null;
                       return (
-                        <Card key={asgn.id} className="border-slate-200 shadow-sm hover:border-amber-300 transition-all bg-white overflow-hidden">
-                          <div className="h-1 w-full bg-amber-400"></div>
+                        <Card key={asgn.id} className="border-[var(--border)] shadow-sm hover:border-[var(--accent)]/40 transition-all bg-[var(--card)] overflow-hidden">
+                          <div className="h-1 w-full bg-[var(--accent)]/60"></div>
                           <CardContent className="p-6">
                             <div className="flex items-start justify-between gap-6">
                               <div className="flex items-start gap-4 min-w-0">
-                                <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0 border border-amber-100 mt-1">
-                                  <CheckCircle className="w-5 h-5 text-amber-600" />
+                                <div className="w-10 h-10 rounded-lg bg-[var(--secondary-background)] flex items-center justify-center shrink-0 border border-[var(--border)] mt-1">
+                                  <CheckCircle className="w-5 h-5 text-[var(--muted-foreground)]" />
                                 </div>
                                 <div className="min-w-0">
-                                  <h4 className="font-bold text-xl text-slate-800">{asgn.title}</h4>
+                                  <h4 className="font-bold text-xl text-[var(--foreground)]">{asgn.title}</h4>
                                   {asgn.description && (
-                                    <p className="text-slate-600 mt-1 leading-relaxed text-sm whitespace-pre-wrap">{asgn.description}</p>
+                                    <p className="text-[var(--muted-foreground)] mt-1 leading-relaxed text-sm whitespace-pre-wrap">{asgn.description}</p>
                                   )}
                                 </div>
                               </div>
                               {asgn.driveLink && (
                                 <Link href={asgn.driveLink} target="_blank" rel="noopener noreferrer" className="shrink-0">
-                                  <Button className="bg-amber-600 hover:bg-amber-700 text-white shadow-sm">
+                                  <Button className="bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-white shadow-sm">
                                     View Assignment <ExternalLink className="w-4 h-4 ml-2" />
                                   </Button>
                                 </Link>
@@ -644,12 +647,12 @@ export default async function StudentCourseView({
             {tab === "quizzes" && (
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <HelpCircle className="w-6 h-6 text-emerald-600" />
-                  <h3 className="text-2xl font-bold text-slate-800">Quizzes & Tests</h3>
+                  <HelpCircle className="w-6 h-6 text-[var(--foreground)]" />
+                  <h3 className="text-2xl font-bold text-[var(--foreground)]">Quizzes & Tests</h3>
                 </div>
 
-                {(!course.quizzes || course.quizzes.length === 0) ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
+                {course.quizzes.length === 0 ? (
+                  <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
                     No quizzes available.
                   </div>
                 ) : (
@@ -657,18 +660,18 @@ export default async function StudentCourseView({
                     {(course.quizzes as any[]).map((quiz) => {
                       const existingSub = quizSubmissionMap.get(quiz.id) ?? null;
                       return (
-                        <Card key={quiz.id} className="border-slate-200 shadow-sm hover:border-emerald-300 transition-all bg-white overflow-hidden">
-                          <div className="h-1 w-full bg-emerald-400"></div>
+                        <Card key={quiz.id} className="border-[var(--border)] shadow-sm hover:border-[var(--accent)]/40 transition-all bg-[var(--card)] overflow-hidden">
+                          <div className="h-1 w-full bg-[var(--border)]"></div>
                           <CardHeader className="pb-2">
-                            <CardTitle className="text-lg font-bold flex items-center gap-2">
-                              <HelpCircle className="w-5 h-5 text-emerald-600" />
+                            <CardTitle className="text-lg font-bold flex items-center gap-2 text-[var(--foreground)]">
+                              <HelpCircle className="w-5 h-5 text-[var(--muted-foreground)]" />
                               {quiz.title}
                             </CardTitle>
-                            <CardDescription className="flex items-center gap-1.5 mt-1 font-medium text-emerald-600">
+                            <CardDescription className="flex items-center gap-1.5 mt-1 font-medium text-[var(--muted-foreground)]">
                               <CheckCircle className="w-3.5 h-3.5" />
                               {quiz.questions.length} Question{quiz.questions.length !== 1 ? "s" : ""}
                               {existingSub && (
-                                <span className="ml-2 text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                                <span className="ml-2 text-xs bg-[var(--secondary-background)] border border-[var(--border)] text-[var(--foreground)] px-2 py-0.5 rounded-full font-bold">
                                   Submitted
                                 </span>
                               )}

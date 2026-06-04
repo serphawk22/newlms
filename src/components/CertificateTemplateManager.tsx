@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Upload, Loader2, X, CheckCircle2, AlertCircle, Image as ImageIcon, Settings } from "lucide-react";
+import { Upload, Loader2, X, CheckCircle2, AlertCircle, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -161,11 +161,11 @@ export function CertificateTemplateManager() {
             <div
               key={t.id}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium pointer-events-auto transition-all
-                ${t.type === "success" ? "bg-green-50 border-green-200 text-green-800"
+                ${t.type === "success" ? "bg-[rgba(217,37,42,0.12)] border-[rgba(217,37,42,0.25)] text-[#D9252A]"
                   : t.type === "error" ? "bg-red-50 border-red-200 text-red-800"
                   : "bg-slate-50 border-slate-200 text-slate-700"}`}
             >
-              {t.type === "success" && <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />}
+              {t.type === "success" && <CheckCircle2 className="w-4 h-4 text-[#D9252A] shrink-0" />}
               {t.type === "error" && <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />}
               <span className="flex-1">{t.message}</span>
               <button onClick={() => dismissToast(t.id)} suppressHydrationWarning
@@ -179,7 +179,7 @@ export function CertificateTemplateManager() {
 
       {loading ? (
         <div className="flex items-center justify-center py-12 text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin text-emerald-500 mr-2" /> Loading...
+          <Loader2 className="w-6 h-6 animate-spin text-[var(--muted-foreground)] mr-2" /> Loading...
         </div>
       ) : (
         <div className="space-y-6">
@@ -195,7 +195,7 @@ export function CertificateTemplateManager() {
                 {activeTemplate && (
                   <button
                     onClick={() => setShowMapper((v) => !v)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${showMapper ? "bg-blue-600 text-white border-blue-600" : "bg-white text-blue-600 border-blue-200 hover:bg-blue-50"}`}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${showMapper ? "bg-[#D9252A] text-white border-[#D9252A]" : "bg-white text-[#D9252A] border-[#D9252A] hover:bg-[rgba(217,37,42,0.06)]"}`}
                   >
                     <Settings className="w-3.5 h-3.5" />
                     {showMapper ? "Hide Editor" : "Edit Field Positions"}
@@ -213,7 +213,7 @@ export function CertificateTemplateManager() {
                         </a>
                       </div>
                       {/* Mapping status badge */}
-                      <div className={`absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-bold ${activeTemplate.mappings ? "bg-emerald-500 text-white" : "bg-amber-400 text-white"}`}>
+                      <div className={`absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-bold ${activeTemplate.mappings ? "bg-[rgba(217,37,42,0.12)] text-[#D9252A]" : "bg-[#D9252A] text-white"}`}>
                         {activeTemplate.mappings ? "✓ Mapped" : "⚠ Not Mapped"}
                       </div>
                     </div>
@@ -231,7 +231,6 @@ export function CertificateTemplateManager() {
                   </div>
                 ) : (
                   <div className="text-center py-14 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                    <ImageIcon className="w-10 h-10 text-slate-300 mx-auto mb-3" />
                     <p className="font-semibold text-slate-400 text-sm">No custom template is active.</p>
                     <p className="text-xs text-slate-400 mt-1">The system is using the default layout.</p>
                   </div>
@@ -272,9 +271,9 @@ export function CertificateTemplateManager() {
                     onClick={() => !uploading && fileInputRef.current?.click()}
                     className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all
                       ${isDragging
-                        ? "border-emerald-400 bg-emerald-50"
+                        ? "border-[rgba(217,37,42,0.25)] bg-[rgba(217,37,42,0.06)]"
                         : selectedFile
-                        ? "border-emerald-300 bg-emerald-50/40"
+                        ? "border-[rgba(217,37,42,0.25)] bg-[rgba(217,37,42,0.12)]"
                         : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50"}
                       ${uploading ? "pointer-events-none opacity-60" : ""}`}
                   >
@@ -283,7 +282,6 @@ export function CertificateTemplateManager() {
 
                     {selectedFile ? (
                       <div className="flex flex-col items-center gap-2">
-                        <ImageIcon className="w-10 h-10 text-emerald-500" />
                         <p className="font-semibold text-slate-700 text-sm truncate max-w-xs">{selectedFile.name}</p>
                         {!uploading && (
                           <button type="button"
@@ -296,9 +294,6 @@ export function CertificateTemplateManager() {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-                          <Upload className="w-6 h-6 text-slate-400" />
-                        </div>
                         <div>
                           <p className="font-semibold text-slate-600 text-sm">Drag &amp; drop your template image here</p>
                           <p className="text-xs text-slate-400 mt-0.5">or click to browse from your computer</p>
@@ -312,13 +307,13 @@ export function CertificateTemplateManager() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs text-slate-500">
                       <span className="flex items-center gap-1.5">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--muted-foreground)]" />
                         Uploading…
                       </span>
-                      <span className="font-bold text-emerald-600">{progress}%</span>
+                      <span className="font-bold text-[#D9252A]">{progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-200"
+                      <div className="h-2 bg-[#D9252A] rounded-full transition-all duration-200"
                         style={{ width: `${progress}%` }} />
                     </div>
                   </div>
@@ -327,7 +322,7 @@ export function CertificateTemplateManager() {
                 <Button
                   onClick={handleUpload}
                   disabled={uploading || !selectedFile || !name.trim()}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-10"
+                  className="w-full bg-[#D9252A] hover:bg-[#EF4444] text-white font-semibold h-10"
                 >
                   {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading…</> : <><Upload className="w-4 h-4 mr-2" />Upload Template</>}
                 </Button>
@@ -338,8 +333,8 @@ export function CertificateTemplateManager() {
           {/* Field Position Mapper — shown when toggled or after upload */}
           {activeTemplate && showMapper && (
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 bg-blue-50 flex items-center gap-3">
-                <Settings className="w-5 h-5 text-blue-600" />
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3" style={{ backgroundColor: "var(--secondary-background)" }}>
+                <Settings className="w-5 h-5 text-[#D9252A]" />
                 <div>
                   <h3 className="text-lg font-bold text-slate-800">Field Position Mapping</h3>
                   <p className="text-xs text-slate-500 mt-0.5">

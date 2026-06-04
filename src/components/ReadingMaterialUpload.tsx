@@ -2,9 +2,10 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
-  Upload, Trash2, Loader2, X, CheckCircle2, AlertCircle,
+  Upload, Trash2, X, CheckCircle2, AlertCircle,
   BookOpen, Link2,
 } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -359,7 +360,7 @@ export function ReadingMaterialUpload({ courseId }: Props) {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span className="flex items-center gap-1.5">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-500" />
+                  <RingLoader size="sm" className="inline-flex" />
                   {progressMsg || "Uploading…"}
                 </span>
                 <span className="font-bold text-blue-600">{progress}%</span>
@@ -378,7 +379,7 @@ export function ReadingMaterialUpload({ courseId }: Props) {
             id="upload-material-btn"
           >
             {uploading
-              ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading… {progress > 0 && `${progress}%`}</>
+              ? <><RingLoader size="sm" className="inline-flex mr-2" />Uploading… {progress > 0 && `${progress}%`}</>
               : <><Upload className="w-4 h-4 mr-2" />Upload Material</>}
           </Button>
         </div>
@@ -392,7 +393,7 @@ export function ReadingMaterialUpload({ courseId }: Props) {
 
         {loadingList ? (
           <div className="flex items-center justify-center py-12 gap-2 text-slate-400 bg-white rounded-xl border border-slate-200">
-            <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
+            <RingLoader size="sm" />
             <span className="text-sm">Loading materials…</span>
           </div>
         ) : materials.length === 0 ? (
@@ -468,7 +469,7 @@ export function ReadingMaterialUpload({ courseId }: Props) {
                       className="text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                       id={`delete-material-${rm.id}`}>
                       {isDeleting
-                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        ? <RingLoader size="sm" className="inline-flex" />
                         : <Trash2  className="w-4 h-4" />}
                     </Button>
                   </div>

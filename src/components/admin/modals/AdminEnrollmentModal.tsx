@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { X, Loader2, TrendingUp } from "lucide-react";
+import { X, TrendingUp } from "lucide-react";
+import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 
 interface Enrollment {
@@ -69,7 +70,7 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
         <div className="max-h-[400px] overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <RingLoader size="md" />
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-center text-slate-400 text-sm py-16">No enrollments found.</p>

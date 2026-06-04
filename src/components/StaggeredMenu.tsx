@@ -413,10 +413,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               height={24}
             />
           ) : (
-             <Logo 
-               color={open ? openMenuButtonColor : menuButtonColor} 
-               accentColor={accentColor}
-             />
+             <Logo />
           )}
         </div>
         <button
