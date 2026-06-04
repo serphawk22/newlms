@@ -45,7 +45,6 @@ model User {
   email                    String                   @unique
   password                 String
   name                     String?
-<<<<<<< HEAD
   status                   UserStatus               @default(PENDING)
   avatar                   String?
   coverImage               String?
@@ -53,8 +52,6 @@ model User {
   sessionToken             String?
   expertise                String[]                 @default([])
   bio                      String?
-  avatar                   String?
-  coverImage               String?
   adminCommentsAuthored    AdminComment[]           @relation("AdminCommentAuthor")
   adminCommentsReceived    AdminComment[]           @relation("AdminCommentStudent")
   submissions              AssignmentSubmission[]
@@ -68,7 +65,6 @@ model User {
   recordedClasses          RecordedClass[]
   reviews                  Review[]
   studentRoadmapProgresses StudentRoadmapProgress[]
-<<<<<<< HEAD
   dailyLogins              DailyLogin[]
   certificates             Certificate[]
   studyFriendSessions      StudyFriendSession[]
@@ -107,9 +103,6 @@ model Course {
   quizzes          Quiz[]
   readingMaterials ReadingMaterial[]
   recordedClasses  RecordedClass[]
-<<<<<<< HEAD
-  adminComments    AdminComment[]
-  courseRoadmap    CourseRoadmap?
   certificates     Certificate[]
   reviews          Review[]
 

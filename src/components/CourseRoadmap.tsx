@@ -140,7 +140,7 @@ export function CourseRoadmap({
       ) : (
         <div className="relative pl-6 md:pl-12 z-10">
           {/* Central Connecting Road track line (Neon glowing) */}
-          <div className="absolute top-8 bottom-8 left-6 md:left-12 w-1.5 bg-gradient-to-b from-indigo-500 via-purple-500 to-emerald-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)] -translate-x-1/2 opacity-80" />
+          <div className="absolute top-8 bottom-8 left-6 md:left-12 w-1.5 bg-[#D9252A] rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)] -translate-x-1/2 opacity-80" />
 
           {/* Module Nodes List */}
           <div className="space-y-16">

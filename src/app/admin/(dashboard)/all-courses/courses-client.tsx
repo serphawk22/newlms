@@ -23,29 +23,33 @@ function ConfirmDialog({ open, onClose, onConfirm, title, message, loading }: {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl border border-zinc-200 w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-xl w-full max-w-sm mx-4" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }} onClick={(e) => e.stopPropagation()}>
         <div className="px-6 py-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-5 h-5 text-red-600" />
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A" }}>
+              <AlertCircle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
-              <p className="text-xs text-zinc-500 mt-0.5">{message}</p>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{title}</h3>
+              <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{message}</p>
             </div>
           </div>
           <div className="flex gap-2 justify-end mt-5">
             <button
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-xs font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+              style={{ background: "var(--secondary-background)", color: "var(--muted-foreground)" }}
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
               disabled={loading}
-              className="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-medium text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              style={{ background: "#D9252A" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#EF4444")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#D9252A")}
             >
               {loading && <Loader size="sm" variant="bars" />}
               {loading ? "Deleting..." : "Delete"}
@@ -95,31 +99,29 @@ export function CoursesClient({ courses }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-zinc-100 bg-zinc-50">
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Course</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Instructor</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Enrolled</th>
-              <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Status</th>
-              <th className="text-right text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-4 py-3">Actions</th>
+            <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Course</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Instructor</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Enrolled</th>
+              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Status</th>
+              <th className="text-right text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {courses.map((c) => (
-              <tr key={c.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                <td className="px-4 py-3 text-sm font-medium text-zinc-900">{c.title}</td>
-                <td className="px-4 py-3 text-sm text-zinc-500">{c.creator?.name || "Unknown"}</td>
-                <td className="px-4 py-3 text-sm text-zinc-700">{c._count.enrollments}</td>
+              <tr key={c.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                <td className="px-4 py-3 text-sm font-medium" style={{ color: "var(--foreground)" }}>{c.title}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{c.creator?.name || "Unknown"}</td>
+                <td className="px-4 py-3 text-sm" style={{ color: "var(--foreground)" }}>{c._count.enrollments}</td>
                 <td className="px-4 py-3">
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
-                    c.published ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-                  }`}>
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
                     {c.published ? "Published" : "Draft"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => setDeleteTarget({ id: c.id, title: c.title })}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors" style={{ color: "#D9252A" }} onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(217,37,42,0.08)")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Delete
                   </button>

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, BookOpen } from "lucide-react";
+
 
 export interface InstructorRow {
   id: string;
@@ -24,8 +24,8 @@ export function AdminInstructorTable({ rows }: { rows: InstructorRow[] }) {
   return (
     <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold" style={{ color: "var(--foreground)" }}>
-          <Users className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> Instructor Analytics
+        <CardTitle className="text-base font-bold" style={{ color: "var(--foreground)" }}>
+          Instructor Analytics
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -80,8 +80,8 @@ export function AdminCourseTable({ rows }: { rows: CourseRow[] }) {
   return (
     <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold" style={{ color: "var(--foreground)" }}>
-          <BookOpen className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> Course Analytics
+        <CardTitle className="text-base font-bold" style={{ color: "var(--foreground)" }}>
+          Course Analytics
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">

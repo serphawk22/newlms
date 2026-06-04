@@ -147,12 +147,18 @@ export default function StudentCoursesClient({
             size="sm"
             className="w-full transition-colors"
             style={{
-              background: "#343A40",
-              border: "1px solid #5C6670",
-              color: "#FFFFFF"
+              background: "var(--secondary-background)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)"
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#D9252A")}
-            onMouseLeave={e => (e.currentTarget.style.background = "#343A40")}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "#D9252A";
+              e.currentTarget.style.color = "#FFFFFF";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "var(--secondary-background)";
+              e.currentTarget.style.color = "var(--foreground)";
+            }}
             onClick={() => handleEnrollRequest(course.id)}
           >
             Request Again
@@ -164,12 +170,18 @@ export default function StudentCoursesClient({
             size="sm"
             className="w-full transition-colors"
             style={{
-              background: "#343A40",
-              border: "1px solid #5C6670",
-              color: "#FFFFFF"
+              background: "var(--secondary-background)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)"
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#D9252A")}
-            onMouseLeave={e => (e.currentTarget.style.background = "#343A40")}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "#D9252A";
+              e.currentTarget.style.color = "#FFFFFF";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "var(--secondary-background)";
+              e.currentTarget.style.color = "var(--foreground)";
+            }}
             onClick={() => handleEnrollRequest(course.id)}
           >
             Request to Join
@@ -484,9 +496,6 @@ export default function StudentCoursesClient({
                 ))}
               </div>
             ) : (
-<<<<<<< HEAD
-              <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-6 text-center text-sm text-zinc-500">
-=======
               <div
                 className="rounded-lg p-6 text-center text-sm"
                 style={{
@@ -495,7 +504,6 @@ export default function StudentCoursesClient({
                   color: "var(--muted-foreground)",
                 }}
               >
->>>>>>> vaishnavi-ui
                 You are not enrolled in any courses yet. Browse &quot;All Courses&quot; to request enrollment.
               </div>
             )}
@@ -567,12 +575,18 @@ export default function StudentCoursesClient({
                       size="sm"
                       className="transition-colors"
                       style={{
-                        background: "#343A40",
-                        border: "1px solid #5C6670",
-                        color: "#FFFFFF",
+                        background: "var(--secondary-background)",
+                        border: "1px solid var(--border)",
+                        color: "var(--foreground)",
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#D9252A")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "#343A40")}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = "#D9252A";
+                        e.currentTarget.style.color = "#FFFFFF";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = "var(--secondary-background)";
+                        e.currentTarget.style.color = "var(--foreground)";
+                      }}
                       onClick={() => handleEnrollRequest(course.id)}
                       disabled={enrollingCourseId === course.id}
                     >

@@ -329,7 +329,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
   };
 
   return (
-    <section className="bg-gradient-to-br from-zinc-900 to-zinc-950 text-white rounded-2xl overflow-hidden shadow-2xl border border-zinc-800 relative group transition-all duration-300 hover:shadow-zinc-900/50">
+    <section className="bg-gradient-to-br from-zinc-900 to-zinc-950 text-white rounded-2xl overflow-hidden border border-zinc-800 relative group transition-all duration-300">
       
       {/* Background Micro Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-800/10 via-transparent to-transparent pointer-events-none" />
@@ -337,8 +337,8 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
       {/* Header */}
       <div className="px-5 py-4 border-b border-zinc-800/70 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-violet-600/10 border border-violet-500/20 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-violet-400" />
+          <div className="w-8 h-8 rounded-xl bg-[rgba(217,37,42,0.12)] border-[rgba(217,37,42,0.25)] flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
           </div>
           <div>
             <h3 className="text-sm font-black tracking-tight text-white">Share What You Learned</h3>
@@ -373,7 +373,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
               <div className="w-16 h-16 rounded-3xl bg-zinc-800/50 border border-zinc-700/80 flex items-center justify-center">
                 <Video className="w-7 h-7 text-zinc-400" />
               </div>
-              <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center border-2 border-zinc-950 shadow-md">
+              <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#D9252A] flex items-center justify-center border-2 border-zinc-950">
                 <Monitor className="w-3.5 h-3.5 text-white" />
               </span>
             </div>
@@ -387,7 +387,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
             <Button
               type="button"
               onClick={startRecording}
-              className="bg-violet-600 hover:bg-violet-500 text-white rounded-xl px-5 h-11 text-xs font-bold transition-all shadow-md shadow-violet-900/30 hover:scale-[1.03] active:scale-[0.98]"
+              className="bg-[#D9252A] hover:bg-[#EF4444] text-white rounded-xl px-5 h-11 text-xs font-bold transition-all hover:scale-[1.03] active:scale-[0.98]"
             >
               <Play className="w-3.5 h-3.5 mr-2" /> Start Recording
             </Button>
@@ -401,9 +401,9 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
             <div className="bg-zinc-800/40 border border-zinc-700/30 rounded-2xl p-4 flex flex-col items-center gap-3">
               <div className="relative">
                 <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-                  <Monitor className="w-6 h-6 text-violet-400" />
+                  <Monitor className="w-6 h-6 text-[#D9252A]" />
                 </div>
-                <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-emerald-500 rounded-full border-2 border-zinc-900 flex items-center justify-center animate-bounce">
+                <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#D9252A] rounded-full border-2 border-zinc-900 flex items-center justify-center animate-bounce">
                   <Mic className="w-2.5 h-2.5 text-white" />
                 </div>
               </div>
@@ -422,7 +422,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
             <Button
               type="button"
               onClick={handleStopRecording}
-              className="bg-red-600 hover:bg-red-500 text-white rounded-xl px-6 h-11 text-xs font-bold transition-all shadow-md shadow-red-900/30 hover:scale-[1.03] active:scale-[0.98]"
+              className="bg-red-600 hover:bg-red-500 text-white rounded-xl px-6 h-11 text-xs font-bold transition-all hover:scale-[1.03] active:scale-[0.98]"
             >
               <Square className="w-3.5 h-3.5 mr-2" /> Stop Recording
             </Button>
@@ -444,7 +444,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
             {/* Optional caption field */}
             <div className="space-y-1.5 bg-zinc-900/40 p-3 rounded-xl border border-zinc-800/60">
               <Label htmlFor="video-caption" className="text-[11px] text-zinc-400 font-semibold flex items-center gap-1.5">
-                <MessageSquare className="w-3.5 h-3.5 text-violet-400" />
+                <MessageSquare className="w-3.5 h-3.5 text-[#D9252A]" />
                 Add a caption or comment
               </Label>
               <Input
@@ -452,7 +452,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
                 placeholder="What is this video about? (Optional)"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                className="bg-zinc-950 border-zinc-800 text-xs text-white placeholder-zinc-500 h-9 rounded-lg focus-visible:ring-violet-600 focus-visible:border-violet-600"
+                className="bg-zinc-950 border-zinc-800 text-xs text-white placeholder-zinc-500 h-9 rounded-lg focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
               />
             </div>
 
@@ -469,7 +469,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
               <Button
                 type="button"
                 onClick={uploadRecording}
-                className="bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-xs h-10 font-bold transition-all shadow-md shadow-violet-900/30 hover:scale-[1.02]"
+                className="bg-[#D9252A] hover:bg-[#EF4444] text-white rounded-xl text-xs h-10 font-bold transition-all hover:scale-[1.02]"
               >
                 <Share2 className="w-3.5 h-3.5 mr-2" /> Share Video
               </Button>
@@ -491,7 +491,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
             <div className="max-w-[200px] mx-auto space-y-1">
               <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-violet-500 rounded-full transition-all duration-300"
+                  className="h-full bg-[#D9252A] rounded-full transition-all duration-300"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
@@ -503,7 +503,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail }: ShareWhatYouL
         {/* ── STATE: SUCCESS ── */}
         {recordingState === "success" && (
           <div className="text-center py-8 space-y-4">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 shadow-lg shadow-emerald-950/20">
+            <div className="w-14 h-14 rounded-full bg-[rgba(217,37,42,0.12)] border-[rgba(217,37,42,0.25)] flex items-center justify-center mx-auto text-[#D9252A]">
               <CheckCircle2 className="w-7 h-7" />
             </div>
 

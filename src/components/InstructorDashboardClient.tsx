@@ -4,9 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import {
-  Users, BookOpen, HelpCircle, ClipboardList, TrendingUp,
-  CalendarDays, ChevronRight, PlusCircle, ArrowRight,
-  Clock, Video, ChevronLeft,
+  HelpCircle, ChevronRight, ArrowRight,
+  Video, ChevronLeft,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -156,10 +155,10 @@ export function InstructorDashboardClient({
   const [chartView, setChartView] = useState<"weekly" | "monthly">("weekly");
 
   const stats = [
-    { label: "Total Students", value: totalStudents, suffix: "+", icon: Users },
-    { label: "Total Courses", value: totalCourses, suffix: "+", icon: BookOpen },
-    { label: "Active Quizzes", value: activeQuizzes, suffix: "", icon: HelpCircle },
-    { label: "Pending Assignments", value: pendingAssignments, suffix: "", icon: ClipboardList },
+    { label: "Total Students", value: totalStudents, suffix: "+" },
+    { label: "Total Courses", value: totalCourses, suffix: "+" },
+    { label: "Active Quizzes", value: activeQuizzes, suffix: "" },
+    { label: "Pending Assignments", value: pendingAssignments, suffix: "" },
   ];
 
   const chartData = chartView === "weekly"
@@ -192,15 +191,7 @@ export function InstructorDashboardClient({
           <motion.div key={stat.label} variants={cardItem}>
             <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }} className="hover:shadow-sm transition-shadow">
               <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
-                  >
-                    <stat.icon className="w-5 h-5" style={{ color: "var(--foreground)" } as React.CSSProperties} />
-                  </div>
-                  <TrendingUp className="w-4 h-4" style={{ color: "#D9252A" }} />
-                </div>
+
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 <p className="text-xs font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
               </CardContent>
@@ -217,10 +208,7 @@ export function InstructorDashboardClient({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ease: "easeOut", duration: 0.4 }}
         >
-          <div className="flex items-center gap-2 mb-3">
-            <CalendarDays className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Schedule</h3>
-          </div>
+          <h3 className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: "var(--muted-foreground)" }}>Schedule</h3>
           <MiniCalendar sessionDates={sessionDates} />
         </motion.div>
 
@@ -231,10 +219,7 @@ export function InstructorDashboardClient({
           transition={{ delay: 0.3, ease: "easeOut", duration: 0.4 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Course Performance</h3>
-            </div>
+            <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Course Performance</h3>
             <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ background: "var(--muted)" }}>
               <button
                 onClick={() => setChartView("weekly")}
@@ -318,20 +303,12 @@ export function InstructorDashboardClient({
           transition={{ delay: 0.4, ease: "easeOut", duration: 0.4 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Active Quizzes</h3>
-            </div>
-<<<<<<< HEAD
-=======
-            
->>>>>>> vaishnavi-ui
+            <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Active Quizzes</h3>
           </div>
           <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
             <CardContent className="p-0" style={{ borderColor: "var(--border)" }}>
               {allQuizzes.length === 0 ? (
                 <div className="p-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  <HelpCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
                   No quizzes created yet.
                 </div>
               ) : (
@@ -369,20 +346,12 @@ export function InstructorDashboardClient({
           transition={{ delay: 0.45, ease: "easeOut", duration: 0.4 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Video className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Upcoming Live Classes</h3>
-            </div>
-<<<<<<< HEAD
-=======
-            
->>>>>>> vaishnavi-ui
+            <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Upcoming Live Classes</h3>
           </div>
           <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
             <CardContent className="p-0">
               {allLiveSessions.length === 0 ? (
                 <div className="p-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  <Video className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
                   No live classes scheduled.
                 </div>
               ) : (

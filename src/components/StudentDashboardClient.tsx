@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  BookOpen, CheckCircle2, HelpCircle, Clock, ChevronRight,
+  CheckCircle2, HelpCircle, Clock, ChevronRight,
   Video, Flame, Zap, LayoutGrid, TrendingUp, Users,
   PlayCircle, ArrowRight,
 } from "lucide-react";
@@ -89,9 +89,9 @@ function getFirstDayOfMonth(month: number, year: number) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value, icon: Icon,
+  label, value,
 }: {
-  label: string; value: number; icon: React.ElementType;
+  label: string; value: number;
 }) {
   return (
     <motion.div
@@ -101,12 +101,6 @@ function StatCard({
       style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
       className="rounded-2xl p-5 hover:shadow-sm transition-shadow"
     >
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 border"
-        style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}
-      >
-        <Icon className="w-5 h-5" style={{ color: "var(--foreground)" }} />
-      </div>
       <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{value}</p>
       <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{label}</p>
     </motion.div>
@@ -209,8 +203,8 @@ function StreakCalendar({
         </span>
       </div>
       {currentStreak > 0 && (
-        <div className="mt-2 text-xs font-semibold flex items-center gap-1" style={{ color: "#D9252A" }}>
-          <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak!
+        <div className="mt-2 text-xs font-semibold" style={{ color: "#D9252A" }}>
+          {currentStreak} day streak!
         </div>
       )}
     </div>
@@ -347,10 +341,10 @@ export function StudentDashboardClient({
   const router = useRouter();
 
   const stats = [
-    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen },
-    { label: "Completed Assignments",  value: completedAssignments,   icon: CheckCircle2 },
-    { label: "Pending Quizzes",        value: pendingQuizzesCount,    icon: HelpCircle },
-    { label: "Study Sessions",         value: studySessions,          icon: Clock },
+    { label: "Enrolled Courses",       value: enrolledCoursesCount },
+    { label: "Completed Assignments",  value: completedAssignments },
+    { label: "Pending Quizzes",        value: pendingQuizzesCount },
+    { label: "Study Sessions",         value: studySessions },
   ];
 
   const sortedTrending = [...trendingCourses].sort((a, b) => {
@@ -393,7 +387,7 @@ export function StudentDashboardClient({
               }}
               className="flex items-center gap-1.5 border px-3 py-1 rounded-full text-xs font-bold"
             >
-              <Flame className="w-3.5 h-3.5 animate-pulse" /> {currentStreak} day streak
+              {currentStreak} day streak
             </motion.div>
           )}
         </div>
@@ -412,10 +406,7 @@ export function StudentDashboardClient({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.4 }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <PlayCircle className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-              <span className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Continue Learning</span>
-            </div>
+            <span className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: "var(--muted-foreground)" }}>Continue Learning</span>
             <div
               className="rounded-2xl p-6 flex items-center justify-between gap-4"
               style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
@@ -481,16 +472,12 @@ export function StudentDashboardClient({
 
         {/* My Courses */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <BookOpen className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-            <span className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>My Courses</span>
-          </div>
+          <span className="text-xs font-medium uppercase tracking-wider mb-3 block" style={{ color: "var(--muted-foreground)" }}>My Courses</span>
           {enrolledCourses.length === 0 ? (
             <div
               className="rounded-2xl border-dashed border-2 p-8 text-center"
               style={{ background: "transparent", borderColor: "var(--border)" }}
             >
-              <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
               <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No enrolled courses yet.</p>
               <Link href="/student/courses" className="text-xs hover:underline mt-1 inline-block font-semibold" style={{ color: "#D9252A" }}>
                 Browse available courses →
@@ -543,10 +530,7 @@ export function StudentDashboardClient({
         {/* Trending Courses */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-              <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Trending Courses</span>
-            </div>
+            <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Trending Courses</span>
             {/* Filter Tabs */}
             <div className="flex items-center gap-1 rounded-full p-0.5 self-start sm:self-auto" style={{ background: "var(--secondary-background)" }}>
               {([
@@ -580,7 +564,6 @@ export function StudentDashboardClient({
               className="rounded-2xl border-dashed border-2 p-8 text-center"
               style={{ background: "transparent", borderColor: "var(--border)" }}
             >
-              <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
               <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No courses available yet.</p>
             </div>
           ) : (
@@ -604,20 +587,10 @@ export function StudentDashboardClient({
           style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
           className="rounded-2xl p-5"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <Flame className="w-4 h-4" style={{ color: "#D9252A" }} />
-            <h3 className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Learning Streak</h3>
-          </div>
+          <h3 className="text-sm font-bold mb-1" style={{ color: "var(--foreground)" }}>Learning Streak</h3>
           <p className="text-[11px] mb-4" style={{ color: "var(--muted-foreground)" }}>Stay active every day</p>
 
           {/* Streak Stats */}
-<<<<<<< HEAD
-          <div className="flex justify-center mb-4">
-            <div className="text-center bg-zinc-50 rounded-xl py-4 px-8 w-full max-w-[200px]">
-              <p className="text-3xl font-bold text-orange-500">{currentStreak}</p>
-              <p className="text-xs text-zinc-500 mt-1 font-medium">Current Streak</p>
-            </div>
-=======
           <div className="grid grid-cols-3 gap-2 mb-4">
             {[
               { label: "Current",     value: currentStreak },
@@ -629,7 +602,6 @@ export function StudentDashboardClient({
                 <p className="text-[10px] mt-0.5 leading-tight" style={{ color: "var(--muted-foreground)" }}>{s.label}</p>
               </div>
             ))}
->>>>>>> vaishnavi-ui
           </div>
 
           {/* Calendar */}
@@ -653,12 +625,6 @@ export function StudentDashboardClient({
 
           {totalPending === 0 ? (
             <div className="flex flex-col items-center py-4 text-center">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center mb-3 border"
-                style={{ background: "rgba(255,255,255,0.06)", borderColor: "var(--border)" }}
-              >
-                <CheckCircle2 className="w-6 h-6" style={{ color: "var(--foreground)" }} />
-              </div>
               <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>All caught up!</p>
               <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>No pending quizzes or assignments</p>
             </div>

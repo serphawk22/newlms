@@ -22,6 +22,7 @@ export interface PendingUserRow {
   email: string;
   loginCode: string | null;
   role: "STUDENT" | "INSTRUCTOR";
+  status: string;
 }
 
 export interface InstructorRow {
@@ -52,7 +53,7 @@ export default async function AdminUsersPage() {
 
   const [studentMembers, instructorMembers, enrollments, pendingStudents, pendingInstructors] = await Promise.all([
     prisma.organizationMember.findMany({
-      where: { organizationId: ctx.orgId, role: "STUDENT" },
+      where: { organizationId: ctx.orgId, role: "STUDENT", user: { status: { not: "PENDING" } } },
       include: {
         user: {
           select: {
@@ -64,7 +65,7 @@ export default async function AdminUsersPage() {
       orderBy: { id: "desc" },
     }),
     prisma.organizationMember.findMany({
-      where: { organizationId: ctx.orgId, role: "INSTRUCTOR" },
+      where: { organizationId: ctx.orgId, role: "INSTRUCTOR", user: { status: { not: "PENDING" } } },
       include: {
         user: {
           select: {
@@ -82,22 +83,28 @@ export default async function AdminUsersPage() {
       where: { course: { organizationId: ctx.orgId } },
       select: { courseId: true, course: { select: { creatorId: true } } },
     }),
-    // Pending students — have loginCode starting with STU, no membership in this org
+    // Pending students — all users with PENDING status trying to be students
     prisma.user.findMany({
       where: {
-        loginCode: { startsWith: "STU" },
-        memberships: { none: { organizationId: ctx.orgId } },
+        status: "PENDING",
+        OR: [
+          { memberships: { some: { organizationId: ctx.orgId, role: "STUDENT" } } },
+          { memberships: { none: { organizationId: ctx.orgId } }, loginCode: { startsWith: "STU" } },
+        ],
       },
-      select: { id: true, name: true, email: true, loginCode: true },
+      select: { id: true, name: true, email: true, loginCode: true, status: true },
       orderBy: { id: "desc" },
     }),
-    // Pending instructors — have loginCode starting with INS, no membership in this org
+    // Pending instructors — all users with PENDING status trying to be instructors
     prisma.user.findMany({
       where: {
-        loginCode: { startsWith: "INS" },
-        memberships: { none: { organizationId: ctx.orgId } },
+        status: "PENDING",
+        OR: [
+          { memberships: { some: { organizationId: ctx.orgId, role: "INSTRUCTOR" } } },
+          { memberships: { none: { organizationId: ctx.orgId } }, loginCode: { startsWith: "INS" } },
+        ],
       },
-      select: { id: true, name: true, email: true, loginCode: true },
+      select: { id: true, name: true, email: true, loginCode: true, status: true },
       orderBy: { id: "desc" },
     }),
   ]);
@@ -126,6 +133,7 @@ export default async function AdminUsersPage() {
     email: u.email,
     loginCode: u.loginCode,
     role: "STUDENT",
+    status: u.status,
   }));
 
   const pendingInstructorRows: PendingUserRow[] = pendingInstructors.map((u) => ({
@@ -134,6 +142,7 @@ export default async function AdminUsersPage() {
     email: u.email,
     loginCode: u.loginCode,
     role: "INSTRUCTOR",
+    status: u.status,
   }));
 
   const enrollmentsByCreator = new Map<string, number>();

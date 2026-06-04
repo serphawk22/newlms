@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Eye, GraduationCap, Users, BookOpen, BookMarked, TrendingUp } from "lucide-react";
+import { Eye } from "lucide-react";
 import { AdminStudentModal }    from "@/components/admin/modals/AdminStudentModal";
 import { AdminInstructorModal } from "@/components/admin/modals/AdminInstructorModal";
 import { AdminEnrollmentModal } from "@/components/admin/modals/AdminEnrollmentModal";
@@ -20,35 +20,30 @@ const CARDS = [
     key: "totalStudents",
     label: "Total Students",
     sub: "in workspace",
-    Icon: GraduationCap,
     modal: "students" as ModalType,
   },
   {
     key: "activeInstructors",
     label: "Instructors",
     sub: "in organization",
-    Icon: Users,
     modal: "instructors" as ModalType,
   },
   {
     key: "totalCourses",
     label: "Total Courses",
     sub: "in organization",
-    Icon: BookOpen,
     modal: null,
   },
   {
     key: "publishedCourses",
     label: "Published Courses",
     sub: "live & accessible",
-    Icon: BookMarked,
     modal: null,
   },
   {
     key: "totalEnrollments",
     label: "Total Enrollments",
     sub: "across all courses",
-    Icon: TrendingUp,
     modal: "enrollments" as ModalType,
   },
 ] as const;
@@ -59,7 +54,7 @@ export function AdminStatCards({ stats, orgId }: { stats: AdminStats; orgId: str
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {CARDS.map(({ key, label, sub, Icon, modal }) => (
+        {CARDS.map(({ key, label, sub, modal }) => (
           <div
             key={key}
             className="rounded-2xl p-4 transition-shadow relative group hover:shadow-sm"
@@ -79,12 +74,7 @@ export function AdminStatCards({ stats, orgId }: { stats: AdminStats; orgId: str
               </button>
             )}
 
-            <div
-              className="inline-flex p-2 rounded-lg mb-3"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
-            >
-              <Icon className="h-4 w-4" style={{ color: "var(--foreground)" }} />
-            </div>
+
             <div className="text-2xl font-black" style={{ color: "var(--foreground)" }}>
               {stats[key as keyof AdminStats]}
             </div>

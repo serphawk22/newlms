@@ -78,7 +78,7 @@ export default function CertificateDownloadPage() {
   if (!certData) {
     return (
       <div className="p-10 text-center text-zinc-500 flex flex-col items-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--muted-foreground)" }} />
         <p>Generating your certificate...</p>
       </div>
     );
@@ -100,7 +100,7 @@ export default function CertificateDownloadPage() {
         <div className="text-sm">Certificate: {certData.certificateNumber}</div>
         <button
           onClick={() => window.print()}
-          className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-md font-medium transition-colors text-sm"
+          className="px-4 py-2 rounded-md font-medium transition-colors text-sm hover:bg-[#EF4444]" style={{ background: "#D9252A", color: "#FFFFFF" }}
         >
           Print / Save as PDF
         </button>

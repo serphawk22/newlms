@@ -46,22 +46,22 @@ export default async function SettingsPage() {
   });
 
   if (!org) {
-    return <div className="text-center py-12 text-zinc-500">Organization not found.</div>;
+    return <div className="text-center py-12" style={{ color: "var(--muted-foreground)" }}>Organization not found.</div>;
   }
 
   return (
     <div className="container-page max-w-2xl space-y-6">
       <div className="flex items-center gap-2">
-        <Settings className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Organization Settings</h1>
+        <Settings className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Organization Settings</h1>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm p-6">
+      <Card className="p-6" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <form action={updateOrgName} className="space-y-6">
           <input type="hidden" name="orgId" value={org.id} />
 
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="name" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Organization Name
             </Label>
             <Input
@@ -69,70 +69,72 @@ export default async function SettingsPage() {
               name="name"
               defaultValue={org.name}
               required
-              className="border-zinc-200 focus-visible:ring-zinc-900"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+              className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="slug" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Slug
             </Label>
             <Input
               id="slug"
               value={org.slug}
               disabled
-              className="border-zinc-200 bg-zinc-50 text-zinc-500"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--muted-foreground)" }}
             />
-            <p className="text-[10px] text-zinc-400">Slug cannot be changed.</p>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Slug cannot be changed.</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="logo" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Organization Logo
             </Label>
             <Input
               id="logo"
               type="file"
               disabled
-              className="border-zinc-200 bg-zinc-50 text-zinc-400"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--muted-foreground)" }}
               accept="image/*"
             />
-            <p className="text-[10px] text-zinc-400">Logo upload coming soon.</p>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Logo upload coming soon.</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="timezone" className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label htmlFor="timezone" className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Default Timezone
             </Label>
             <select
               id="timezone"
               disabled
-              className="w-full px-3 py-2 rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500 text-sm"
+              className="w-full px-3 py-2 rounded-lg text-sm"
+              style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--muted-foreground)" }}
             >
               <option>UTC (Coordinated Universal Time)</option>
             </select>
-            <p className="text-[10px] text-zinc-400">Timezone selection coming soon.</p>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Timezone selection coming soon.</p>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-600 font-semibold text-xs uppercase tracking-wider">
+            <Label className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Registration Mode
             </Label>
             <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 text-sm text-zinc-500">
+              <label className="flex items-center gap-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
                 <input type="radio" name="regMode" value="open" disabled className="accent-zinc-900" />
                 Open Registration
               </label>
-              <label className="flex items-center gap-2 text-sm text-zinc-500">
+              <label className="flex items-center gap-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
                 <input type="radio" name="regMode" value="invite" checked disabled className="accent-zinc-900" />
                 Invite Only
               </label>
             </div>
-            <p className="text-[10px] text-zinc-400">Registration settings coming soon.</p>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Registration settings coming soon.</p>
           </div>
 
-          <div className="pt-4 border-t border-zinc-100">
-            <Button type="submit" className="bg-zinc-900 text-white hover:bg-zinc-800">
+          <div className="pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+            <Button type="submit" style={{ background: "#D9252A", color: "#FFFFFF" }} onMouseEnter={(e) => (e.currentTarget.style.background = "#EF4444")} onMouseLeave={(e) => (e.currentTarget.style.background = "#D9252A")}>
               Save Changes
             </Button>
           </div>

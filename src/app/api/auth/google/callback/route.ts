@@ -117,6 +117,18 @@ export async function GET(request: Request) {
     });
 
     if (user) {
+      // Check account status first — pending/rejected users cannot log in
+      if (user.status === "PENDING") {
+        return NextResponse.redirect(
+          new URL(getLoginUrl("Your account is awaiting administrator approval."), request.url)
+        );
+      }
+      if (user.status === "REJECTED") {
+        return NextResponse.redirect(
+          new URL(getLoginUrl("Your account has been rejected by an administrator."), request.url)
+        );
+      }
+
       // User exists — check membership status
       const primaryMembership = user.memberships.find((m) => m.role === role);
 

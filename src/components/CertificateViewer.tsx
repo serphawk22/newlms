@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Download, CheckCircle, Loader2 } from "lucide-react";
+import { Download, CheckCircle } from "lucide-react";
 import type { TemplateMappings, FieldMapping } from "@/components/CertificateTemplateMapper";
 
 interface CertData {
@@ -148,7 +148,7 @@ export function CertificateViewer({ certData }: Props) {
       <div className="flex justify-end mb-4 no-print">
         <button
           onClick={handlePrint}
-          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-colors shadow-sm"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-colors hover:bg-[#EF4444]" style={{ background: "#D9252A", color: "#FFFFFF" }}
         >
           <Download className="w-4 h-4" />
           Download PDF
@@ -158,12 +158,12 @@ export function CertificateViewer({ certData }: Props) {
       {/* Certificate */}
       <div
         id="certificate-print-area"
-        className="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-zinc-100 relative"
-        style={{ aspectRatio: "1.414 / 1", maxWidth: "900px", margin: "0 auto" }}
+        className="w-full rounded-2xl overflow-hidden border border-[var(--border)] relative"
+        style={{ background: "var(--card)", aspectRatio: "1.414 / 1", maxWidth: "900px", margin: "0 auto" }}
       >
         {certData.templateUrl ? (
           /* ── Custom Template Layout ── */
-          <div className="absolute inset-0 bg-white">
+          <div className="absolute inset-0" style={{ background: "var(--card)" }}>
             {/* Template background image */}
             <img
               src={certData.templateUrl}
@@ -194,31 +194,31 @@ export function CertificateViewer({ certData }: Props) {
               /* ── Fallback centered overlay (no mappings configured) ── */
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-12 pb-12 pt-20">
                 <h1
-                  className="text-4xl sm:text-5xl font-bold text-zinc-900 mb-4 tracking-wide"
-                  style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}
+                  className="text-4xl sm:text-5xl font-bold mb-4 tracking-wide"
+                  style={{ color: "var(--foreground)", fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}
                 >
                   {certData.studentName.toUpperCase()}
                 </h1>
-                <p className="text-sm text-zinc-700 mb-2 font-medium">has successfully completed</p>
+                <p className="text-sm mb-2 font-medium" style={{ color: "var(--muted-foreground)" }}>has successfully completed</p>
                 <h2
-                  className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-8 max-w-2xl"
-                  style={{ fontFamily: "Georgia, serif" }}
+                  className="text-2xl sm:text-3xl font-extrabold mb-8 max-w-2xl"
+                  style={{ color: "var(--foreground)", fontFamily: "Georgia, serif" }}
                 >
                   {certData.courseName}
                 </h2>
                 <div className="flex items-center gap-16 mt-auto">
                   <div className="text-center">
-                    <p className="text-sm font-bold text-zinc-800">{formattedDate}</p>
+                    <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>{formattedDate}</p>
                     <div className="w-32 h-px bg-zinc-400 my-1 mx-auto"></div>
-                    <p className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Date</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Date</p>
                   </div>
-                  <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-sm border border-white/50">
+                  <div className="p-2 rounded-xl border border-[var(--border)]" style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(4px)" }}>
                     <img src={qrUrl} alt="QR Code" className="w-24 h-24 object-contain mix-blend-multiply" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-bold text-zinc-800">{certData.certificateNumber}</p>
+                    <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>{certData.certificateNumber}</p>
                     <div className="w-40 h-px bg-zinc-400 my-1 mx-auto"></div>
-                    <p className="text-xs font-semibold text-zinc-600 uppercase tracking-widest">Certificate ID</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Certificate ID</p>
                   </div>
                 </div>
               </div>
@@ -227,7 +227,7 @@ export function CertificateViewer({ certData }: Props) {
         ) : (
           /* ── Default Hardcoded Layout (no template uploaded) ── */
           <div className="flex h-full">
-            <div className="flex flex-col items-center justify-between bg-emerald-600 w-[90px] py-8 px-3 flex-shrink-0">
+            <div className="flex flex-col items-center justify-between w-[90px] py-8 px-3 flex-shrink-0" style={{ background: "var(--card)" }}>
               <div className="text-center">
                 <p className="text-white font-bold text-[9px] tracking-widest uppercase leading-tight mb-3">
                   VERIFIED<br />CERTIFICATE
@@ -246,28 +246,27 @@ export function CertificateViewer({ certData }: Props) {
             <div className="flex flex-col flex-1 px-8 py-8 justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[10px] tracking-[0.3em] text-zinc-400 uppercase font-semibold mb-1">Certificate of Completion</p>
-                  <p className="text-xs text-zinc-400">This is to certify that</p>
+                  <p className="text-[10px] tracking-[0.3em] uppercase font-semibold mb-1" style={{ color: "var(--muted-foreground)" }}>Certificate of Completion</p>
+                  <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>This is to certify that</p>
                 </div>
-                <Award className="w-10 h-10 text-emerald-500 opacity-60" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-zinc-900 tracking-tight leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+                <h1 className="text-4xl font-bold tracking-tight leading-tight" style={{ color: "var(--foreground)", fontFamily: "Georgia, serif" }}>
                   {certData.studentName}
                 </h1>
-                <p className="text-sm text-zinc-500 mt-2 mb-4">has successfully completed the course</p>
-                <h2 className="text-xl font-extrabold text-emerald-700 mb-1">{certData.courseName}</h2>
-                <p className="text-xs text-zinc-400">Duration: {certData.courseDuration}</p>
+                <p className="text-sm mt-2 mb-4" style={{ color: "var(--muted-foreground)" }}>has successfully completed the course</p>
+                <h2 className="text-xl font-extrabold mb-1" style={{ color: "var(--foreground)" }}>{certData.courseName}</h2>
+                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Duration: {certData.courseDuration}</p>
               </div>
               <div className="flex items-end justify-between">
                 <div>
                   <div className="w-32 h-px bg-zinc-300 mb-1" />
-                  <p className="text-xs font-semibold text-zinc-500">{formattedDate}</p>
-                  <p className="text-[10px] text-zinc-400 uppercase tracking-widest">Date of Completion</p>
+                  <p className="text-xs font-semibold" style={{ color: "var(--muted-foreground)" }}>{formattedDate}</p>
+                  <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Date of Completion</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-mono text-zinc-400">{certData.certificateNumber}</p>
-                  <p className="text-[10px] text-zinc-400 uppercase tracking-widest">Certificate ID</p>
+                  <p className="text-xs font-mono" style={{ color: "var(--muted-foreground)" }}>{certData.certificateNumber}</p>
+                  <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Certificate ID</p>
                 </div>
               </div>
             </div>

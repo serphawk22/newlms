@@ -129,8 +129,8 @@ export default async function AnalyticsPage() {
   return (
     <PageWrapper>
       <div className="flex items-center gap-2 mb-6">
-        <BarChart2 className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Analytics</h1>
+        <BarChart2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Analytics</h1>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -140,9 +140,9 @@ export default async function AnalyticsPage() {
           { label: "Most Active Student", value: mostActiveStudent },
           { label: "Most Popular Course", value: mostPopularCourse },
         ].map((item) => (
-          <Card key={item.label} className="rounded-xl border border-zinc-200 bg-white p-4">
-            <p className="text-xs text-zinc-400 uppercase tracking-wider">{item.label}</p>
-            <p className="text-lg font-medium text-zinc-900 mt-1 truncate">{item.value}</p>
+          <Card key={item.label} className="rounded-xl p-4" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
+            <p className="text-xs uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>{item.label}</p>
+            <p className="text-lg font-medium mt-1 truncate" style={{ color: "var(--foreground)" }}>{item.value}</p>
           </Card>
         ))}
       </div>

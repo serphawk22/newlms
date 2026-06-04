@@ -434,11 +434,10 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
       >
         {isOpen ? <X className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
       </button>
-      </button>
       {/* Main chat window */}
       {isOpen && (
         <div
-          className="fixed bottom-24 right-6 z-50 flex rounded-2xl overflow-hidden shadow-2xl"
+          className="fixed bottom-24 right-6 z-50 flex rounded-2xl overflow-hidden"
           style={{
             width: sidebarOpen ? "680px" : "400px",
             height: "580px",
@@ -499,9 +498,9 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
           )}
 
           {/* ======= MAIN CHAT PANEL ======= */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 bg-[#161616]">
             {/* Header */}
-            <div className="flex items-center gap-2 px-3 py-3 border-b border-white/10 bg-white/5 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-3 border-b border-[#2A2A2A] bg-[#0A0A0A] shrink-0">
               <button
                 onClick={() => setSidebarOpen((p) => !p)}
                 className="text-white/40 hover:text-white/80 transition-colors"
@@ -557,8 +556,8 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                     )}
                     {msg.filePreview && !msg.fileType?.startsWith("image/") && (
                       <div className="flex items-center gap-2 bg-white/10 rounded-lg px-2 py-1.5 border border-white/10">
-                        <FileText className="w-3.5 h-3.5 text-violet-300 shrink-0" />
-                        <span className="text-[11px] text-violet-200 truncate">{msg.fileName}</span>
+                        <FileText className="w-3.5 h-3.5 text-[#D9252A] shrink-0" />
+                        <span className="text-[11px] text-red-200 truncate">{msg.fileName}</span>
                       </div>
                     )}
                     {/* Text content */}
@@ -572,7 +571,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                         title={speakingMsgIdx === idx ? "Stop reading" : "Read aloud"}
                         className={`absolute -bottom-2 right-2 flex items-center justify-center w-5 h-5 rounded-full transition-all duration-200 opacity-0 group-hover/bubble:opacity-100 focus:opacity-100 ${
                           speakingMsgIdx === idx
-                            ? "bg-violet-500 text-white shadow-lg shadow-violet-500/40"
+                            ? "bg-[#D9252A] text-white"
                             : "bg-white/15 text-white/50 hover:bg-white/25 hover:text-white"
                         }`}
                       >
@@ -616,7 +615,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
             </div>
 
             {/* Input area */}
-            <div className="shrink-0 p-3 border-t border-white/10 bg-white/5 space-y-2">
+            <div className="shrink-0 p-3 border-t border-[#2A2A2A] bg-[#0A0A0A] space-y-2">
               {/* File preview above input */}
               {attachedFile && filePreviewUrl && (
                 <div
@@ -707,7 +706,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                     className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isListening
                         ? "bg-red-500 hover:bg-red-400 mic-pulse"
-                        : "text-white/40 hover:text-violet-300 hover:bg-white/10"
+                        : "text-white/40 hover:text-[#D9252A] hover:bg-white/10"
                     }`}
                   >
                     {isListening

@@ -192,14 +192,14 @@ export default async function StudentProgressPage() {
 
       {/* ── Earned Certificates ─────────────────────────────────────────────── */}
       <div className="px-6 pb-8">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#D9252A" }}>
               <Award className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-gray-800">Earned Certificates</h2>
-              <p className="text-xs text-gray-400">
+              <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Earned Certificates</h2>
+              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
                 {serializedCerts.length === 0 && eligibleCourses.length === 0
                   ? "Complete a course at 100% to earn your first certificate"
                   : `${serializedCerts.length} certificate${serializedCerts.length !== 1 ? "s" : ""} earned`}

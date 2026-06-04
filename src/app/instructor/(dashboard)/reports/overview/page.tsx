@@ -58,33 +58,33 @@ async function OverviewContent() {
   return (
     <PageWrapper>
       <div className="flex items-center gap-2 mb-6">
-        <h1 className="text-xl font-bold text-zinc-900">Reports Overview</h1>
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Reports Overview</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-zinc-200 shadow-sm">
+          <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-5 space-y-0 divide-y divide-zinc-100">
-              <h3 className="text-sm font-semibold text-zinc-900 pb-3">Overview</h3>
+              <h3 className="text-sm font-semibold pb-3" style={{ color: "var(--foreground)" }}>Overview</h3>
               {statRows.map((row) => {
                 const Icon = row.icon;
                 return (
                   <div
                     key={row.label}
-                    className="flex items-center justify-between py-3 hover:bg-zinc-50 -mx-5 px-5 transition-colors"
+                    className="flex items-center justify-between py-3 -mx-5 px-5 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="w-4 h-4 text-zinc-400" />
+                      <Icon className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
                       <span className="text-sm text-zinc-600">{row.label}</span>
                     </div>
-                    <span className="text-sm font-semibold text-zinc-900">{row.value}</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{row.value}</span>
                   </div>
                 );
               })}
             </div>
           </Card>
 
-          <Card className="border-zinc-200 shadow-sm">
+          <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-5">
               <ActivityChart data={activityData} />
             </div>
@@ -92,9 +92,9 @@ async function OverviewContent() {
         </div>
 
         <div className="space-y-6">
-          <Card className="border-zinc-200 shadow-sm">
+          <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-5 space-y-0 divide-y divide-zinc-100">
-              <h3 className="text-sm font-semibold text-zinc-900 pb-3">Learning Structure</h3>
+              <h3 className="text-sm font-semibold pb-3" style={{ color: "var(--foreground)" }}>Learning Structure</h3>
               {[
                 { label: "Courses", value: courses.length },
                 { label: "Categories", value: 0 },
@@ -104,18 +104,18 @@ async function OverviewContent() {
               ].map((row) => (
                 <div
                   key={row.label}
-                  className="flex items-center justify-between py-2.5 hover:bg-zinc-50 -mx-5 px-5 transition-colors"
+                  className="flex items-center justify-between py-2.5 -mx-5 px-5 transition-colors"
                 >
                   <span className="text-sm text-zinc-600">{row.label}</span>
-                  <span className="text-sm font-semibold text-zinc-900">{row.value}</span>
+                  <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{row.value}</span>
                 </div>
               ))}
             </div>
           </Card>
 
-          <Card className="border-zinc-200 shadow-sm">
+          <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-5">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">Courses</h3>
+              <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--foreground)" }}>Courses</h3>
               <CompletionDonut
                 completed={completedCourses}
                 inProgress={inProgressCourses}

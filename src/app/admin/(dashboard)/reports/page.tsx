@@ -10,12 +10,12 @@ function ReportsSkeleton() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Reports</h1>
+        <BarChart2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Reports</h1>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="border-zinc-200 shadow-sm">
+          <Card key={i} style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-4">
               <div className="w-8 h-8 rounded-lg bg-zinc-100 animate-pulse mb-2" />
               <div className="h-6 bg-zinc-100 rounded animate-pulse mb-2" />
@@ -58,65 +58,65 @@ async function AdminReportsContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Reports</h1>
+        <BarChart2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Reports</h1>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Students", value: totalStudents, icon: <Users className="w-4 h-4" />, color: "bg-blue-100 text-blue-600" },
-          { label: "Instructors", value: totalInstructors, icon: <Users className="w-4 h-4" />, color: "bg-emerald-100 text-emerald-600" },
-          { label: "Total Courses", value: totalCourses, icon: <BookOpen className="w-4 h-4" />, color: "bg-amber-100 text-amber-600" },
-          { label: "Published", value: publishedCourses, icon: <CheckCircle className="w-4 h-4" />, color: "bg-purple-100 text-purple-600" },
+          { label: "Total Students", value: totalStudents, icon: <Users className="w-4 h-4" style={{ color: "#D9252A" }} />, color: "rgba(217,37,42,0.12)" },
+          { label: "Instructors", value: totalInstructors, icon: <Users className="w-4 h-4" style={{ color: "#D9252A" }} />, color: "rgba(217,37,42,0.12)" },
+          { label: "Total Courses", value: totalCourses, icon: <BookOpen className="w-4 h-4" style={{ color: "#D9252A" }} />, color: "rgba(217,37,42,0.12)" },
+          { label: "Published", value: publishedCourses, icon: <CheckCircle className="w-4 h-4" style={{ color: "#D9252A" }} />, color: "rgba(217,37,42,0.12)" },
         ].map((stat) => (
-          <Card key={stat.label} className="border-zinc-200 shadow-sm">
+          <Card key={stat.label} style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-4">
-              <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-2`}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ background: stat.color }}>
                 {stat.icon}
               </div>
-              <p className="text-xl font-medium text-zinc-900">{stat.value}</p>
-              <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+              <p className="text-xl font-medium" style={{ color: "var(--foreground)" }}>{stat.value}</p>
+              <p className="text-[10px] font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
             </div>
           </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-zinc-200 shadow-sm">
+        <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <div className="p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Enrollments</h3>
+              <TrendingUp className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Enrollments</h3>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{totalEnrollments}</p>
-            <p className="text-xs text-zinc-500">Total course enrollments across all courses</p>
+            <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{totalEnrollments}</p>
+            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Total course enrollments across all courses</p>
           </div>
         </Card>
-        <Card className="border-zinc-200 shadow-sm">
+        <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <div className="p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">Completion</h3>
+              <CheckCircle className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Completion</h3>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{completionRate}%</p>
-            <p className="text-xs text-zinc-500">{completedCourses} completed out of {totalEnrollments} enrollments</p>
+            <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{completionRate}%</p>
+            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{completedCourses} completed out of {totalEnrollments} enrollments</p>
           </div>
         </Card>
-        <Card className="border-zinc-200 shadow-sm">
+        <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <div className="p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider">In Progress</h3>
+              <Clock className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>In Progress</h3>
             </div>
-            <p className="text-2xl font-bold text-zinc-900">{inProgress}</p>
-            <p className="text-xs text-zinc-500">Enrollments currently in progress</p>
+            <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{inProgress}</p>
+            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Enrollments currently in progress</p>
           </div>
         </Card>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm">
+      <Card style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <div className="p-4">
-          <h3 className="text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-3">Course Overview</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--muted-foreground)" }}>Course Overview</h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

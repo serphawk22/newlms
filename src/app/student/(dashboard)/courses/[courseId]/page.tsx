@@ -310,40 +310,23 @@ export default async function StudentCourseView({
                   </div>
                 ) : (
                   <div className="space-y-4">
-<<<<<<< HEAD
-                    {(course.modules as any[]).map((module, index) => (
-                      <Card key={module.id} className="border-slate-200 shadow-sm overflow-hidden bg-white hover:border-blue-200 transition-colors">
-                        <CardHeader className="bg-slate-50 border-b border-slate-100 py-4">
-                          <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <BookOpen className="w-5 h-5 text-blue-500" />
-=======
                     {course.modules.map((module, index) => (
                       <Card key={module.id} className="border-[var(--border)] shadow-sm overflow-hidden bg-[var(--card)] hover:border-[var(--accent)]/40 transition-colors">
                         <CardHeader className="bg-[var(--secondary-background)] border-b border-[var(--border)] py-4">
                           <CardTitle className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
                             <BookOpen className="w-5 h-5 text-[var(--muted-foreground)]" />
->>>>>>> vaishnavi-ui
                             Module {index + 1}: {module.title}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
 
                           {/* ── Lessons ── */}
-<<<<<<< HEAD
-                          <div className="divide-y divide-slate-100">
-                            {module.lessons?.length === 0 ? (
-                              <div className="p-6 text-sm text-slate-400 text-center bg-slate-50/50">No lessons posted yet.</div>
-                            ) : (
-                              (module.lessons || []).map((lesson: any, lessonIndex: number) => (
-                                <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-blue-50/50 transition-colors">
-=======
                           <div className="divide-y divide-[var(--border)]">
                             {module.lessons.length === 0 ? (
                               <div className="p-6 text-sm text-[var(--muted-foreground)] text-center bg-[var(--secondary-background)]/30">No lessons posted yet.</div>
                             ) : (
                               module.lessons.map((lesson, lessonIndex) => (
                                 <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-[var(--secondary-background)]/60 transition-colors">
->>>>>>> vaishnavi-ui
                                   <div className="flex items-center gap-4">
                                     <div className="w-8 h-8 rounded-full bg-[var(--secondary-background)] border border-[var(--border)] flex items-center justify-center shrink-0">
                                       <PlayCircle className="w-4 h-4 text-[var(--muted-foreground)]" />
@@ -379,15 +362,9 @@ export default async function StudentCourseView({
                           </div>
 
                           {/* ── Live Classes ── */}
-<<<<<<< HEAD
-                          {module.liveSessions && module.liveSessions.length > 0 && (
-                            <div className="border-t border-slate-100 px-4 py-3">
-                              <p className="text-xs font-bold uppercase tracking-wider text-red-400 mb-2 flex items-center gap-1.5">
-=======
                           {module.liveSessions.length > 0 && (
                             <div className="border-t border-[var(--border)] px-4 py-3">
                               <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-2 flex items-center gap-1.5">
->>>>>>> vaishnavi-ui
                                 <Radio className="w-3.5 h-3.5" /> Live Classes
                               </p>
                               <div className="space-y-2">
@@ -446,16 +423,6 @@ export default async function StudentCourseView({
                           )}
 
                           {/* ── Recorded Videos ── */}
-<<<<<<< HEAD
-                          {module.recordedClasses && module.recordedClasses.length > 0 && (
-                            <div className="border-t border-slate-100 px-4 py-3">
-                              <p className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2 flex items-center gap-1.5">
-                                <MonitorPlay className="w-3.5 h-3.5" /> Recorded Videos
-                              </p>
-                              <div className="space-y-2">
-                                {(module.recordedClasses || []).map((rec: any) => (
-                                  <div key={rec.id} className="flex items-center justify-between p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
-=======
                           {module.recordedClasses.length > 0 && (
                             <div className="border-t border-[var(--border)] px-4 py-3">
                               <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2 flex items-center gap-1.5">
@@ -464,7 +431,6 @@ export default async function StudentCourseView({
                               <div className="space-y-2">
                                 {module.recordedClasses.map((rec) => (
                                   <div key={rec.id} className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--secondary-background)]/40">
->>>>>>> vaishnavi-ui
                                     <div className="flex items-center gap-3 min-w-0">
                                       <MonitorPlay className="w-4 h-4 text-[var(--muted-foreground)] shrink-0" />
                                       <span className="text-sm font-medium truncate text-[var(--foreground)]">{rec.title}</span>
@@ -505,13 +471,8 @@ export default async function StudentCourseView({
                   <h3 className="text-2xl font-bold text-[var(--foreground)]">Reading Materials</h3>
                 </div>
 
-<<<<<<< HEAD
-                {(!course.readingMaterials || course.readingMaterials.length === 0) ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
-=======
                 {course.readingMaterials.length === 0 ? (
                   <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
->>>>>>> vaishnavi-ui
                     No reading materials available yet.
                   </div>
                 ) : (
@@ -611,13 +572,8 @@ export default async function StudentCourseView({
                   <h3 className="text-2xl font-bold text-[var(--foreground)]">Assignments</h3>
                 </div>
 
-<<<<<<< HEAD
-                {(!course.assignments || course.assignments.length === 0) ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
-=======
                 {course.assignments.length === 0 ? (
                   <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
->>>>>>> vaishnavi-ui
                     No assignments currently due.
                   </div>
                 ) : (
@@ -689,13 +645,8 @@ export default async function StudentCourseView({
                   <h3 className="text-2xl font-bold text-[var(--foreground)]">Quizzes & Tests</h3>
                 </div>
 
-<<<<<<< HEAD
-                {(!course.quizzes || course.quizzes.length === 0) ? (
-                  <div className="text-center py-16 text-slate-500 bg-white rounded-lg border border-slate-200 shadow-sm">
-=======
                 {course.quizzes.length === 0 ? (
                   <div className="text-center py-16 text-[var(--muted-foreground)] bg-[var(--card)] rounded-lg border border-[var(--border)] shadow-sm">
->>>>>>> vaishnavi-ui
                     No quizzes available.
                   </div>
                 ) : (

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, UserCheck, Clock } from "lucide-react";
+
 
 export interface StudentAnalyticsData {
   total: number;
@@ -11,8 +11,8 @@ export function AdminStudentSection({ data }: { data: StudentAnalyticsData }) {
   return (
     <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-bold" style={{ color: "var(--foreground)" }}>
-          <GraduationCap className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} /> Student Analytics
+        <CardTitle className="text-base font-bold" style={{ color: "var(--foreground)" }}>
+          Student Analytics
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -23,12 +23,7 @@ export function AdminStudentSection({ data }: { data: StudentAnalyticsData }) {
               className="rounded-xl p-4 flex items-center gap-3"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)" }}
             >
-              <div
-                className="p-2 rounded-lg"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
-              >
-                <GraduationCap className="w-5 h-5" style={{ color: "var(--foreground)" }} />
-              </div>
+
               <div>
                 <div className="text-2xl font-black" style={{ color: "var(--foreground)" }}>{data.total}</div>
                 <div className="text-xs font-semibold" style={{ color: "var(--muted-foreground)" }}>Total Students</div>
@@ -38,12 +33,7 @@ export function AdminStudentSection({ data }: { data: StudentAnalyticsData }) {
               className="rounded-xl p-4 flex items-center gap-3"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)" }}
             >
-              <div
-                className="p-2 rounded-lg"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
-              >
-                <UserCheck className="w-5 h-5" style={{ color: "var(--foreground)" }} />
-              </div>
+
               <div>
                 <div className="text-2xl font-black" style={{ color: "var(--foreground)" }}>{data.active}</div>
                 <div className="text-xs font-semibold" style={{ color: "var(--muted-foreground)" }}>Active (Enrolled)</div>
@@ -53,10 +43,7 @@ export function AdminStudentSection({ data }: { data: StudentAnalyticsData }) {
 
           {/* Recently joined table — spans 2 cols */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
-              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Recently Joined Students</span>
-            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: "var(--muted-foreground)" }}>Recently Joined Students</span>
             <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
               {data.recentlyJoined.length === 0 ? (
                 <div className="text-center py-6 text-xs" style={{ color: "var(--muted-foreground)" }}>No students yet</div>

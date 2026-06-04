@@ -317,14 +317,14 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
     <div className="flex flex-col gap-6">
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${toast.type === "success" ? "bg-emerald-600" : "bg-red-600"}`}>
+        <div className={`fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${toast.type === "success" ? "bg-[#D9252A]" : "bg-red-600"}`}>
           {toast.type === "success" ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
           {toast.msg}
         </div>
       )}
 
       {/* Header controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border" style={{ backgroundColor: "var(--secondary-background)", borderColor: "var(--border)" }}>
         <div>
           <h3 className="font-semibold text-zinc-800 text-sm">Field Position Editor</h3>
           <p className="text-xs text-zinc-500 mt-0.5">Drag the colored boxes to match where each field should appear on the certificate</p>
@@ -333,7 +333,7 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
           <button
             onClick={runOcr}
             disabled={scanning}
-            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#D9252A] hover:bg-[#EF4444] disabled:opacity-60 text-white rounded-lg text-xs font-medium transition-colors"
           >
             {scanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Scan className="w-3.5 h-3.5" />}
             {scanning ? "Scanning..." : "Auto-Detect (OCR)"}
@@ -348,7 +348,7 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#D9252A] hover:bg-[#EF4444] disabled:opacity-60 text-white rounded-lg text-xs font-medium transition-colors"
           >
             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             {saving ? "Saving..." : "Save Positions"}
@@ -358,7 +358,7 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
 
       {/* OCR result */}
       {scanResult && (
-        <div className="flex items-center gap-2 text-xs text-violet-700 bg-violet-50 border border-violet-200 rounded-lg px-4 py-2">
+        <div className="flex items-center gap-2 text-xs rounded-lg px-4 py-2" style={{ color: "#D9252A", backgroundColor: "rgba(217,37,42,0.06)", border: "1px solid rgba(217,37,42,0.15)" }}>
           <Scan className="w-3.5 h-3.5 flex-shrink-0" />
           {scanResult}
         </div>
@@ -456,7 +456,7 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleField(field); }}
-                    className={`p-1 rounded transition-colors ${fm.visible ? "text-emerald-600 hover:bg-emerald-50" : "text-zinc-400 hover:bg-zinc-100"}`}
+                    className={`p-1 rounded transition-colors ${fm.visible ? "text-[#D9252A] hover:bg-[rgba(217,37,42,0.06)]" : "text-zinc-400 hover:bg-zinc-100"}`}
                   >
                     {fm.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                   </button>

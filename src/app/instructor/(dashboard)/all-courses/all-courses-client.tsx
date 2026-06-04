@@ -14,23 +14,21 @@ const ITEMS_PER_PAGE = 15;
 
 function CourseRowComponent({ course }: { course: CourseRow }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50 transition-colors border-b border-zinc-100 last:border-b-0">
+    <div className="flex items-center justify-between px-4 py-3 transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-zinc-900 truncate">{course.title}</p>
-        <p className="text-xs text-zinc-500 mt-0.5">{course.instructorName || "Unknown"}</p>
+        <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>{course.title}</p>
+        <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{course.instructorName || "Unknown"}</p>
       </div>
       <div className="flex items-center gap-6 shrink-0">
         <div className="text-center">
-          <p className="text-sm font-semibold text-zinc-900">{course.enrolledStudents}</p>
-          <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Students</p>
+          <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{course.enrolledStudents}</p>
+          <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Students</p>
         </div>
         <div className="text-center">
-          <p className="text-sm font-semibold text-zinc-900">{course.completionRate}%</p>
-          <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Completed</p>
+          <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{course.completionRate}%</p>
+          <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Completed</p>
         </div>
-        <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${
-          course.published ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-        }`}>
+        <span className="text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
           {course.published ? "Published" : "Draft"}
         </span>
       </div>
@@ -60,27 +58,29 @@ export function AllCoursesPageClient({ data }: Props) {
   return (
     <div className="container-page space-y-6">
       <div className="flex items-center gap-2">
-        <FolderKanban className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">All Courses</h1>
-        <span className="ml-auto text-xs font-semibold bg-zinc-100 text-zinc-600 px-2.5 py-1 rounded-full">
+        <FolderKanban className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>All Courses</h1>
+        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)", color: "var(--muted-foreground)" }}>
           {data.total} courses
         </span>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
           <Input
             placeholder="Search by course name..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 border-zinc-200"
+            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+            className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
           />
         </div>
         <select
           value={instructorFilter}
           onChange={(e) => { setInstructorFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+          className="px-3 py-2 rounded-lg text-sm focus:outline-none"
+          style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
         >
           <option value="">All Instructors</option>
           {data.instructors.map((inst) => (
@@ -90,7 +90,8 @@ export function AllCoursesPageClient({ data }: Props) {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+          className="px-3 py-2 rounded-lg text-sm focus:outline-none"
+          style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
         >
           <option value="all">All Status</option>
           <option value="published">Published</option>
@@ -98,33 +99,35 @@ export function AllCoursesPageClient({ data }: Props) {
         </select>
       </div>
 
-      <Card className="border-zinc-200 shadow-sm overflow-hidden">
-        <div className="divide-y divide-zinc-100">
+      <Card className="overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
+        <div style={{ borderTop: "1px solid var(--border)" }}>
           {paged.map((c) => (
             <CourseRowComponent key={c.id} course={c} />
           ))}
         </div>
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-zinc-400 text-sm">No courses found matching your filters.</div>
+          <div className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>No courses found matching your filters.</div>
         )}
       </Card>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <span className="text-xs text-zinc-500">{filtered.length} courses</span>
+          <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{filtered.length} courses</span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1.5 text-xs font-medium text-zinc-500 disabled:opacity-40 hover:text-zinc-900 border border-zinc-200 rounded-lg"
+              className="px-3 py-1.5 text-xs font-medium disabled:opacity-40 rounded-lg"
+              style={{ color: "var(--muted-foreground)", border: "1px solid var(--border)", background: "var(--secondary-background)" }}
             >
               Previous
             </button>
-            <span className="text-xs text-zinc-500">Page {page} of {totalPages}</span>
+            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>Page {page} of {totalPages}</span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-3 py-1.5 text-xs font-medium text-zinc-500 disabled:opacity-40 hover:text-zinc-900 border border-zinc-200 rounded-lg"
+              className="px-3 py-1.5 text-xs font-medium disabled:opacity-40 rounded-lg"
+              style={{ color: "var(--muted-foreground)", border: "1px solid var(--border)", background: "var(--secondary-background)" }}
             >
               Next
             </button>

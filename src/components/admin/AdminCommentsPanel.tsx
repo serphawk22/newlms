@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { MessageSquare, Send, Trash2, BookOpen, GraduationCap } from "lucide-react";
+import { Send, Trash2, BookOpen, GraduationCap } from "lucide-react";
 import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 
@@ -106,7 +106,6 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
     <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
       {/* Header */}
       <div className="flex items-center gap-2 px-6 py-4" style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border)" }}>
-        <MessageSquare className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
         <span className="text-base font-bold" style={{ color: "var(--foreground)" }}>Admin Comments</span>
         <span className="text-xs ml-1" style={{ color: "var(--muted-foreground)" }}>— visible only to admin &amp; instructor / student</span>
       </div>

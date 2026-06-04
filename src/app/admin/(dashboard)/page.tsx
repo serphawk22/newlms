@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
 import { AdminInstructorTable, AdminCourseTable } from "@/components/admin/AdminAnalyticsTables";
 import { AdminStudentSection } from "@/components/admin/AdminStudentSection";
 import { AdminCommentsPanel } from "@/components/admin/AdminCommentsPanel";
+import { PendingRequestsCard } from "@/components/admin/PendingRequestsCard";
+import type { PendingUserItem } from "@/components/admin/PendingRequestsCard";
 import { getAdminContext } from "./_lib";
 
 export const dynamic = "force-dynamic";
@@ -104,13 +105,28 @@ async function AdminDashboardContent() {
 
   const { adminStats, instructorRows, courseRows, studentData, courses } = data;
 
+  // Pending users — query by status directly to catch all (email + Google signups)
+  const pendingUsersRaw = await prisma.user.findMany({
+    where: { status: "PENDING" },
+    select: {
+      id: true, name: true, email: true, loginCode: true,
+      memberships: { select: { role: true } },
+    },
+    orderBy: { id: "desc" },
+    take: 20,
+  });
+
+  const pendingUsers: PendingUserItem[] = pendingUsersRaw.map((u) => {
+    const role =
+      u.memberships[0]?.role ??
+      (u.loginCode?.startsWith("STU") ? "STUDENT" as const : u.loginCode?.startsWith("INS") ? "INSTRUCTOR" as const : "STUDENT" as const);
+    return { id: u.id, name: u.name, email: u.email, role };
+  });
+
   return (
     <div className="space-y-6">
       <div className="px-4 sm:px-6 lg:px-8 pt-6">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
-          <h1 className="text-base font-medium" style={{ color: "var(--foreground)" }}>Admin Dashboard</h1>
-        </div>
+        <h1 className="text-base font-medium" style={{ color: "var(--foreground)" }}>Admin Dashboard</h1>
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 space-y-6">
@@ -124,12 +140,7 @@ async function AdminDashboardContent() {
           ].map((stat) => (
             <Card key={stat.label} style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
               <CardContent className="p-4">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center mb-2"
-                  style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
-                >
-                  <TrendingUp className="w-4 h-4" style={{ color: "var(--foreground)" }} />
-                </div>
+
                 <p className="text-xl font-medium" style={{ color: "var(--foreground)" }}>{stat.value}</p>
                 <p className="text-[10px] font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
               </CardContent>
@@ -143,6 +154,8 @@ async function AdminDashboardContent() {
         </div>
 
         <AdminStudentSection data={studentData} />
+
+        <PendingRequestsCard users={pendingUsers} totalPending={pendingUsers.length} />
 
         <div className="pt-4" style={{ borderTop: "1px solid var(--border)" }}>
           <h3 className="text-xs font-medium uppercase tracking-wider mb-4" style={{ color: "var(--muted-foreground)" }}>Admin Comments</h3>

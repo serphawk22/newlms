@@ -23,11 +23,8 @@ import { jwtVerify } from "jose";
 import { CourseRoadmap } from "@/components/CourseRoadmap";
 import { LiveSessionScheduleForm } from "@/components/LiveSessionScheduleForm";
 import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
-<<<<<<< HEAD
 import { QuizPdfImporter } from "@/components/QuizPdfImporter";
-=======
 import { getCourseBannerUrl } from "@/lib/course-images";
->>>>>>> vaishnavi-ui
 
 // --- SERVER ACTIONS ---
 
@@ -565,7 +562,6 @@ export default async function CourseBuilderPage({
     orderBy: { enrolledAt: "desc" },
   });
 
-<<<<<<< HEAD
   // Fetch certificates for this course to show status in Students Info
   const courseCertificates = await prisma.certificate.findMany({
     where: { courseId },
@@ -573,8 +569,6 @@ export default async function CourseBuilderPage({
   const certMap = new Map(courseCertificates.map(c => [c.studentId, c.status]));
 
   // Fetch org students NOT enrolled in this course (for instructor to add)
-=======
->>>>>>> vaishnavi-ui
   const enrolledIds = [...enrollments.map((e) => e.userId), ...pendingEnrollments.map((e) => e.userId)];
   const unenrolledMembers = await prisma.organizationMember.findMany({
     where: {
@@ -1575,22 +1569,8 @@ export default async function CourseBuilderPage({
                     <p className="text-sm mt-1">Students will appear here once they enrol in this course.</p>
                   </div>
                 ) : (
-<<<<<<< HEAD
-                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
-                    <table className="w-full text-sm min-w-[1000px]">
-                      <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">#</th>
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">Student</th>
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">Email</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Assignments</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Quizzes</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Materials</th>
-                          <th className="text-left px-5 py-3 font-semibold text-slate-600">Progress</th>
-                          <th className="text-center px-5 py-3 font-semibold text-slate-600">Certificate Status</th>
-=======
                   <div className="rounded-xl border overflow-hidden" style={{ background: "var(--card)", borderColor: "var(--border)", boxShadow: "none" }}>
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm min-w-[1000px]">
                       <thead>
                         <tr style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
                           <th className="text-left px-5 py-3 font-semibold w-12" style={{ color: "var(--muted-foreground)" }}>#</th>
@@ -1600,7 +1580,7 @@ export default async function CourseBuilderPage({
                           <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Quizzes</th>
                           <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Materials</th>
                           <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Progress</th>
->>>>>>> vaishnavi-ui
+                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Certificate Status</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
