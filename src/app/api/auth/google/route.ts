@@ -20,9 +20,12 @@ export async function GET(request: Request) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const jwtSecret = process.env.JWT_SECRET;
 
-    if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: "Google OAuth credentials not configured" }, { status: 500 });
-    }
+    return NextResponse.json({
+  hasClientId: !!process.env.GOOGLE_CLIENT_ID,
+  hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+  hasJwtSecret: !!process.env.JWT_SECRET,
+  appUrl: process.env.NEXT_PUBLIC_APP_URL,
+});
 
     if (!jwtSecret) {
       return NextResponse.json({ error: "JWT_SECRET not configured" }, { status: 500 });
