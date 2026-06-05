@@ -117,9 +117,9 @@ export default function StudentCoursesClient({
           <Button
             size="sm"
             className="w-full transition-colors"
-            style={{ background: "#D9252A", color: "#FFFFFF" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#B21E22")}
-            onMouseLeave={e => (e.currentTarget.style.background = "#D9252A")}
+            style={{ background: "var(--foreground)", color: "var(--background)" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#2D3035")}
+            onMouseLeave={e => (e.currentTarget.style.background = "var(--foreground)")}
             onClick={() => router.push(`/student/courses/${course.id}`)}
           >
             Continue Learning
@@ -457,18 +457,12 @@ export default function StudentCoursesClient({
                         )}
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <div className="flex items-center justify-between text-xs">
-                          <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
-                          <span className="font-medium" style={{ color: "var(--foreground)" }}>
-                            {course.progress}%
-                          </span>
-                        </div>
                         <Button
                           size="sm"
                           className="w-full transition-colors"
-                          style={{ background: "#D9252A", color: "#FFFFFF" }}
-                          onMouseEnter={e => (e.currentTarget.style.background = "#B21E22")}
-                          onMouseLeave={e => (e.currentTarget.style.background = "#D9252A")}
+                          style={{ background: "var(--foreground)", color: "var(--background)" }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "#2D3035")}
+                          onMouseLeave={e => (e.currentTarget.style.background = "var(--foreground)")}
                           onClick={() => router.push(`/student/courses/${course.id}`)}
                         >
                           Continue Learning

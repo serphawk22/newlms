@@ -351,9 +351,8 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
                           ) : (
                             <div className="space-y-1.5 max-w-md">
                               {user.enrolledCourses.map((course) => (
-                                <div key={`${user.id}-${course.title}`} className="flex items-center justify-between text-sm py-1 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                                <div key={`${user.id}-${course.title}`} className="flex items-center text-sm py-1" style={{ borderBottom: "1px solid var(--border)" }}>
                                   <span style={{ color: "var(--foreground)" }}>{course.title}</span>
-                                  <span className="font-semibold" style={{ color: "#D9252A" }}>{Math.round(course.progress)}%</span>
                                 </div>
                               ))}
                             </div>

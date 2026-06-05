@@ -293,20 +293,14 @@ function TrendingCourseCard({
           <span className="flex items-center gap-1"><LayoutGrid className="w-3 h-3" /> {course.modulesCount} modules</span>
         </div>
         {localStatus === "ACTIVE" && (
-          <>
-            <div className="flex items-center justify-between text-xs">
-              <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
-              <span className="font-semibold" style={{ color: "var(--foreground)" }}>{course.progress}%</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => router.push(`/student/courses/${course.id}`)}
-              style={{ background: "#D9252A", color: "#FFFFFF" }}
-              className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl transition-colors hover:bg-[#C21F24]"
-            >
-              Continue Learning <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </>
+          <button
+            type="button"
+            onClick={() => router.push(`/student/courses/${course.id}`)}
+            style={{ background: "var(--foreground)", color: "var(--background)" }}
+            className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-xl transition-colors hover:opacity-80"
+          >
+            Continue Learning <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         )}
         {localStatus === "PENDING" && (
           <button
@@ -452,8 +446,8 @@ export function StudentDashboardClient({
               </div>
               <Link
                 href={`/student/courses/${continueLearningCourse.id}`}
-                style={{ background: "var(--primary)", color: "var(--primary-foreground)", border: "1px solid var(--border)" }}
-                className="shrink-0 flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors hover:bg-[#D9252A]"
+                style={{ background: "var(--foreground)", color: "var(--background)" }}
+                className="shrink-0 flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors hover:opacity-80"
               >
                 Resume <ArrowRight className="w-4 h-4" />
               </Link>
@@ -525,7 +519,6 @@ export function StudentDashboardClient({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>{course.title}</p>
-                        <span className="text-[11px] font-semibold shrink-0" style={{ color: "var(--muted-foreground)" }}>{course.progress}%</span>
                       </div>
                       <ChevronRight className="w-4 h-4 transition-all shrink-0" style={{ color: "var(--border)" }} />
                     </div>

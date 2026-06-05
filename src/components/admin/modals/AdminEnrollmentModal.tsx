@@ -38,31 +38,32 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden border border-slate-200">
+      <div style={{ background: "var(--card)", border: "1px solid var(--border)" }} className="rounded-2xl w-full max-w-2xl mx-4 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+        <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-pink-500" />
-            <h2 className="text-base font-bold text-slate-900">Enrollment Details</h2>
+            <TrendingUp className="w-5 h-5" style={{ color: "#D9252A" }} />
+            <h2 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Enrollment Details</h2>
             {!loading && (
-              <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-bold ml-1">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A" }}>
                 {enrollments.length}
               </span>
             )}
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-200 transition-colors">
-            <X className="w-4 h-4 text-slate-500" />
+          <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "var(--muted-foreground)" }}>
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Search */}
-        <div className="px-5 py-3 border-b border-slate-100">
+        <div className="px-5 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
           <input
             type="text"
             placeholder="Search by student or course..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
+            className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
+            style={{ border: "1px solid var(--border)", background: "var(--secondary-background)", color: "var(--foreground)" }}
           />
         </div>
 
@@ -73,7 +74,7 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
               <RingLoader size="md" />
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-center text-slate-400 text-sm py-16">No enrollments found.</p>
+            <p className="text-center text-sm py-16" style={{ color: "var(--muted-foreground)" }}>No enrollments found.</p>
           ) : (
             <div className="overflow-x-auto">
             <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
@@ -81,7 +82,6 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
                 <tr>
                   <th className="text-left py-3 px-5 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Student</th>
                   <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Course</th>
-                  <th className="text-center py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Progress</th>
                 </tr>
               </thead>
               <tbody>
@@ -92,11 +92,6 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
                       <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{e.studentEmail}</p>
                     </td>
                     <td className="py-3 px-4 text-sm" style={{ color: "var(--muted-foreground)" }}>{e.courseTitle}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                        {Math.round(e.progress)}%
-                      </span>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -105,8 +100,8 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
           )}
         </div>
 
-        <div className="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-end">
-          <Button variant="outline" size="sm" onClick={onClose} className="text-slate-600">Close</Button>
+        <div className="px-6 py-3 flex justify-end" style={{ borderTop: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+          <Button variant="outline" size="sm" onClick={onClose} style={{ color: "var(--muted-foreground)", borderColor: "var(--border)" }}>Close</Button>
         </div>
       </div>
     </div>

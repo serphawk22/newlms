@@ -1,12 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Playfair_Display, JetBrains_Mono } from "next/font/google";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { toggleSubtopicProgress } from "@/app/actions/roadmap";
-
-const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-const jetbrains = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "700"] });
 
 type Subtopic = { id: string; title: string; order: number; _isCompleted?: boolean };
 type Topic = { id: string; title: string; order: number; subtopics: Subtopic[] };
@@ -77,31 +73,21 @@ export default function StudentRoadmapViewer({
   };
 
   return (
-    <div className="bg-[#F5F5F0] text-[#111] font-sans selection:bg-black selection:text-white rounded-xl overflow-hidden">
+    <div style={{ background: "var(--background)" }} className="rounded-xl overflow-hidden">
       
       {/* MAIN CONTENT */}
-      <div className="relative bg-white min-h-[600px]">
+      <div style={{ background: "var(--card)" }}>
         
         {/* TOP NAV BAR */}
-        <div className="border-b border-[#E0E0DB] bg-white/80 px-8 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="px-8 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderBottom: "1px solid var(--border)" }}>
           <div className="flex flex-col gap-1">
-             <h2 className={`${playfair.className} text-2xl font-bold`}>Interactive Syllabus</h2>
-             <p className="text-sm text-black/50">Follow the path and track your progress.</p>
-          </div>
-          
-          <div className="flex items-center gap-6">
-            <div className="border border-black px-4 py-2 text-right">
-              <p className={`${jetbrains.className} text-[9px] text-black/50 tracking-widest mb-0.5`}>SYLLABUS PROGRESS</p>
-              <div className="flex items-baseline justify-end gap-2">
-                <span className={`${playfair.className} text-2xl leading-none`}>{progressPercent}%</span>
-                <span className={`${jetbrains.className} text-[10px] text-black/40`}>{completedCount}/{totalSubtopics}</span>
-              </div>
-            </div>
+             <h2 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Interactive Syllabus</h2>
+             <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>Follow the path and track your progress.</p>
           </div>
         </div>
 
         {errorToast && (
-          <div className="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg font-medium text-sm animate-in slide-in-from-bottom-5 fade-in z-50">
+          <div className="fixed bottom-6 right-6 text-white px-6 py-3 rounded-lg shadow-lg font-medium text-sm animate-in slide-in-from-bottom-5 fade-in z-50" style={{ background: "#D9252A" }}>
             {errorToast}
           </div>
         )}
@@ -109,8 +95,8 @@ export default function StudentRoadmapViewer({
         <div className="p-8 md:p-12 max-w-4xl mx-auto pb-16">
           
           {phases.length === 0 && (
-            <div className="text-center py-20 border border-dashed border-black/20">
-              <p className={`${playfair.className} text-2xl text-black/50 mb-4`}>Roadmap hasn&apos;t been created yet.</p>
+            <div className="text-center py-20 border border-dashed" style={{ borderColor: "var(--border)" }}>
+              <p className="text-2xl mb-4" style={{ color: "var(--muted-foreground)" }}>Roadmap hasn&apos;t been created yet.</p>
             </div>
           )}
 
@@ -120,19 +106,19 @@ export default function StudentRoadmapViewer({
               {/* PHASE HEADER */}
               <div className="mb-12 group">
                 <div className="flex items-center gap-4 mb-4">
-                  <span className={`${jetbrains.className} bg-[#104FE8] text-white text-[10px] tracking-widest font-bold px-3 py-1 uppercase`}>
+                  <span className="text-[10px] tracking-widest font-bold px-3 py-1 uppercase rounded" style={{ background: "#D9252A", color: "#FFFFFF" }}>
                     PHASE {String(pIdx + 1).padStart(2, "0")}
                   </span>
-                  <span className={`${jetbrains.className} text-[10px] text-black/40 tracking-widest uppercase`}>
+                  <span className="text-[10px] tracking-widest uppercase" style={{ color: "var(--muted-foreground)" }}>
                     {phase.topics.length} MODULES
                   </span>
                 </div>
                 
-                <h2 className={`${playfair.className} text-5xl md:text-6xl text-[#111] leading-tight tracking-tight mb-4`}>
+                <h2 className="text-5xl md:text-6xl leading-tight tracking-tight mb-4 font-bold" style={{ color: "var(--foreground)" }}>
                   {phase.title}
                 </h2>
                 {phase.description && (
-                  <p className={`${playfair.className} text-2xl text-black/50 italic`}>
+                  <p className="text-2xl italic" style={{ color: "var(--muted-foreground)" }}>
                     {phase.description}
                   </p>
                 )}
@@ -149,26 +135,26 @@ export default function StudentRoadmapViewer({
                   const isTopicDone = topicTotal > 0 && topicTotal === topicCompleted;
 
                   return (
-                    <div key={topic.id} className="border border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:translate-x-1 transition-all duration-200 group/topic">
+                    <div key={topic.id} style={{ border: "1px solid var(--border)", background: "var(--card)" }} className="transition-all duration-200 group/topic rounded-lg">
                       
                       {/* TOPIC HEADER */}
                       <div className="p-6 md:p-8 flex items-center justify-between cursor-pointer" onClick={() => toggleTopic(topic.id)}>
                         <div className="flex items-center gap-6">
-                          <div className={`w-5 h-5 border-2 ${isTopicDone ? "border-[#104FE8] bg-[#104FE8]" : "border-black/20 group-hover/topic:border-black"} transition-colors`} />
+                          <div className={`w-5 h-5 border-2 transition-colors rounded`} style={isTopicDone ? { borderColor: "#D9252A", background: "#D9252A" } : { borderColor: "var(--border)" }} />
                           <div>
                             <div className="flex items-center gap-3 mb-2">
-                              <span className={`${jetbrains.className} bg-[#104FE8] text-white text-[10px] font-bold px-2 py-0.5`}>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: "#D9252A", color: "#FFFFFF" }}>
                                 M{String(tIdx + 1).padStart(2, "0")}
                               </span>
-                              <span className={`${jetbrains.className} text-[9px] text-black/40 tracking-widest uppercase`}>
+                              <span className="text-[9px] tracking-widest uppercase" style={{ color: "var(--muted-foreground)" }}>
                                 {topic.subtopics.length} TOPICS
                               </span>
                             </div>
-                            <h3 className={`${playfair.className} text-3xl ${isTopicDone ? "text-black/50 line-through" : "text-black"}`}>{topic.title}</h3>
+                            <h3 className="text-3xl font-bold" style={isTopicDone ? { color: "var(--muted-foreground)", textDecoration: "line-through" } : { color: "var(--foreground)" }}>{topic.title}</h3>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="w-8 h-8 border border-black flex items-center justify-center bg-[#F5F5F0]">
+                          <div className="w-8 h-8 flex items-center justify-center rounded" style={{ border: "1px solid var(--border)", background: "var(--secondary-background)" }}>
                             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </div>
                         </div>
@@ -176,20 +162,21 @@ export default function StudentRoadmapViewer({
 
                       {/* SUBTOPICS */}
                       {isExpanded && (
-                        <div className="border-t border-black p-6 md:p-8 bg-[#FDFDFD]">
-                          <p className={`${jetbrains.className} text-[10px] text-black/40 tracking-widest uppercase mb-6`}>
+                        <div className="p-6 md:p-8" style={{ borderTop: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                          <p className="text-[10px] tracking-widest uppercase mb-6 font-bold" style={{ color: "var(--muted-foreground)" }}>
                             TOPICS
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
                             {topic.subtopics.map((subtopic) => (
-                              <label key={subtopic.id} className="flex items-start gap-3 group/sub cursor-pointer hover:bg-black/5 p-1 -ml-1 rounded transition-colors">
+                              <label key={subtopic.id} className="flex items-start gap-3 group/sub cursor-pointer p-1 -ml-1 rounded transition-colors">
                                 <input 
                                   type="checkbox" 
-                                  className="mt-1 w-3.5 h-3.5 accent-[#104FE8] cursor-pointer"
+                                  className="mt-1 w-3.5 h-3.5 cursor-pointer"
+                                  style={{ accentColor: "#D9252A" }}
                                   checked={!!subtopic._isCompleted}
                                   onChange={() => handleToggleProgress(subtopic.id, !!subtopic._isCompleted)}
                                 />
-                                <span className={`text-sm font-medium ${subtopic._isCompleted ? "text-black/40 line-through" : "text-black/80"}`}>{subtopic.title}</span>
+                                <span className="text-sm font-medium" style={subtopic._isCompleted ? { color: "var(--muted-foreground)", textDecoration: "line-through" } : { color: "var(--foreground)" }}>{subtopic.title}</span>
                               </label>
                             ))}
                           </div>

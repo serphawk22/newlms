@@ -40,15 +40,6 @@ function StudentDetail({ student }: StudentDetailProps) {
     >
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Avg Progress</span>
-          <p
-            className="text-sm font-semibold mt-0.5"
-            style={{ color: avgProgress >= 50 ? "#D9252A" : "var(--foreground)" }}
-          >
-            {avgProgress.toFixed(1)}%
-          </p>
-        </div>
-        <div>
           <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Quiz Avg</span>
           <p className="text-sm font-semibold mt-0.5" style={{ color: "var(--foreground)" }}>
             {student.quizAvg !== null ? `${student.quizAvg.toFixed(1)}%` : "N/A"}
@@ -63,12 +54,11 @@ function StudentDetail({ student }: StudentDetailProps) {
       </div>
 
       <div className="mt-4">
-        <span className="text-[10px] font-bold uppercase tracking-widest block mb-2" style={{ color: "var(--muted-foreground)" }}>Course Progress</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest block mb-2" style={{ color: "var(--muted-foreground)" }}>Enrolled Courses</span>
         <div className="space-y-2">
           {student.courses.map((course) => (
             <div key={course.id} className="flex items-center gap-3">
-              <span className="text-xs font-medium w-32 truncate" style={{ color: "var(--foreground)" }}>{course.title}</span>
-              <span className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>{course.progress.toFixed(0)}%</span>
+              <span className="text-xs font-medium" style={{ color: "var(--foreground)" }}>{course.title}</span>
             </div>
           ))}
         </div>

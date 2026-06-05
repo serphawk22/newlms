@@ -691,8 +691,8 @@ export default async function CourseBuilderPage({
           <div className="space-y-4">
             <Link href={`/instructor/courses/${course.id}/roadmap`}>
               <Button
-                style={{ background: "#D9252A", color: "#FFFFFF" }}
-                className="w-full justify-start hover:bg-[#C21F24] font-semibold py-6 mb-4 rounded-xl shadow-md transition-colors"
+                style={{ background: "var(--foreground)", color: "var(--background)" }}
+                className="w-full justify-start font-semibold py-5 mb-4 rounded-lg transition-colors hover:opacity-80"
               >
                 <MapIcon className="w-5 h-5 mr-3" /> View Interactive Roadmap
               </Button>

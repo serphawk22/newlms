@@ -222,14 +222,7 @@ function CoursesCard({ courses }: Pick<Props, "courses">) {
     <div className="space-y-4 overflow-y-auto max-h-[260px] pr-1">
       {courses.map((course) => (
         <div key={course.id}>
-          <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-medium truncate max-w-[75%]" style={{ color: "var(--foreground)" }}>{course.title}</p>
-            <span className="text-xs font-semibold" style={{
-              color: course.progress >= 100 ? "var(--accent)" : course.progress > 0 ? "var(--foreground)" : "var(--muted-foreground)"
-            }}>
-              {course.progress}%
-            </span>
-          </div>
+          <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>{course.title}</p>
           <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
             {course.progress >= 100 ? "✓ Completed" : course.progress > 0 ? "In progress" : "Not started"}{" "}
             · {course.moduleCount} module{course.moduleCount !== 1 ? "s" : ""}
@@ -263,11 +256,11 @@ function AchievementsCard({ points, level }: Pick<Props, "points" | "level">) {
         </div>
       </div>
 
-      {/* Progress to next level - text only, no visual bar */}
+      {/* Level progress - text only */}
       <div>
-        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>Progress to Level {level + 1}</p>
+        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>Current Level</p>
         <p className="text-[11px] mt-1" style={{ color: "var(--muted-foreground)" }}>
-          {nextLevelPoints - points} points needed
+          {nextLevelPoints - points} points to next level
         </p>
       </div>
     </div>
