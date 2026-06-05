@@ -85,7 +85,7 @@ export function RecommendedCourseCard() {
       <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
         <CardHeader className="pb-3 border-b border-slate-50">
           <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-            <Sparkles className="w-4 h-4 text-violet-500" />
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
             Recommended For You
           </CardTitle>
         </CardHeader>
@@ -105,7 +105,7 @@ export function RecommendedCourseCard() {
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader className="pb-3 border-b border-slate-50">
           <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-            <Sparkles className="w-4 h-4 text-violet-500" />
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
             Recommended For You
           </CardTitle>
         </CardHeader>
@@ -125,7 +125,7 @@ export function RecommendedCourseCard() {
       <Card className="border-slate-200 shadow-sm bg-white">
         <CardHeader className="pb-3 border-b border-slate-50">
           <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-            <Sparkles className="w-4 h-4 text-violet-500" />
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
             Recommended For You
           </CardTitle>
         </CardHeader>
@@ -140,7 +140,7 @@ export function RecommendedCourseCard() {
     <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
       <CardHeader className="pb-3 border-b border-slate-50">
         <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-          <Sparkles className="w-4 h-4 text-violet-500" />
+          <Sparkles className="w-4 h-4 text-[#D9252A]" />
           Recommended For You
         </CardTitle>
       </CardHeader>
@@ -160,14 +160,7 @@ export function RecommendedCourseCard() {
               <p className="text-sm font-semibold text-slate-800 truncate mt-0.5">
                 {nearlyComplete.title}
               </p>
-              {/* Progress bar */}
-              <div className="mt-2 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(nearlyComplete.progress, 100)}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-[10px] text-slate-500">
                 {Math.round(nearlyComplete.progress)}% complete — keep going!
               </p>
               <Link href={`/student/courses/${nearlyComplete.id}`}>
@@ -214,11 +207,11 @@ export function RecommendedCourseCard() {
         {/* ── Recommended next course ── */}
         {recommendedNext && !enrolled && (
           <div className="p-4 flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
-              <GraduationCap className="w-4 h-4 text-violet-600" />
+            <div className="w-8 h-8 rounded-lg bg-[rgba(217,37,42,0.08)] flex items-center justify-center shrink-0 mt-0.5">
+              <GraduationCap className="w-4 h-4 text-[#D9252A]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-violet-600 uppercase tracking-tight">
+              <p className="text-xs font-bold text-[#D9252A] uppercase tracking-tight">
                 Next Course
               </p>
               <p className="text-sm font-semibold text-slate-800 truncate mt-0.5">
@@ -229,7 +222,7 @@ export function RecommendedCourseCard() {
                   {recommendedNext.description}
                 </p>
               )}
-              <p className="text-[10px] text-violet-500 mt-1 flex items-center gap-1">
+              <p className="text-[10px] text-[#D9252A] mt-1 flex items-center gap-1">
                 <BookMarked className="w-3 h-3" />
                 {recommendedNext.reason}
               </p>
@@ -237,7 +230,7 @@ export function RecommendedCourseCard() {
                 size="sm"
                 onClick={() => handleEnroll(recommendedNext.id)}
                 disabled={enrolling}
-                className="mt-2 h-7 text-xs bg-violet-600 hover:bg-violet-700 text-white"
+                className="mt-2 h-7 text-xs bg-[#D9252A] hover:bg-[#C21F24] text-white"
               >
                 {enrolling ? (
                   <>

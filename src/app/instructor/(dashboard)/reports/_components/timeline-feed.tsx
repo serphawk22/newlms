@@ -36,9 +36,9 @@ export function TimelineFeed({ items }: TimelineFeedProps) {
 
   const dotClass = (type: TimelineItem["type"]) => {
     if (type === "completions") return "bg-green-600";
-    if (type === "logins") return "bg-blue-600";
+    if (type === "logins") return "bg-[#D9252A]";
     if (type === "enrollments") return "bg-amber-500";
-    return "bg-purple-600";
+    return "bg-[#D9252A]";
   };
 
   let lastDate = "";

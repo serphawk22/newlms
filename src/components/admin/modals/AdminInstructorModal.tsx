@@ -84,10 +84,10 @@ export function AdminInstructorModal({ orgId, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
           <div className="flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-blue-500" />
+            <UserCheck className="w-5 h-5 text-[#D9252A]" />
             <h2 className="text-base font-bold text-slate-900">Instructor Directory</h2>
             {!loading && (
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold ml-1">
+              <span className="text-xs bg-[rgba(217,37,42,0.08)] text-[#D9252A] px-2 py-0.5 rounded-full font-bold ml-1">
                 {instructors.length}
               </span>
             )}
@@ -99,7 +99,7 @@ export function AdminInstructorModal({ orgId, onClose }: Props) {
 
         {/* Add form */}
         {showAdd && (
-          <form onSubmit={handleAdd} className="px-6 py-4 border-b border-slate-100 bg-blue-50/50">
+          <form onSubmit={handleAdd} className="px-6 py-4 border-b border-slate-100 bg-[rgba(217,37,42,0.04)]">
             <div className="flex items-end gap-3">
               <div className="flex-1">
                 <label className="block text-xs font-medium text-slate-500 mb-1">Name (optional)</label>
@@ -108,7 +108,7 @@ export function AdminInstructorModal({ orgId, onClose }: Props) {
                   value={addName}
                   onChange={(e) => setAddName(e.target.value)}
                   placeholder="Instructor name"
-                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
                 />
               </div>
               <div className="flex-1">
@@ -119,10 +119,10 @@ export function AdminInstructorModal({ orgId, onClose }: Props) {
                   onChange={(e) => setAddEmail(e.target.value)}
                   placeholder="instructor@example.com"
                   required
-                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
                 />
               </div>
-              <Button type="submit" disabled={adding} className="h-10 px-5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg">
+              <Button type="submit" disabled={adding} className="h-10 px-5 bg-[#D9252A] hover:bg-[#C21F24] text-white text-sm font-medium rounded-lg">
                 {adding ? <RingLoader size="sm" className="inline-flex" /> : "Add"}
               </Button>
             </div>
@@ -140,20 +140,21 @@ export function AdminInstructorModal({ orgId, onClose }: Props) {
           ) : instructors.length === 0 ? (
             <p className="text-center text-slate-400 text-sm py-16">No instructors in this workspace yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-slate-50 border-b border-slate-100 z-10">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+              <thead className="sticky top-0 z-10" style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
                 <tr>
-                  <th className="text-left py-3 px-5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
-                  <th className="text-center py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Courses</th>
-                  <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Remove</th>
+                  <th className="text-left py-3 px-5 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Name</th>
+                  <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                  <th className="text-center py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Courses</th>
+                  <th className="py-3 px-4 text-[11px] font-bold uppercase tracking-widest text-right" style={{ color: "var(--muted-foreground)" }}>Remove</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody>
                 {instructors.map((i) => (
-                  <tr key={i.memberId} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-5 font-medium text-slate-800">{i.name}</td>
-                    <td className="py-3 px-4 text-slate-500 text-xs">{i.email}</td>
+                  <tr key={i.memberId} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                    <td className="py-3 px-5 text-sm font-medium" style={{ color: "var(--foreground)" }}>{i.name}</td>
+                    <td className="py-3 px-4 text-sm" style={{ color: "var(--muted-foreground)" }}>{i.email}</td>
                     <td className="py-3 px-4 text-center">
                       <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
                         {i.coursesCreated}
@@ -177,6 +178,7 @@ export function AdminInstructorModal({ orgId, onClose }: Props) {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
 

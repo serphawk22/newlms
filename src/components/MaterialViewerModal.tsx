@@ -259,7 +259,7 @@ export function MaterialViewerModal({
           {/* ── top bar ── */}
           <div className="flex items-center justify-between px-5 py-3 bg-slate-900 border-b border-slate-700/60 shadow-lg shrink-0">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-[#D9252A] flex items-center justify-center shrink-0">
                 <BookOpen className="w-4 h-4 text-white" />
               </div>
               <div className="min-w-0">
@@ -357,7 +357,7 @@ export function MaterialViewerModal({
                         rel="noopener noreferrer"
                         className="w-full"
                       >
-                        <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white">
+                        <Button className="w-full bg-[#D9252A] hover:bg-[#C21F24] text-white">
                           <Download className="w-4 h-4 mr-2" /> Download PDF
                         </Button>
                       </a>
@@ -394,7 +394,7 @@ export function MaterialViewerModal({
                             rel="noopener noreferrer"
                             className="w-full"
                           >
-                            <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white">
+<Button className="w-full bg-[#D9252A] hover:bg-[#C21F24] text-white">
                               <Download className="w-4 h-4 mr-2" /> Download File
                             </Button>
                           </a>

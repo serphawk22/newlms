@@ -62,7 +62,7 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
             placeholder="Search by student or course..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-300"
+            className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
           />
         </div>
 
@@ -75,22 +75,23 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
           ) : filtered.length === 0 ? (
             <p className="text-center text-slate-400 text-sm py-16">No enrollments found.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-slate-50 border-b border-slate-100 z-10">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+              <thead className="sticky top-0 z-10" style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
                 <tr>
-                  <th className="text-left py-3 px-5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Student</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Course</th>
-                  <th className="text-center py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Progress</th>
+                  <th className="text-left py-3 px-5 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Student</th>
+                  <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Course</th>
+                  <th className="text-center py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Progress</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody>
                 {filtered.map((e) => (
-                  <tr key={e.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={e.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                     <td className="py-3 px-5">
-                      <p className="font-medium text-slate-800">{e.studentName}</p>
-                      <p className="text-xs text-slate-400">{e.studentEmail}</p>
+                      <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{e.studentName}</p>
+                      <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{e.studentEmail}</p>
                     </td>
-                    <td className="py-3 px-4 text-slate-700 text-xs">{e.courseTitle}</td>
+                    <td className="py-3 px-4 text-sm" style={{ color: "var(--muted-foreground)" }}>{e.courseTitle}</td>
                     <td className="py-3 px-4 text-center">
                       <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
                         {Math.round(e.progress)}%
@@ -100,6 +101,7 @@ export function AdminEnrollmentModal({ orgId, onClose }: Props) {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
 

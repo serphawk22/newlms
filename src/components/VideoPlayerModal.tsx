@@ -71,7 +71,7 @@ export function VideoPlayerModal({ videoUrl, title, duration, children }: VideoP
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 bg-slate-800/80 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-2 min-w-0">
-                <MonitorPlay className="w-4 h-4 text-indigo-400 shrink-0" />
+                <MonitorPlay className="w-4 h-4 text-[#D9252A] shrink-0" />
                 <span className="text-sm font-semibold text-white truncate">{title}</span>
                 {duration && (
                   <span className="text-xs text-slate-400 flex items-center gap-1 shrink-0">

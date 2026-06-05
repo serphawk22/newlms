@@ -988,7 +988,7 @@ export default function LiveClassRoom({
           </div>
           <h2 className="text-xl font-bold">Unable to Join Classroom</h2>
           <p className="text-slate-400 text-sm">{error}</p>
-          <button onClick={() => window.location.reload()} className="text-blue-400 underline text-sm">
+          <button onClick={() => window.location.reload()} className="text-[#D9252A] underline text-sm">
             Refresh Page
           </button>
         </div>
@@ -1001,15 +1001,15 @@ export default function LiveClassRoom({
       {status === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-950">
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
-              <Video className="w-8 h-8 text-blue-400" />
+            <div className="w-16 h-16 bg-[#D9252A]/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
+              <Video className="w-8 h-8 text-[#D9252A]" />
             </div>
             <div className="flex items-center gap-2 text-white">
               <Loader size="sm" variant="bars" />
               <span className="text-sm">Connecting to live classroom...</span>
             </div>
             <p className="text-slate-500 text-xs">
-              Joining as <span className="text-blue-400 font-semibold">{userName}</span>
+              Joining as <span className="text-[#D9252A] font-semibold">{userName}</span>
               {isHost && <span className="ml-2 text-amber-400">(Host)</span>}
             </p>
           </div>
@@ -1020,7 +1020,7 @@ export default function LiveClassRoom({
       {!isHost && isScreenSharing && status === "ready" && (
         <div
           id="screen-share-banner"
-          className="absolute top-3 left-1/2 -translate-x-1/2 z-[9998] flex items-center gap-2 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-medium px-4 py-1.5 rounded-full shadow-lg border border-blue-400/30 pointer-events-none"
+          className="absolute top-3 left-1/2 -translate-x-1/2 z-[9998] flex items-center gap-2 bg-[#D9252A]/90 backdrop-blur-sm text-white text-xs font-medium px-4 py-1.5 rounded-full shadow-lg border border-[rgba(217,37,42,0.3)] pointer-events-none"
         >
           <MonitorOff className="w-3.5 h-3.5" />
           Instructor is sharing their screen
@@ -1044,7 +1044,7 @@ export default function LiveClassRoom({
 
       {/* Upload status */}
       {isUploading && (
-        <div className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-indigo-600/95 backdrop-blur text-white px-4 py-2 rounded-full shadow-2xl border border-indigo-400/50">
+        <div className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#D9252A]/95 backdrop-blur text-white px-4 py-2 rounded-full shadow-2xl border border-[rgba(217,37,42,0.5)]">
           <Loader size="sm" variant="bars" />
           <span className="text-sm font-semibold">Uploading…</span>
         </div>

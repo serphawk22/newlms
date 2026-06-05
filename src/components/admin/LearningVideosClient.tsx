@@ -132,7 +132,7 @@ export function LearningVideosClient({ initialVideos }: Props) {
 
                   <div className="p-5 space-y-4">
                     {/* Course Badge */}
-                    <div className="flex items-center gap-1.5 text-xs text-blue-600 font-bold tracking-tight bg-blue-50/50 border border-blue-100/50 w-fit px-2.5 py-1 rounded-full">
+                    <div className="flex items-center gap-1.5 text-xs text-[#D9252A] font-bold tracking-tight bg-[rgba(217,37,42,0.06)] border border-[rgba(217,37,42,0.15)] w-fit px-2.5 py-1 rounded-full">
                       <BookOpen className="w-3.5 h-3.5" />
                       <span>{courseTitle}</span>
                     </div>

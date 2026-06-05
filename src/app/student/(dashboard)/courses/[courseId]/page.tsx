@@ -296,7 +296,7 @@ export default async function StudentCourseView({
               </Button>
             </Link>
             <Link href={`?tab=comments`}>
-              <Button variant={tab === "comments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "comments" ? "bg-blue-100 text-blue-700 font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
+              <Button variant={tab === "comments" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "comments" ? "bg-[rgba(217,37,42,0.08)] text-[#D9252A] font-bold" : "text-slate-600 hover:bg-slate-100"}`}>
                 <MessageSquare className="w-4 h-4 mr-3" /> Q&A
               </Button>
             </Link>
@@ -306,7 +306,7 @@ export default async function StudentCourseView({
               </Button>
             </Link>
             <Link href={`?tab=share`}>
-              <Button variant={tab === "share" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "share" ? "bg-purple-100 text-purple-700 font-bold" : "text-zinc-600 hover:bg-zinc-100"}`}>
+              <Button variant={tab === "share" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "share" ? "bg-[rgba(217,37,42,0.08)] text-[#D9252A] font-bold" : "text-zinc-600 hover:bg-zinc-100"}`}>
                 <Share2 className="w-4 h-4 mr-3" /> Share Your Learning
               </Button>
             </Link>

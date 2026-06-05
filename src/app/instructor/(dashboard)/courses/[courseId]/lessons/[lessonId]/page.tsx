@@ -105,8 +105,8 @@ export default async function LessonEditorPage({
             </Card>
 
             
-            <Card className="border-slate-200 shadow-sm bg-blue-50/50 flex flex-col items-center justify-center text-slate-500 p-8 text-center min-h-[200px]">
-               <ExternalLink className="w-12 h-12 mb-4 text-blue-500 opacity-80"/>
+            <Card className="border-slate-200 shadow-sm bg-[rgba(217,37,42,0.04)] flex flex-col items-center justify-center text-slate-500 p-8 text-center min-h-[200px]">
+               <ExternalLink className="w-12 h-12 mb-4 text-[#D9252A] opacity-80"/>
                <p className="text-sm font-semibold text-slate-800">External Resource Configuration</p>
                <p className="text-xs mt-2 max-w-[250px] text-slate-600">This lesson is configured to save bandwidth. Students clicking this lesson will be safely routed to the attached Drive document.</p>
             </Card>
@@ -121,9 +121,9 @@ export default async function LessonEditorPage({
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-slate-700">
-                    <Globe className="text-blue-600 w-4 h-4"/> Published
+                    <Globe className="text-[#D9252A] w-4 h-4"/> Published
                   </div>
-                  <div className="w-8 h-4 bg-blue-600 rounded-full relative">
+                  <div className="w-8 h-4 bg-[#D9252A] rounded-full relative">
                     <div className="absolute right-1 top-1 w-2 h-2 bg-white rounded-full"></div>
                   </div>
                 </div>

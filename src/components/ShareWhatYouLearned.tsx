@@ -464,7 +464,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
                       onClick={() => setMode(m)}
                       className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
                         mode === m 
-                          ? "bg-violet-600/15 border-violet-500 text-violet-300" 
+                          ? "bg-[rgba(217,37,42,0.15)] border-[#D9252A] text-[#D9252A]" 
                           : "border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                       }`}
                     >
@@ -553,7 +553,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
           <div className="space-y-6 py-6 text-center flex flex-col items-center">
             <div className="relative">
               <div className="w-16 h-16 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center animate-pulse">
-                {mode === "camera" ? <Video className="w-8 h-8 text-violet-400" /> : <Monitor className="w-8 h-8 text-violet-400" />}
+                {mode === "camera" ? <Video className="w-8 h-8 text-[#D9252A]" /> : <Monitor className="w-8 h-8 text-[#D9252A]" />}
               </div>
               {micEnabled && (
                 <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-emerald-500 rounded-full border-2 border-zinc-950 flex items-center justify-center">
@@ -659,14 +659,8 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
               <p className="text-xs text-zinc-500">Writing video metadata and uploading storage packet</p>
             </div>
 
-            <div className="w-full max-w-[240px] space-y-1">
-              <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-[#D9252A] rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-              <p className="text-[10px] font-mono text-zinc-500">{uploadProgress}%</p>
+            <div className="w-full max-w-[240px]">
+              <p className="text-[10px] font-mono text-zinc-500">{uploadProgress}% uploaded</p>
             </div>
           </div>
         )}

@@ -133,13 +133,7 @@ function MatchCard({ match }: { match: SimilarityMatch }) {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-zinc-800 truncate">{match.studentName}</p>
           <div className="flex items-center gap-2 mt-1">
-            <div className="flex-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${barColor}`}
-                style={{ width: `${match.similarityPct}%` }}
-              />
-            </div>
-            <span className="text-xs font-bold text-zinc-600 shrink-0">{match.similarityPct}%</span>
+            <span className="text-xs font-bold text-zinc-600">{match.similarityPct}%</span>
           </div>
         </div>
         {open ? <ChevronUp className="w-4 h-4 text-zinc-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-zinc-400 shrink-0" />}
@@ -270,7 +264,7 @@ export function PlagiarismPanel({ submissionId, hasFile }: Props) {
 
         {/* Running */}
         {checking && (
-          <div className="flex items-center gap-2 text-xs text-blue-600 py-1">
+          <div className="flex items-center gap-2 text-xs text-[#D9252A] py-1">
             <Loader size="sm" variant="bars" />
             Extracting text and comparing submissions…
           </div>

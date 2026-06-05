@@ -573,15 +573,15 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
       {/* Table Card */}
       <Card className="overflow-hidden rounded-xl" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-left">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>User</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Email</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Role</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Status</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Stats / Details</th>
-                <th className="text-right text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Actions</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>User</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Role</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Status</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Stats / Details</th>
+                <th className="text-right text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Actions</th>
               </tr>
             </thead>
             <tbody>

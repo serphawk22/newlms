@@ -46,13 +46,13 @@ function StudentTable({ students }: { students: StudentUser[] }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-[600px] whitespace-nowrap">
           <thead>
             <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Name</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Email</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Enrolled Courses</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Last Login</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Name</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Email</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Enrolled Courses</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Last Login</th>
             </tr>
           </thead>
           <tbody>
@@ -190,14 +190,14 @@ function InstructorTable({ instructors, orgId }: { instructors: InstructorUser[]
       )}
 
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-[600px] whitespace-nowrap">
           <thead>
             <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Name</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Email</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Courses Created</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Students</th>
-              <th className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Joined</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Name</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Email</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Courses Created</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Students</th>
+              <th className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>Joined</th>
             </tr>
           </thead>
           <tbody>

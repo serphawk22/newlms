@@ -201,7 +201,7 @@ export function SidebarNav({
       {/* Collapse toggle button (desktop only) */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center text-zinc-400 shadow-sm transition-colors z-50"
+        className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center shadow-sm transition-colors z-50"
         style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >

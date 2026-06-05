@@ -258,13 +258,7 @@ export function CourseReviewSection({
                   <div key={star} className="flex items-center gap-2 text-sm">
                     <span className="w-4 text-right" style={{ color: "var(--muted-foreground)" }}>{star}</span>
                     <Star className="w-3 h-3" style={{ fill: "#D9252A", color: "#D9252A" }} />
-                    <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ background: "var(--muted)" }}>
-                      <div
-                        className="h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%`, background: "#D9252A" }}
-                      />
-                    </div>
-                    <span className="w-6 text-xs" style={{ color: "var(--muted-foreground)" }}>{count}</span>
+                    <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{count} ({pct.toFixed(0)}%)</span>
                   </div>
                 );
               })}

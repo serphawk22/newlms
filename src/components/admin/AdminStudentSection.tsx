@@ -48,11 +48,12 @@ export function AdminStudentSection({ data }: { data: StudentAnalyticsData }) {
               {data.recentlyJoined.length === 0 ? (
                 <div className="text-center py-6 text-xs" style={{ color: "var(--muted-foreground)" }}>No students yet</div>
               ) : (
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
                   <thead>
                     <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border)" }}>
-                      <th className="text-left py-2.5 px-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Name</th>
-                      <th className="text-left py-2.5 px-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                      <th className="text-left py-2.5 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Name</th>
+                      <th className="text-left py-2.5 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Email</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -68,6 +69,7 @@ export function AdminStudentSection({ data }: { data: StudentAnalyticsData }) {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           </div>

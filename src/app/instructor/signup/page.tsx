@@ -252,7 +252,7 @@ export default function InstructorSignupPage() {
                 <Label htmlFor="instructor-signup-name">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="instructor-signup-name" name="name" required className="pl-9 h-11 rounded-lg" placeholder="Your full name" autoComplete="name" />
+                  <Input id="instructor-signup-name" name="name" required className="pl-9 h-11 rounded-lg" placeholder="Your full name" autoComplete="name" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                 </div>
               </div>
 
@@ -260,7 +260,7 @@ export default function InstructorSignupPage() {
                 <Label htmlFor="instructor-signup-email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="instructor-signup-email" name="email" type="email" required className="pl-9 h-11 rounded-lg" placeholder="you@example.com" autoComplete="email" />
+                  <Input id="instructor-signup-email" name="email" type="email" required className="pl-9 h-11 rounded-lg" placeholder="you@example.com" autoComplete="email" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                 </div>
               </div>
 
@@ -268,7 +268,7 @@ export default function InstructorSignupPage() {
                 <Label htmlFor="instructor-signup-password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="instructor-signup-password" name="password" type={showPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" autoComplete="new-password" />
+                  <Input id="instructor-signup-password" name="password" type={showPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" autoComplete="new-password" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1} style={{ color: "var(--muted-foreground)" }}>
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -279,7 +279,7 @@ export default function InstructorSignupPage() {
                 <Label htmlFor="instructor-signup-confirm">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="instructor-signup-confirm" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" />
+                  <Input id="instructor-signup-confirm" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1} style={{ color: "var(--muted-foreground)" }}>
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -290,7 +290,7 @@ export default function InstructorSignupPage() {
                 <Label htmlFor="instructor-signup-code">Instructor Code</Label>
                 <div className="relative">
                   <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="instructor-signup-code" name="code" required className="pl-9 h-11 rounded-lg" placeholder="e.g. INST2024" />
+                  <Input id="instructor-signup-code" name="code" required className="pl-9 h-11 rounded-lg" placeholder="e.g. INST2024" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                 </div>
                 <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
                   Instructor accounts require an invitation code from your institution.

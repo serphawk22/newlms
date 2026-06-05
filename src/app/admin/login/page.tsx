@@ -144,7 +144,7 @@ export default function AdminLoginPage() {
             <Label htmlFor="admin-email">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-200" style={{ color: focusedField === "email" ? "var(--foreground)" : "var(--muted-foreground)" }} />
-              <Input id="admin-email" name="email" type="email" required autoComplete="email" onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} className="pl-10 h-11 rounded-lg" />
+              <Input id="admin-email" name="email" type="email" required autoComplete="email" onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} className="pl-10 h-11 rounded-lg" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
             </div>
           </motion.div>
 
@@ -161,6 +161,7 @@ export default function AdminLoginPage() {
                 onFocus={() => setFocusedField("password")}
                 onBlur={() => setFocusedField(null)}
                 className="pl-10 pr-10 h-11 rounded-lg"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1} style={{ color: "var(--muted-foreground)" }}>
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -182,6 +183,7 @@ export default function AdminLoginPage() {
                 onFocus={() => setFocusedField("loginCode")}
                 onBlur={() => setFocusedField(null)}
                 className="pl-10 h-11 rounded-lg uppercase tracking-widest"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
               />
             </div>
           </motion.div>

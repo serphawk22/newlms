@@ -65,10 +65,10 @@ function formatChatContent(content: string) {
       return (
         <pre
           key={index}
-          className="my-3 p-3 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded-lg text-xs overflow-x-auto font-mono shadow-sm"
+          className="my-3 p-3 rounded-lg text-xs overflow-x-auto font-mono" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
         >
           {language && (
-            <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1 border-b border-zinc-800 pb-1">
+            <div className="text-[10px] uppercase tracking-widest mb-1 pb-1" style={{ color: "var(--muted-foreground)", borderBottom: "1px solid var(--border)" }}>
               {language}
             </div>
           )}
@@ -544,19 +544,14 @@ export default function StudyFriendPage() {
                       </span>
                       <span className="font-bold text-[var(--foreground)]">{uploadProgress}%</span>
                     </div>
-                    <div className="h-2 w-full bg-[var(--border)] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[var(--accent)] rounded-full transition-all duration-300"
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
+
                   </div>
                 )}
 
-                {errorMsg && (
-                  <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 p-4 rounded-xl dark:bg-red-950/50 dark:border-red-900">
-                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                    <p className="text-sm text-red-700 dark:text-red-400 font-medium">{errorMsg}</p>
+                  {errorMsg && (
+                  <div className="flex items-start gap-2.5 p-4 rounded-xl" style={{ background: "color-mix(in srgb, var(--accent) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--accent) 25%, transparent)" }}>
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "var(--accent)" }} />
+                    <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{errorMsg}</p>
                   </div>
                 )}
 
@@ -710,9 +705,9 @@ export default function StudyFriendPage() {
                   )}
 
                   {errorMsg && (
-                    <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 p-4 rounded-xl max-w-xl mx-auto dark:bg-red-950/50 dark:border-red-900">
-                      <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                      <p className="text-sm font-medium text-red-700 dark:text-red-400">{errorMsg}</p>
+                    <div className="flex items-start gap-2.5 p-4 rounded-xl max-w-xl mx-auto" style={{ background: "color-mix(in srgb, var(--accent) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--accent) 25%, transparent)" }}>
+                      <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "var(--accent)" }} />
+                      <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{errorMsg}</p>
                     </div>
                   )}
                 </div>

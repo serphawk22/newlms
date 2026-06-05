@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, HelpCircle, Clock, ChevronRight,
-  Video, LayoutGrid, Users,
+  Video, LayoutGrid, Users, BookOpen,
   PlayCircle, ArrowRight, Flame,
 } from "lucide-react";
 import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
@@ -351,10 +351,10 @@ export function StudentDashboardClient({
   const firstPendingQuizCourseId = pendingQuizzes.length > 0 ? pendingQuizzes[0].courseId : firstActiveCourseId;
 
   const stats = [
-    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen,      iconBg: "bg-blue-50",   iconColor: "text-blue-500", href: "/student/courses" },
+    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen,      iconBg: "bg-[rgba(217,37,42,0.08)]",   iconColor: "text-[#D9252A]", href: "/student/courses" },
     { label: "Completed Assignments",  value: completedAssignments,   icon: CheckCircle2,  iconBg: "bg-green-50",  iconColor: "text-green-500", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=assignments` : "/student" },
     { label: "Pending Quizzes",        value: pendingQuizzesCount,    icon: HelpCircle,    iconBg: "bg-amber-50",  iconColor: "text-amber-500", href: firstPendingQuizCourseId ? `/student/courses/${firstPendingQuizCourseId}?tab=quizzes` : "/student" },
-    { label: "Study Sessions",         value: studySessions,          icon: Clock,         iconBg: "bg-purple-50", iconColor: "text-purple-500", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=reading` : "/student" },
+    { label: "Study Sessions",         value: studySessions,          icon: Clock,         iconBg: "bg-[rgba(217,37,42,0.08)]", iconColor: "text-[#D9252A]", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=reading` : "/student" },
   ];
 
   const sortedTrending = [...trendingCourses].sort((a, b) => {

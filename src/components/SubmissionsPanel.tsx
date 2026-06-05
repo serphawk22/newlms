@@ -85,7 +85,7 @@ function SubmissionActions({ sub }: { sub: Submission }) {
           fileSize={file.size}
         >
           <Button variant="outline" size="sm"
-            className="h-8 text-xs border-blue-200 text-blue-700 hover:bg-blue-50">
+            className="h-8 text-xs border-[rgba(217,37,42,0.25)] text-[#D9252A] hover:bg-[rgba(217,37,42,0.08)]">
             <Eye className="w-3 h-3 mr-1" /> Preview
           </Button>
         </FileViewerModal>
@@ -106,7 +106,7 @@ function SubmissionActions({ sub }: { sub: Submission }) {
     return (
       <a href={sub.driveLink} target="_blank" rel="noopener noreferrer">
         <Button variant="outline" size="sm"
-          className="h-8 text-xs border-blue-200 text-blue-700 hover:bg-blue-50">
+          className="h-8 text-xs border-[rgba(217,37,42,0.25)] text-[#D9252A] hover:bg-[rgba(217,37,42,0.08)]">
           <Eye className="w-3 h-3 mr-1" /> View
         </Button>
       </a>
@@ -159,7 +159,7 @@ function GradeForm({ submission, onGraded }: GradeFormProps) {
           <input
             type="number" min="0" max="100" required
             value={grade} onChange={(e) => setGrade(e.target.value)}
-            className="w-24 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-center font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-24 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-center font-bold focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:outline-none"
             placeholder="e.g. 85"
           />
         </div>
@@ -170,7 +170,7 @@ function GradeForm({ submission, onGraded }: GradeFormProps) {
           <textarea
             value={feedback} onChange={(e) => setFeedback(e.target.value)}
             rows={2} placeholder="Great work! Consider improving..."
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:outline-none"
           />
         </div>
       </div>

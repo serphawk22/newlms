@@ -142,26 +142,26 @@ export function CustomReports({ courses, rows }: CustomReportsProps) {
         </button>
       </div>
 
-      <Card className="border-zinc-200 overflow-hidden">
+      <Card className="overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
         {!generated || visibleRows.length === 0 ? (
-          <div className="py-12 text-center text-zinc-400 text-sm">No results</div>
+          <div className="py-12 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>No results</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px] text-sm">
-              <thead className="bg-zinc-50 border-b border-zinc-200">
-                <tr>
+            <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
                   {columns.map((column) => (
-                    <th key={column} className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                    <th key={column} className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>
                       {column.replaceAll("_", " ")}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100">
+              <tbody>
                 {visibleRows.map((row) => (
-                  <tr key={row.id} className="hover:bg-zinc-50">
+                  <tr key={row.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                     {columns.map((column) => (
-                      <td key={`${row.id}-${column}`} className="px-4 py-3 text-zinc-600">
+                      <td key={`${row.id}-${column}`} className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>
                         {String(row.columns[column] ?? "")}
                       </td>
                     ))}

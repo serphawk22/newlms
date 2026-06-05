@@ -169,11 +169,11 @@ export function AnalyticsPageClient({ data }: Props) {
           style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
         >
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[600px] whitespace-nowrap">
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
                   {["Name", "Email", "Course", "Progress", "Quiz Avg"].map((h) => (
-                    <th key={h} className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>
+                    <th key={h} className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>
                       {h}
                     </th>
                   ))}

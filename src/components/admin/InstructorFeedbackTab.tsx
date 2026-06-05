@@ -90,7 +90,7 @@ export function InstructorFeedbackTab({ courseId }: Props) {
     return (
       <div className="text-center py-16 bg-white rounded-xl border border-red-100">
         <p className="text-red-500 font-medium text-sm">{error}</p>
-        <button onClick={fetchFeedback} className="mt-3 text-xs text-blue-600 underline">Retry</button>
+        <button onClick={fetchFeedback} className="mt-3 text-xs text-[#D9252A] underline">Retry</button>
       </div>
     );
   }
@@ -100,11 +100,11 @@ export function InstructorFeedbackTab({ courseId }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <MessageSquare className="w-6 h-6 text-violet-600" />
+        <MessageSquare className="w-6 h-6 text-[#D9252A]" />
         <h2 className="text-xl font-bold">Admin Feedback</h2>
         <span className="text-xs text-slate-400 font-medium">— comments from admin</span>
         {totalCount > 0 && (
-          <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold">{totalCount}</span>
+          <span className="text-xs bg-[rgba(217,37,42,0.08)] text-[#D9252A] px-2 py-0.5 rounded-full font-bold">{totalCount}</span>
         )}
       </div>
 
@@ -120,16 +120,16 @@ export function InstructorFeedbackTab({ courseId }: Props) {
         ) : (
           <div className="space-y-3">
             {courseComments.map((fb) => (
-              <div key={fb.id} className="bg-white border border-violet-100 rounded-xl px-5 py-4 shadow-sm">
+              <div key={fb.id} className="bg-white border border-[rgba(217,37,42,0.15)] rounded-xl px-5 py-4 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-violet-100 flex items-center justify-center">
-                      <span className="text-xs font-black text-violet-700">
+                    <div className="w-7 h-7 rounded-full bg-[rgba(217,37,42,0.08)] flex items-center justify-center">
+                      <span className="text-xs font-black text-[#D9252A]">
                         {(fb.author.name ?? "A").charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <span className="text-sm font-bold text-slate-800">{fb.author.name ?? "Admin"}</span>
-                    <span className="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-semibold">
+                    <span className="text-[10px] bg-[rgba(217,37,42,0.08)] text-[#D9252A] px-2 py-0.5 rounded-full font-semibold">
                       Course
                     </span>
                   </div>
@@ -154,17 +154,17 @@ export function InstructorFeedbackTab({ courseId }: Props) {
         ) : (
           <div className="space-y-3">
             {studentComments.map((fb) => (
-              <div key={fb.id} className="bg-white border border-blue-100 rounded-xl px-5 py-4 shadow-sm">
+              <div key={fb.id} className="bg-white border border-[rgba(217,37,42,0.15)] rounded-xl px-5 py-4 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-xs font-black text-blue-700">
+                    <div className="w-7 h-7 rounded-full bg-[rgba(217,37,42,0.08)] flex items-center justify-center">
+                      <span className="text-xs font-black text-[#D9252A]">
                         {(fb.author.name ?? "A").charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <span className="text-sm font-bold text-slate-800">{fb.author.name ?? "Admin"}</span>
                     {fb.student && (
-                      <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-[rgba(217,37,42,0.08)] text-[#D9252A] px-2 py-0.5 rounded-full font-semibold">
                         → {fb.student.name ?? "Student"}
                       </span>
                     )}

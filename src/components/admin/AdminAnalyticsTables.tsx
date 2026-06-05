@@ -30,13 +30,13 @@ export function AdminInstructorTable({ rows }: { rows: InstructorRow[] }) {
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
             <thead>
               <tr style={{ background: "rgba(255,255,255,0.03)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-                <th className="text-left py-2.5 px-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Name</th>
-                <th className="text-center py-2.5 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Courses</th>
-                <th className="text-center py-2.5 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Students</th>
-                <th className="text-center py-2.5 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Role</th>
+                <th className="text-left py-2.5 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Name</th>
+                <th className="text-center py-2.5 px-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Courses</th>
+                <th className="text-center py-2.5 px-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Students</th>
+                <th className="text-center py-2.5 px-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Role</th>
               </tr>
             </thead>
             <motion.tbody
@@ -86,13 +86,13 @@ export function AdminCourseTable({ rows }: { rows: CourseRow[] }) {
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto max-h-72 overflow-y-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
             <thead className="sticky top-0 z-10" style={{ background: "var(--card)" }}>
               <tr style={{ background: "rgba(255,255,255,0.03)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-                <th className="text-left py-2.5 px-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Course</th>
-                <th className="text-left py-2.5 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Creator</th>
-                <th className="text-center py-2.5 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Status</th>
-                <th className="text-center py-2.5 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Enrolled</th>
+                <th className="text-left py-2.5 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Course</th>
+                <th className="text-left py-2.5 px-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Creator</th>
+                <th className="text-center py-2.5 px-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Status</th>
+                <th className="text-center py-2.5 px-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Enrolled</th>
               </tr>
             </thead>
             <motion.tbody

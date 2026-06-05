@@ -68,16 +68,7 @@ function StudentDetail({ student }: StudentDetailProps) {
           {student.courses.map((course) => (
             <div key={course.id} className="flex items-center gap-3">
               <span className="text-xs font-medium w-32 truncate" style={{ color: "var(--foreground)" }}>{course.title}</span>
-              <div className="flex-1 rounded-full h-2" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{
-                    width: `${Math.min(course.progress, 100)}%`,
-                    background: course.progress >= 50 ? "#D9252A" : "var(--muted-foreground)",
-                  }}
-                />
-              </div>
-              <span className="text-xs font-semibold w-12 text-right" style={{ color: "var(--foreground)" }}>{course.progress.toFixed(0)}%</span>
+              <span className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>{course.progress.toFixed(0)}%</span>
             </div>
           ))}
         </div>
@@ -173,12 +164,12 @@ export function StudentsPageClient({ students }: Props) {
         style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
       >
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[600px] whitespace-nowrap">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
                 <th className="px-4 py-3 w-8" />
                 {["Name", "Email", "Enrolled In", "Courses", "Quiz Avg"].map((h) => (
-                  <th key={h} className="text-left text-[10px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>
+                  <th key={h} className="text-left text-[11px] font-bold uppercase tracking-widest px-4 py-3" style={{ color: "var(--muted-foreground)" }}>
                     {h}
                   </th>
                 ))}

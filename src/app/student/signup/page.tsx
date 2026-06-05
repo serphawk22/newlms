@@ -244,7 +244,7 @@ export default function StudentSignupPage() {
                 <Label htmlFor="student-signup-name">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="student-signup-name" name="name" required className="pl-9 h-11 rounded-lg" placeholder="Your full name" autoComplete="name" />
+                  <Input id="student-signup-name" name="name" required className="pl-9 h-11 rounded-lg" placeholder="Your full name" autoComplete="name" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                 </div>
               </div>
 
@@ -252,7 +252,7 @@ export default function StudentSignupPage() {
                 <Label htmlFor="student-signup-email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="student-signup-email" name="email" type="email" required className="pl-9 h-11 rounded-lg" placeholder="you@example.com" autoComplete="email" />
+                  <Input id="student-signup-email" name="email" type="email" required className="pl-9 h-11 rounded-lg" placeholder="you@example.com" autoComplete="email" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                 </div>
               </div>
 
@@ -260,7 +260,7 @@ export default function StudentSignupPage() {
                 <Label htmlFor="student-signup-password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="student-signup-password" name="password" type={showPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" autoComplete="new-password" />
+                  <Input id="student-signup-password" name="password" type={showPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" autoComplete="new-password" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1} style={{ color: "var(--muted-foreground)" }}>
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -271,7 +271,7 @@ export default function StudentSignupPage() {
                 <Label htmlFor="student-signup-confirm">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="student-signup-confirm" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" />
+                  <Input id="student-signup-confirm" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required className="pl-9 pr-10 h-11 rounded-lg" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1} style={{ color: "var(--muted-foreground)" }}>
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
