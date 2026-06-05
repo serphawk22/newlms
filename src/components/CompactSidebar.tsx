@@ -107,9 +107,9 @@ export function CompactSidebar({
               background: active
                 ? "var(--sidebar-accent)"
                 : isHovered
-                ? "rgba(255,255,255,0.04)"
+                ? "var(--sidebar-hover)"
                 : "transparent",
-              color: active || isHovered ? "#D9252A" : "var(--foreground)",
+              color: active || isHovered ? "#D9252A" : "var(--sidebar-foreground)",
               borderLeft: active
                 ? "3px solid #D9252A"
                 : "3px solid transparent",
@@ -181,8 +181,8 @@ export function CompactSidebar({
               expanded ? "px-3" : ""
             )}
             style={{
-              background: logoutHovered ? "rgba(255,255,255,0.04)" : "transparent",
-              color: logoutHovered ? "#D9252A" : "var(--foreground)",
+              background: logoutHovered ? "var(--sidebar-hover)" : "transparent",
+              color: logoutHovered ? "#D9252A" : "var(--sidebar-foreground)",
             }}
           >
             <span className="shrink-0 flex items-center justify-center">

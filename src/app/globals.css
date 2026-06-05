@@ -95,15 +95,16 @@
   --chart-5: #E5E7EB;
   --radius: 0.5rem;
 
-  --sidebar: #151821;
-  --sidebar-foreground: #FFFFFF;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111827;
   --sidebar-primary: #D9252A;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-accent: rgba(217, 37, 42, 0.08);
+  --sidebar-accent-foreground: #D9252A;
+  --sidebar-border: #E5E7EB;
   --sidebar-ring: #D9252A;
   --sidebar-active: #D9252A;
+  --sidebar-hover: #F8FAFC;
 
   --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.08);
   --shadow-md: 0 10px 22px rgba(17, 24, 39, 0.10);
@@ -158,6 +159,7 @@
   --sidebar-border: #5C6670;
   --sidebar-ring: #D9252A;
   --sidebar-active: #D9252A;
+  --sidebar-hover: rgba(255, 255, 255, 0.04);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
