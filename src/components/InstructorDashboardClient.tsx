@@ -155,6 +155,13 @@ interface Props {
   monthCounts: number[];
 }
 
+interface TaskItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+}
+
 export function InstructorDashboardClient({
   greeting, userName, userId, totalCourses, totalStudents,
   activeQuizzes, pendingAssignments,
@@ -162,6 +169,7 @@ export function InstructorDashboardClient({
 }: Props) {
   const [chartView, setChartView] = useState<"weekly" | "monthly">("weekly");
 
+  // Stateful notes/tasks tracking per instructor logged in
   const [tasks, setTasks] = useState<TaskItem[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(`tasks-${userId}`);
@@ -374,6 +382,7 @@ export function InstructorDashboardClient({
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
+              <ClipboardList className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
               <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tasks to be done</h3>
             </div>
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
@@ -383,16 +392,16 @@ export function InstructorDashboardClient({
           <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
             <CardContent className="p-4 space-y-4">
               <form onSubmit={handleAddTask} className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Add a new task..."
-                  value={newTaskText}
-                  onChange={(e) => setNewTaskText(e.target.value)}
-                  className="flex-1 px-3 py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
-                  style={{ background: "var(--muted)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-                />
-                <Button type="submit" size="sm" className="gap-1 shrink-0" style={{ background: "var(--foreground)", color: "var(--background)" }}>
-                  <PlusCircle className="w-4 h-4" /> Add
+                  <input
+                    type="text"
+                    placeholder="Add a new task..."
+                    value={newTaskText}
+                    onChange={(e) => setNewTaskText(e.target.value)}
+                    className="flex-1 px-3 py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
+                    style={{ background: "var(--muted)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                  />
+                  <Button type="submit" size="sm" className="gap-1 shrink-0" style={{ background: "var(--foreground)", color: "var(--background)" }}>
+                    <PlusCircle className="w-4 h-4" /> Add
                 </Button>
               </form>
 

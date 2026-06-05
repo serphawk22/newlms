@@ -17,9 +17,9 @@ function ReportsSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
             <div className="p-4">
-              <div className="w-8 h-8 rounded-lg bg-zinc-100 animate-pulse mb-2" />
-              <div className="h-6 bg-zinc-100 rounded animate-pulse mb-2" />
-              <div className="h-3 bg-zinc-100 rounded animate-pulse w-20" />
+              <div className="w-8 h-8 rounded-lg mb-2" style={{ background: "var(--secondary-background)" }} />
+              <div className="h-6 rounded mb-2" style={{ background: "var(--secondary-background)" }} />
+              <div className="h-3 rounded w-20" style={{ background: "var(--secondary-background)" }} />
             </div>
           </Card>
         ))}
@@ -120,19 +120,21 @@ async function AdminReportsContent() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-zinc-100 bg-zinc-50">
-                  <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-3 py-2">Course</th>
-                  <th className="text-left text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-3 py-2">Status</th>
+                  <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                  <th className="text-left text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--muted-foreground)" }}>Course</th>
+                  <th className="text-left text-[10px] font-bold uppercase tracking-widest px-3 py-2" style={{ color: "var(--muted-foreground)" }}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {courses.slice(0, 10).map((c) => (
-                  <tr key={c.id} className="border-b border-zinc-100 hover:bg-zinc-50">
-                    <td className="px-3 py-2 text-sm text-zinc-900">{c.title}</td>
+                  <tr key={c.id} style={{ borderBottom: "1px solid var(--border)" }} className="hover:bg-[rgba(217,37,42,0.04)]">
+                    <td className="px-3 py-2 text-sm" style={{ color: "var(--foreground)" }}>{c.title}</td>
                     <td className="px-3 py-2">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
-                        c.published ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-500"
-                      }`}>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider`} style={{
+                        background: c.published ? "rgba(16,185,129,0.12)" : "var(--secondary-background)",
+                        color: c.published ? "#10B981" : "var(--muted-foreground)",
+                        border: c.published ? "1px solid rgba(16,185,129,0.25)" : "1px solid var(--border)"
+                      }}>
                         {c.published ? "Published" : "Draft"}
                       </span>
                     </td>

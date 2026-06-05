@@ -95,7 +95,7 @@ export default async function StudentLiveClassesPage() {
                     <Calendar className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
                     {formatDate(session.scheduledAt)}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-zinc-400">
+                  <div className="flex items-center gap-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
                     <Clock className="w-3.5 h-3.5" />
                     <span className="status-badge status-badge--info">Scheduled</span>
                   </div>

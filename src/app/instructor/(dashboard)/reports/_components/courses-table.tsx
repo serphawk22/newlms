@@ -39,10 +39,10 @@ export function CoursesTable({ courses }: CoursesTableProps) {
   const totalPages = Math.ceil(filtered.length / perPage);
   const pageRows = filtered.slice(page * perPage, (page + 1) * perPage);
 
-  const statusClass = (value: CourseRow["status"]) => {
-    if (value === "Published") return "bg-green-100 text-green-600";
-    if (value === "Draft") return "bg-amber-100 text-amber-500";
-    return "bg-zinc-200 text-zinc-600";
+  const statusStyle = (value: CourseRow["status"]): React.CSSProperties => {
+    if (value === "Published") return { background: "rgba(217,37,42,0.08)", color: "#D9252A" };
+    if (value === "Draft") return { background: "var(--muted)", color: "var(--muted-foreground)" };
+    return { background: "var(--muted)", color: "var(--muted-foreground)" };
   };
 
   const exportCSV = () => {
@@ -63,7 +63,7 @@ export function CoursesTable({ courses }: CoursesTableProps) {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 max-w-xs min-w-[220px]">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--muted-foreground)" }} />
           <input
             value={search}
             onChange={(e) => {
@@ -71,7 +71,8 @@ export function CoursesTable({ courses }: CoursesTableProps) {
               setPage(0);
             }}
             placeholder="Search courses..."
-            className="w-full h-10 pl-9 pr-3 text-sm border border-zinc-200 rounded-lg bg-white"
+            className="w-full h-10 pl-9 pr-3 text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
+            style={{ border: "1px solid var(--border)", background: "var(--secondary-background)", color: "var(--foreground)" }}
           />
         </div>
         <select
@@ -83,7 +84,8 @@ export function CoursesTable({ courses }: CoursesTableProps) {
             }
             setPage(0);
           }}
-          className="h-10 px-3 text-sm border border-zinc-200 rounded-lg bg-white"
+          className="h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
+          style={{ border: "1px solid var(--border)", background: "var(--secondary-background)", color: "var(--foreground)" }}
         >
           <option>All</option>
           <option>Published</option>
@@ -93,68 +95,68 @@ export function CoursesTable({ courses }: CoursesTableProps) {
         <button
           onClick={exportCSV}
           data-export-csv
-          className="inline-flex items-center gap-2 h-10 px-3 text-xs font-medium border border-zinc-200 rounded-lg text-zinc-600 hover:bg-zinc-50"
+          className="inline-flex items-center gap-2 h-10 px-3 text-xs font-medium rounded-lg transition-colors"
+          style={{ border: "1px solid var(--border)", color: "var(--muted-foreground)", background: "var(--secondary-background)" }}
         >
           <Download className="w-3.5 h-3.5" /> Export CSV
         </button>
       </div>
 
-      <Card className="border-zinc-200 overflow-hidden">
+      <Card className="overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[940px] text-sm">
-            <thead className="bg-zinc-50 border-b border-zinc-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Course name</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Category</th>
-                <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">Enrolled</th>
-                <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">Completed</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Completion %</th>
-                <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">Avg Score</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Created</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Status</th>
+          <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Course name</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Category</th>
+                <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Enrolled</th>
+                <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Completed</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Completion %</th>
+                <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Avg Score</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Created</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody style={{ borderColor: "var(--border)" }}>
               {pageRows.map((course) => (
                 <Fragment key={course.id}>
                   <motion.tr
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     onClick={() => setExpanded(expanded === course.id ? null : course.id)}
-                    className="hover:bg-zinc-50 cursor-pointer"
+                    className="transition-colors cursor-pointer"
+                    style={{ borderBottom: "1px solid var(--border)" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
-                    <td className="px-4 py-3 text-zinc-900 font-medium">{course.name}</td>
-                    <td className="px-4 py-3 text-zinc-400">N/A</td>
-                    <td className="px-4 py-3 text-center text-zinc-900">{course.enrolled}</td>
-                    <td className="px-4 py-3 text-center text-zinc-900">{course.completed}</td>
+                    <td className="px-4 py-3 text-sm font-medium" style={{ color: "var(--foreground)" }}>{course.name}</td>
+                    <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>N/A</td>
+                    <td className="px-4 py-3 text-center text-sm" style={{ color: "var(--foreground)" }}>{course.enrolled}</td>
+                    <td className="px-4 py-3 text-center text-sm" style={{ color: "var(--foreground)" }}>{course.completed}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-2 bg-zinc-100 rounded-full w-28 overflow-hidden">
-                          <div className="h-full bg-blue-600 rounded-full" style={{ width: `${course.completionPct}%` }} />
-                        </div>
-                        <span className="text-xs text-zinc-600">{course.completionPct}%</span>
+                        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{course.completionPct}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center text-zinc-900">{course.avgScore}%</td>
-                    <td className="px-4 py-3 text-zinc-600">{course.createdDate}</td>
+                    <td className="px-4 py-3 text-center text-sm" style={{ color: "var(--foreground)" }}>{course.avgScore}%</td>
+                    <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{course.createdDate}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${statusClass(course.status)}`}>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md" style={statusStyle(course.status)}>
                         {course.status}
                       </span>
                     </td>
                   </motion.tr>
                   {expanded === course.id && (
-                    <tr className="bg-zinc-50/60">
+                    <tr style={{ background: "var(--secondary-background)" }}>
                       <td colSpan={8} className="px-4 py-3">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2">Enrolled Students</p>
+                        <p className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--muted-foreground)" }}>Enrolled Students</p>
                         {course.students.length === 0 ? (
-                          <p className="text-sm text-zinc-400">No enrolled students.</p>
+                          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No enrolled students.</p>
                         ) : (
                           <div className="space-y-1.5">
                             {course.students.map((student) => (
-                              <div key={student.id} className="flex items-center justify-between text-sm">
-                                <span className="text-zinc-600">{student.name || student.email}</span>
-                                <span className="text-zinc-900">{Math.round(student.progress)}%</span>
+                              <div key={student.id} className="flex items-center text-sm" style={{ borderBottom: "1px solid var(--border)" }}>
+                                <span style={{ color: "var(--foreground)" }}>{student.name || student.email}</span>
                               </div>
                             ))}
                           </div>
@@ -166,7 +168,7 @@ export function CoursesTable({ courses }: CoursesTableProps) {
               ))}
               {pageRows.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-zinc-400">No courses found.</td>
+                  <td colSpan={8} className="px-4 py-10 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>No courses found.</td>
                 </tr>
               )}
             </tbody>
@@ -179,14 +181,16 @@ export function CoursesTable({ courses }: CoursesTableProps) {
           <button
             disabled={page === 0}
             onClick={() => setPage(page - 1)}
-            className="px-3 py-1.5 text-xs border border-zinc-200 rounded-lg disabled:opacity-40"
+            className="px-3 py-1.5 text-xs rounded-lg disabled:opacity-40 transition-colors"
+            style={{ border: "1px solid var(--border)", color: "var(--muted-foreground)", background: "var(--secondary-background)" }}
           >
             Prev
           </button>
           <button
             disabled={page >= totalPages - 1}
             onClick={() => setPage(page + 1)}
-            className="px-3 py-1.5 text-xs border border-zinc-200 rounded-lg disabled:opacity-40"
+            className="px-3 py-1.5 text-xs rounded-lg disabled:opacity-40 transition-colors"
+            style={{ border: "1px solid var(--border)", color: "var(--muted-foreground)", background: "var(--secondary-background)" }}
           >
             Next
           </button>

@@ -60,13 +60,7 @@ export function SidebarNav({
     ? userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
 
-  // Role display color
-  const roleColor =
-    role === "ADMIN"
-      ? "bg-violet-100 text-violet-700"
-      : role === "INSTRUCTOR"
-      ? "bg-blue-100 text-blue-700"
-      : "bg-emerald-100 text-emerald-700";
+
 
   const navContent = (
     <div className="flex flex-col h-full">
@@ -75,10 +69,10 @@ export function SidebarNav({
         <Logo href={role === "STUDENT" ? "/student" : "/instructor"} />
         {!collapsed && (
           <div className="mt-3 space-y-1.5">
-            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest truncate">
+            <p className="text-[10px] font-bold uppercase tracking-widest truncate" style={{ color: "var(--muted-foreground)" }}>
               {orgName}
             </p>
-            <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold", roleColor)}>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
               {role}
             </span>
           </div>
@@ -94,22 +88,16 @@ export function SidebarNav({
               key={item.href + item.label}
               href={item.href}
               className={cn(
-                "relative flex items-center gap-3 rounded-lg text-sm font-medium",
-                "transition-all duration-200",
-                "group",
+                "relative flex items-center gap-3 rounded-lg text-sm transition-all duration-200 group",
                 collapsed ? "px-2 py-2.5 justify-center" : "px-3 py-2.5",
-                active
-                  ? "bg-zinc-100 text-zinc-900 border-l-2 border-zinc-900"
-                  : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 border-l-2 border-transparent"
+                active ? "font-bold border-l-2" : "border-l-2 border-transparent"
               )}
+              style={active ? { background: "rgba(217,37,42,0.08)", color: "#D9252A", borderLeftColor: "#D9252A" } : { color: "var(--muted-foreground)" }}
               aria-current={active ? "page" : undefined}
               title={collapsed ? item.label : undefined}
             >
               {item.icon && (
-                <span className={cn(
-                  "w-5 h-5 flex items-center justify-center shrink-0",
-                  active ? "text-zinc-900" : "text-zinc-500 group-hover:text-zinc-900"
-                )}>
+                <span className="w-5 h-5 flex items-center justify-center shrink-0" style={{ color: active ? "#D9252A" : "var(--muted-foreground)" }}>
                   {item.icon}
                 </span>
               )}
@@ -123,16 +111,14 @@ export function SidebarNav({
 
               {/* Tooltip for collapsed state */}
               {collapsed && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg pointer-events-none">
+                <div className="absolute left-full ml-2 px-2 py-1 text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 pointer-events-none" style={{ background: "var(--foreground)", color: "var(--background)" }}>
                   {item.label}
                 </div>
               )}
 
               {!collapsed && item.badge !== undefined && (
-                <span className={cn(
-                  "ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center",
-                  active ? "bg-zinc-900 text-white" : "bg-zinc-200 text-zinc-700"
-                )}>
+                <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center"
+                  style={active ? { background: "#D9252A", color: "#FFFFFF" } : { background: "var(--muted)", color: "var(--muted-foreground)" }}>
                   {item.badge}
                 </span>
               )}
@@ -149,54 +135,55 @@ export function SidebarNav({
             <button
               onClick={() => setProfileOpen(!profileOpen)}
               className={cn(
-                "flex items-center gap-3 w-full rounded-lg transition-colors hover:bg-zinc-50",
+                "flex items-center gap-3 w-full rounded-lg transition-colors",
                 collapsed ? "justify-center p-2" : "px-2 py-2"
               )}
               title={collapsed ? userName : undefined}
             >
               {/* Avatar */}
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--accent)" }}>
                 <span className="text-[11px] font-black text-white">{initials}</span>
               </div>
               {!collapsed && (
                 <>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="text-xs font-bold text-zinc-900 truncate">{userName}</p>
+                    <p className="text-xs font-bold truncate" style={{ color: "var(--foreground)" }}>{userName}</p>
                     {userEmail && (
-                      <p className="text-[10px] text-zinc-400 truncate">{userEmail}</p>
+                      <p className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>{userEmail}</p>
                     )}
                   </div>
                   <ChevronDown className={cn(
-                    "w-3.5 h-3.5 text-zinc-400 transition-transform duration-200",
+                    "w-3.5 h-3.5 transition-transform duration-200",
                     profileOpen && "rotate-180"
-                  )} />
+                  )} style={{ color: "var(--muted-foreground)" }} />
                 </>
               )}
             </button>
 
             {/* Collapsed tooltip */}
             {collapsed && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg pointer-events-none">
+              <div className="absolute left-full ml-2 px-2 py-1 text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 pointer-events-none" style={{ background: "var(--foreground)", color: "var(--background)" }}>
                 {userName}
               </div>
             )}
 
             {/* Dropdown menu */}
             {profileOpen && !collapsed && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-zinc-200 rounded-xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-200">
-                <div className="px-4 py-3 border-b border-zinc-100">
-                  <p className="text-xs font-bold text-zinc-900 truncate">{userName}</p>
+              <div className="absolute bottom-full left-0 right-0 mb-2 rounded-xl overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-200" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}>
+                <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <p className="text-xs font-bold truncate" style={{ color: "var(--foreground)" }}>{userName}</p>
                   {userEmail && (
-                    <p className="text-[10px] text-zinc-400 truncate">{userEmail}</p>
+                    <p className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>{userEmail}</p>
                   )}
-                  <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold mt-1.5", roleColor)}>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold mt-1.5" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
                     {role}
                   </span>
                 </div>
                 <div className="p-2">
                   <Link
                     href={role === "STUDENT" ? "/student/profile" : "/instructor/profile"}
-                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg transition-colors"
+                    style={{ color: "var(--foreground)" }}
                     onClick={() => setProfileOpen(false)}
                   >
                     <UserCircle className="w-4 h-4" />
@@ -214,7 +201,7 @@ export function SidebarNav({
       {/* Collapse toggle button (desktop only) */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center text-zinc-400 shadow-sm transition-colors z-50"
+        className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center shadow-sm transition-colors z-50"
         style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
@@ -229,7 +216,7 @@ export function SidebarNav({
       <button
         type="button"
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-3 left-3 z-50 lg:hidden bg-white border border-zinc-200 rounded-xl p-2 text-zinc-700 hover:bg-zinc-50 shadow-sm transition-colors"
+        className="fixed top-3 left-3 z-50 lg:hidden rounded-xl p-2 transition-colors" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
         aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
       >
         {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -247,10 +234,11 @@ export function SidebarNav({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-full bg-white border-r border-zinc-200 flex flex-col transition-all duration-200 ease-in-out lg:sticky lg:top-0 lg:h-screen",
+          "fixed top-0 left-0 z-40 h-full flex flex-col transition-all duration-200 ease-in-out lg:sticky lg:top-0 lg:h-screen",
           collapsed ? "w-16" : "w-72",
-          mobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full lg:translate-x-0"
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
+        style={{ background: "var(--sidebar)", borderRight: "1px solid var(--sidebar-border)" }}
         role="navigation"
         aria-label="Sidebar navigation"
       >

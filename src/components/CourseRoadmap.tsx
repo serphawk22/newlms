@@ -91,16 +91,16 @@ export function CourseRoadmap({
   return (
     <div className="relative w-full max-w-4xl mx-auto py-12 px-6 bg-[#0B0F19] rounded-[2.5rem] border border-slate-800/60 shadow-2xl overflow-hidden">
       {/* Background abstract glow effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-indigo-600/10 blur-[100px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-violet-600/10 blur-[100px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-[#D9252A]/10 blur-[100px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-[#D9252A]/10 blur-[100px] -z-10 pointer-events-none" />
 
       {/* Course Roadmap Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 pb-8 border-b border-slate-800/80 relative z-10">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Roadmap</span>
+            <div className="px-2.5 py-1 rounded-full bg-[rgba(217,37,42,0.1)] border border-[rgba(217,37,42,0.2)] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9252A] animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D9252A]">Roadmap</span>
             </div>
           </div>
           <h2 className="text-4xl font-extrabold text-white tracking-tight">Learning Pathway</h2>
@@ -115,8 +115,8 @@ export function CourseRoadmap({
         {/* Global Progress or Editor badge */}
         <div className="shrink-0">
           {isEditor ? (
-            <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold shadow-[0_0_15px_rgba(99,102,241,0.15)]">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)] animate-pulse" />
+            <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[rgba(217,37,42,0.1)] border border-[rgba(217,37,42,0.3)] text-[#D9252A] text-xs font-bold shadow-[0_0_15px_rgba(217,37,42,0.15)]">
+              <span className="w-2 h-2 rounded-full bg-[#D9252A] shadow-[0_0_8px_rgba(217,37,42,0.8)] animate-pulse" />
               BUILDER MODE
             </span>
           ) : (
@@ -140,7 +140,7 @@ export function CourseRoadmap({
       ) : (
         <div className="relative pl-6 md:pl-12 z-10">
           {/* Central Connecting Road track line (Neon glowing) */}
-          <div className="absolute top-8 bottom-8 left-6 md:left-12 w-1.5 bg-[#D9252A] rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)] -translate-x-1/2 opacity-80" />
+          <div className="absolute top-8 bottom-8 left-6 md:left-12 w-1.5 bg-[#D9252A] rounded-full shadow-[0_0_15px_rgba(217,37,42,0.5)] -translate-x-1/2 opacity-80" />
 
           {/* Module Nodes List */}
           <div className="space-y-16">
@@ -161,8 +161,8 @@ export function CourseRoadmap({
                     onClick={() => toggleModule(module.id)}
                     className={`absolute left-[-24px] md:left-[-48px] top-5 w-14 h-14 rounded-full border-4 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 hover:scale-110 ${
                       isExpanded 
-                        ? "bg-indigo-600 border-indigo-300 text-white shadow-[0_0_20px_rgba(99,102,241,0.6)]" 
-                        : "bg-slate-900 border-indigo-500/50 text-indigo-400 hover:border-indigo-400 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)]"
+                        ? "bg-[#D9252A] border-[#D9252A] text-white shadow-[0_0_20px_rgba(217,37,42,0.6)]" 
+                        : "bg-slate-900 border-[rgba(217,37,42,0.5)] text-[#D9252A] hover:border-[#D9252A] hover:shadow-[0_0_15px_rgba(217,37,42,0.4)]"
                     }`}
                   >
                     <span className="text-sm font-black">{idx + 1}</span>
@@ -171,8 +171,8 @@ export function CourseRoadmap({
                   {/* Module Card container with Dark Glassmorphism */}
                   <div className={`ml-10 md:ml-12 rounded-[2rem] border transition-all duration-300 overflow-hidden bg-slate-900/60 backdrop-blur-xl ${
                     isExpanded 
-                      ? "border-indigo-500/50 shadow-[0_8px_30px_rgba(0,0,0,0.5)]" 
-                      : "border-slate-800 hover:border-indigo-500/30 hover:bg-slate-900/80"
+                      ? "border-[rgba(217,37,42,0.5)] shadow-[0_8px_30px_rgba(0,0,0,0.5)]" 
+                      : "border-slate-800 hover:border-[rgba(217,37,42,0.3)] hover:bg-slate-900/80"
                   }`}>
                     {/* Module Card Header */}
                     <div 
@@ -181,22 +181,22 @@ export function CourseRoadmap({
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-[10px] font-black text-indigo-400 tracking-wider uppercase bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md">
+                          <span className="text-[10px] font-black text-[#D9252A] tracking-wider uppercase bg-[rgba(217,37,42,0.1)] border border-[rgba(217,37,42,0.2)] px-2 py-0.5 rounded-md">
                             STAGE {idx + 1}
                           </span>
                           <span className="text-xs font-semibold text-slate-500">
                             {totalItems} topics
                           </span>
                         </div>
-                        <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight truncate group-hover:text-indigo-300 transition-colors">
+                        <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight truncate group-hover:text-[#D9252A] transition-colors">
                           {module.title}
                         </h3>
                       </div>
                       
                       {/* Collapse/Expand Toggle Button */}
-                      <button className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                        isExpanded ? "bg-indigo-500/20 text-indigo-300" : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-                      }`}>
+<button className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                      isExpanded ? "bg-[rgba(217,37,42,0.2)] text-[#D9252A]" : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+                    }`}>
                         {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                       </button>
                     </div>
@@ -225,13 +225,13 @@ export function CourseRoadmap({
 
                                 {/* ── Lessons ── */}
                                 {module.lessons.map((lesson, lIdx) => (
-                                  <div key={lesson.id} className="relative flex items-center justify-between p-4 rounded-2xl border border-slate-800 bg-slate-900/80 shadow-md hover:shadow-lg hover:border-indigo-500/30 transition-all group/item">
+                                  <div key={lesson.id} className="relative flex items-center justify-between p-4 rounded-2xl border border-slate-800 bg-slate-900/80 shadow-md hover:shadow-lg hover:border-[rgba(217,37,42,0.3)] transition-all group/item">
                                     {/* Sub-node branch dot */}
-                                    <div className="absolute left-[-21px] w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-slate-950 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                                    <div className="absolute left-[-21px] w-2.5 h-2.5 rounded-full bg-[#D9252A] border-2 border-slate-950 shadow-[0_0_8px_rgba(217,37,42,0.8)]" />
                                     
                                     <div className="flex items-center gap-4 min-w-0">
-                                      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                                        <BookOpen className="w-4 h-4 text-indigo-400" />
+                                      <div className="w-10 h-10 rounded-xl bg-[rgba(217,37,42,0.1)] border border-[rgba(217,37,42,0.2)] flex items-center justify-center shrink-0">
+                                        <BookOpen className="w-4 h-4 text-[#D9252A]" />
                                       </div>
                                       <div className="min-w-0">
                                         <p className="text-sm font-bold text-slate-200 truncate">{lIdx + 1}. {lesson.title}</p>
@@ -243,7 +243,7 @@ export function CourseRoadmap({
                                     <div className="flex items-center gap-3 shrink-0">
                                       {lesson.videoUrl && (
                                         <VideoPlayerModal videoUrl={lesson.videoUrl} title={lesson.title}>
-                                          <Button size="sm" variant="outline" className="text-indigo-400 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs shadow-none">
+                                          <Button size="sm" variant="outline" className="text-[#D9252A] border-[rgba(217,37,42,0.3)] bg-[rgba(217,37,42,0.1)] hover:bg-[rgba(217,37,42,0.2)] text-xs shadow-none">
                                             <PlayCircle className="w-3.5 h-3.5 mr-1.5" /> Watch
                                           </Button>
                                         </VideoPlayerModal>
@@ -260,7 +260,7 @@ export function CourseRoadmap({
                                       )}
                                       {isEditor && (
                                         <Link href={`/instructor/courses/${courseId}/lessons/${lesson.id}`}>
-                                          <Button variant="ghost" size="sm" className="h-8 text-xs text-slate-500 hover:text-indigo-600 hover:bg-indigo-50">
+                                          <Button variant="ghost" size="sm" className="h-8 text-xs text-slate-500 hover:text-[#D9252A] hover:bg-[rgba(217,37,42,0.08)]">
                                             Edit
                                           </Button>
                                         </Link>
@@ -302,7 +302,7 @@ export function CourseRoadmap({
                                       <div className="flex items-center gap-2 shrink-0 md:ml-auto">
                                         {session.recordingUrl && (
                                           <VideoPlayerModal videoUrl={session.recordingUrl} title={`Recording: ${session.title}`}>
-                                            <Button variant="outline" size="sm" className="text-indigo-400 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs shadow-none">
+                                            <Button variant="outline" size="sm" className="text-[#D9252A] border-[rgba(217,37,42,0.3)] bg-[rgba(217,37,42,0.1)] hover:bg-[rgba(217,37,42,0.2)] text-xs shadow-none">
                                               <MonitorPlay className="w-3.5 h-3.5 mr-1" /> Recording
                                             </Button>
                                           </VideoPlayerModal>
@@ -341,13 +341,13 @@ export function CourseRoadmap({
 
                                 {/* ── Recorded Classes ── */}
                                 {module.recordedClasses.map((rec) => (
-                                  <div key={rec.id} className="relative flex items-center justify-between p-4 rounded-2xl border border-indigo-500/30 bg-indigo-900/20 shadow-md hover:shadow-lg transition-all group/item">
+                                  <div key={rec.id} className="relative flex items-center justify-between p-4 rounded-2xl border border-[rgba(217,37,42,0.3)] bg-[rgba(217,37,42,0.1)] shadow-md hover:shadow-lg transition-all group/item">
                                     {/* Sub-node branch dot */}
-                                    <div className="absolute left-[-21px] w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-slate-950 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                                    <div className="absolute left-[-21px] w-2.5 h-2.5 rounded-full bg-[#D9252A] border-2 border-slate-950 shadow-[0_0_8px_rgba(217,37,42,0.8)]" />
                                     
                                     <div className="flex items-center gap-4 min-w-0">
-                                      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                                        <MonitorPlay className="w-4 h-4 text-indigo-400" />
+                                      <div className="w-10 h-10 rounded-xl bg-[rgba(217,37,42,0.1)] border border-[rgba(217,37,42,0.2)] flex items-center justify-center shrink-0">
+                                        <MonitorPlay className="w-4 h-4 text-[#D9252A]" />
                                       </div>
                                       <div className="min-w-0">
                                         <p className="text-sm font-bold text-slate-200 truncate">{rec.title}</p>
@@ -362,7 +362,7 @@ export function CourseRoadmap({
                                     <div className="flex items-center gap-3 shrink-0">
                                       {rec.videoUrl && (
                                         <VideoPlayerModal videoUrl={rec.videoUrl} title={rec.title}>
-                                          <Button size="sm" variant="outline" className="text-indigo-400 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-xs shadow-none">
+                                          <Button size="sm" variant="outline" className="text-[#D9252A] border-[rgba(217,37,42,0.3)] bg-[rgba(217,37,42,0.1)] hover:bg-[rgba(217,37,42,0.2)] text-xs shadow-none">
                                             <PlayCircle className="w-3.5 h-3.5 mr-1.5" /> Watch
                                           </Button>
                                         </VideoPlayerModal>
@@ -388,7 +388,7 @@ export function CourseRoadmap({
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="h-8 text-xs text-indigo-700 bg-indigo-50 hover:bg-indigo-100/70 border-indigo-150 rounded-xl"
+                                  className="h-8 text-xs text-[#D9252A] bg-[rgba(217,37,42,0.08)] hover:bg-[rgba(217,37,42,0.12)] border-[rgba(217,37,42,0.25)] rounded-xl"
                                   onClick={() => setActiveAddForm({ moduleId: module.id, type: "LESSON" })}
                                 >
                                   <Plus className="w-3.5 h-3.5 mr-1" /> Add Sub-Topic Lesson
@@ -458,7 +458,7 @@ export function CourseRoadmap({
                                         <Button 
                                           type="submit" 
                                           size="sm" 
-                                          className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md"
+                                          className="text-xs bg-[#D9252A] hover:bg-[#C21F24] text-white rounded-xl shadow-md"
                                         >
                                           Create Lesson Node
                                         </Button>

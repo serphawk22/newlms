@@ -73,25 +73,25 @@ export function TrainingMatrix({ students, courses }: TrainingMatrixProps) {
         </button>
       </div>
 
-      <Card className="border-zinc-200 overflow-hidden">
+      <Card className="overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-sm">
-            <thead className="bg-zinc-50 border-b border-zinc-200">
-              <tr>
-                <th className="sticky left-0 bg-zinc-50 z-20 px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500 w-56">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                <th className="sticky left-0 z-20 px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest w-56" style={{ color: "var(--muted-foreground)", background: "var(--card)" }}>
                   Student
                 </th>
                 {courses.map((course) => (
-                  <th key={course.id} className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                  <th key={course.id} className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>
                     {course.title.length > 20 ? `${course.title.slice(0, 20)}...` : course.title}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody>
               {filteredStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-zinc-50">
-                  <td className="sticky left-0 bg-white px-4 py-3 text-zinc-900 font-medium z-10">{student.name}</td>
+                <tr key={student.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                  <td className="sticky left-0 px-4 py-3 text-sm font-medium z-10" style={{ color: "var(--foreground)", background: "var(--card)" }}>{student.name}</td>
                   {courses.map((course) => (
                     <td key={`${student.id}-${course.id}`} className="px-4 py-3 text-center">
                       {statusSymbol(student.statuses[course.id] || "not_enrolled")}
@@ -101,7 +101,7 @@ export function TrainingMatrix({ students, courses }: TrainingMatrixProps) {
               ))}
               {filteredStudents.length === 0 && (
                 <tr>
-                  <td colSpan={courses.length + 1} className="px-4 py-10 text-center text-zinc-400">
+                  <td colSpan={courses.length + 1} className="px-4 py-10 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
                     No students found.
                   </td>
                 </tr>

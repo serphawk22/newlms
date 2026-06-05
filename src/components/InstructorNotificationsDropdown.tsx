@@ -13,6 +13,7 @@ type Notification = {
   createdAt: string;
 };
 
+// ── Map notification type → fallback destination route ──────────────────
 function getFallbackLink(type: string): string {
   switch (type) {
     case "ADMIN_COMMENT":
@@ -22,18 +23,19 @@ function getFallbackLink(type: string): string {
   }
 }
 
+// ── Map notification type → icon + color ──────────────────────────────────
 const TYPE_META: Record<string, { icon: React.ReactNode; bg: string; dot: string; label: string }> = {
-  COURSE:           { icon: <BookOpen className="w-3.5 h-3.5 text-blue-600" />,   bg: "bg-blue-50",   dot: "bg-blue-500",   label: "Course" },
-  ASSIGNMENT:       { icon: <ClipboardList className="w-3.5 h-3.5 text-amber-600" />, bg: "bg-amber-50", dot: "bg-amber-500", label: "Assignment" },
-  MODULE:           { icon: <Layers className="w-3.5 h-3.5 text-purple-600" />,   bg: "bg-purple-50", dot: "bg-purple-500", label: "Module" },
-  LIVE:             { icon: <Video className="w-3.5 h-3.5 text-red-600" />,       bg: "bg-red-50",    dot: "bg-red-500",    label: "Live" },
-  LIVE_CLASS:       { icon: <Video className="w-3.5 h-3.5 text-red-600" />,       bg: "bg-red-50",    dot: "bg-red-500",    label: "Live" },
-  LOGIN:            { icon: <LogIn className="w-3.5 h-3.5 text-zinc-500" />,      bg: "bg-zinc-50",   dot: "bg-zinc-400",   label: "Login" },
-  ADMIN_COMMENT:    { icon: <MessageSquare className="w-3.5 h-3.5 text-orange-600" />, bg: "bg-orange-50", dot: "bg-orange-500", label: "Admin Feedback" },
-  STUDENT_QUESTION: { icon: <HelpCircle className="w-3.5 h-3.5 text-sky-600" />, bg: "bg-sky-50", dot: "bg-sky-500", label: "Student Q&A" },
+  COURSE:           { icon: <BookOpen className="w-3.5 h-3.5 text-[#D9252A]" />,   bg: "bg-[rgba(217,37,42,0.08)]",   dot: "bg-[#D9252A]",   label: "Course" },
+  ASSIGNMENT:       { icon: <ClipboardList className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />, bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Assignment" },
+  MODULE:           { icon: <Layers className="w-3.5 h-3.5 text-[#D9252A]" />,   bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Module" },
+  LIVE:       { icon: <Video className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />,       bg: "bg-[rgba(217,37,42,0.08)]",    dot: "bg-[#D9252A]",    label: "Live" },
+  LIVE_CLASS:       { icon: <Video className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />,       bg: "bg-[rgba(217,37,42,0.08)]",    dot: "bg-[#D9252A]",    label: "Live" },
+  LOGIN:      { icon: <LogIn className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />,      bg: "bg-[var(--muted)]",   dot: "bg-[var(--muted-foreground)]",   label: "Login" },
+  ADMIN_COMMENT:    { icon: <MessageSquare className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />, bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Admin Feedback" },
+  STUDENT_QUESTION: { icon: <HelpCircle className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />, bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Student Q&A" },
 };
 
-const DEFAULT_META = { icon: <Bell className="w-3.5 h-3.5 text-zinc-500" />, bg: "bg-zinc-50", dot: "bg-zinc-400", label: "Notice" };
+const DEFAULT_META = { icon: <Bell className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />, bg: "bg-[var(--muted)]", dot: "bg-[var(--muted-foreground)]", label: "Notice" };
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -68,6 +70,7 @@ export function InstructorNotificationsDropdown() {
         setUnreadCount(data.unreadCount ?? 0);
       }
     } catch {
+      // silent
     } finally {
       setLoading(false);
     }
@@ -77,6 +80,7 @@ export function InstructorNotificationsDropdown() {
     if (!mounted) return;
     fetchNotifications();
 
+    // SSE subscription for real-time updates
     const eventSource = new EventSource("/api/instructor/notifications", {
       withCredentials: true,
     });
@@ -88,6 +92,7 @@ export function InstructorNotificationsDropdown() {
         setUnreadCount(data.unreadCount ?? 0);
         setLoading(false);
       } catch {
+        // silent
       }
     };
 
@@ -104,6 +109,7 @@ export function InstructorNotificationsDropdown() {
     };
   }, [mounted, fetchNotifications]);
 
+  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
@@ -143,28 +149,31 @@ export function InstructorNotificationsDropdown() {
 
   return (
     <div className="relative" ref={panelRef}>
+      {/* Bell button */}
       <button
         id="instructor-notifications-btn"
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-full text-zinc-300 lg:text-zinc-600 hover:bg-white/10 lg:hover:bg-zinc-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="relative p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#D9252A]" style={{ color: "#D9252A" }}
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[10px] font-bold flex items-center justify-center leading-none" style={{ background: "#D9252A" }}>
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
 
+      {/* Dropdown panel */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-zinc-200 z-50 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 bg-zinc-50/50">
+        <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl z-50 overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}>
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-zinc-500" />
-              <h3 className="font-bold text-zinc-900 text-sm">Notifications</h3>
+              <Bell className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+              <h3 className="font-bold text-sm" style={{ color: "var(--foreground)" }}>Notifications</h3>
               {unreadCount > 0 && (
-                <span className="bg-red-100 text-red-600 text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A" }}>
                   {unreadCount}
                 </span>
               )}
@@ -172,7 +181,7 @@ export function InstructorNotificationsDropdown() {
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                className="flex items-center gap-1 text-xs text-[#D9252A] hover:text-[#C21F24] font-semibold transition-colors"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 Mark all read
@@ -180,17 +189,18 @@ export function InstructorNotificationsDropdown() {
             )}
           </div>
 
-          <div className="max-h-96 overflow-y-auto divide-y divide-zinc-50">
+          {/* Body */}
+          <div className="max-h-96 overflow-y-auto" style={{ borderColor: "var(--border)" }}>
             {loading && notifications.length === 0 && (
-              <div className="p-6 text-center text-sm text-zinc-400">Loading...</div>
+              <div className="p-6 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>Loading...</div>
             )}
             {!loading && notifications.length === 0 && (
               <div className="p-8 text-center">
-                <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Bell className="w-5 h-5 text-zinc-300" />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "var(--muted)" }}>
+                  <Bell className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
                 </div>
-                <p className="text-sm font-semibold text-zinc-500">All caught up!</p>
-                <p className="text-xs text-zinc-400 mt-0.5">No new notifications.</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>All caught up!</p>
+                <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>No new notifications.</p>
               </div>
             )}
             {notifications.map((n) => {
@@ -199,26 +209,25 @@ export function InstructorNotificationsDropdown() {
                 <button
                   key={n.id}
                   onClick={() => handleNotificationClick(n)}
-                  className={`w-full text-left flex gap-3 px-4 py-3 transition-colors group ${
-                    n.isRead
-                      ? "bg-white hover:bg-zinc-50"
-                      : "bg-blue-50/60 hover:bg-blue-50"
-                  }`}
+                  className={`w-full text-left flex gap-3 px-4 py-3 transition-colors group`}
+                  style={n.isRead ? { background: "var(--card)" } : { background: "rgba(217,37,42,0.04)" }}
                 >
+                  {/* Type icon */}
                   <div className={`w-8 h-8 rounded-lg ${meta.bg} flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform`}>
                     {meta.icon}
                   </div>
 
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm text-zinc-800 leading-snug line-clamp-2">{n.message}</p>
+                    <p className="text-sm leading-snug line-clamp-2" style={{ color: "var(--foreground)" }}>{n.message}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${meta.bg} text-zinc-600`}>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${meta.bg}`} style={{ color: "var(--muted-foreground)" }}>
                         {meta.label}
                       </span>
-                      <span className="text-[10px] text-zinc-400">{timeAgo(n.createdAt)}</span>
+                      <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{timeAgo(n.createdAt)}</span>
                     </div>
                   </div>
 
+                  {/* Unread dot */}
                   {!n.isRead && (
                     <div className={`w-2 h-2 rounded-full ${meta.dot} shrink-0 mt-1.5`} />
                   )}
@@ -227,9 +236,11 @@ export function InstructorNotificationsDropdown() {
             })}
           </div>
 
+          {/* Footer */}
           {notifications.length > 0 && (
-            <div className="px-4 py-2.5 border-t border-zinc-100 bg-zinc-50/50">
-              <p className="text-[11px] text-zinc-400 text-center">
+            <div className="px-4 py-2.5" style={{ borderTop: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+              {/* Footer */}
+              <p className="text-[11px] text-center" style={{ color: "var(--muted-foreground)" }}>
                 Click a notification to go to the related page
               </p>
             </div>

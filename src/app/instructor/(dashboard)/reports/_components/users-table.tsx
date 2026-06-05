@@ -270,29 +270,29 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
         style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
       >
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
                 <th className="w-10 px-4 py-3 text-center">
                   <input type="checkbox" className="rounded border-zinc-300 accent-[#D9252A]" />
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("name")}>
+                <th className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("name")}>
                   Name {sortKey === "name" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("email")}>
+                <th className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("email")}>
                   Email {sortKey === "email" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("role")}>
+                <th className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("role")}>
                   Role {sortKey === "role" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-center px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("coursesEnrolled")}>
+                <th className="text-center px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("coursesEnrolled")}>
                   Enrolled {sortKey === "coursesEnrolled" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-center px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("coursesCompleted")}>
+                <th className="text-center px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("coursesCompleted")}>
                   Completed {sortKey === "coursesCompleted" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Last Login</th>
-                <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-wider cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("registeredAt")}>
+                <th className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Last Login</th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer select-none" style={{ color: "var(--muted-foreground)" }} onClick={() => toggleSort("registeredAt")}>
                   Registered {sortKey === "registeredAt" && (sortDir === "asc" ? "↑" : "↓")}
                 </th>
                 <th className="w-10 px-4 py-3" />
@@ -351,9 +351,8 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
                           ) : (
                             <div className="space-y-1.5 max-w-md">
                               {user.enrolledCourses.map((course) => (
-                                <div key={`${user.id}-${course.title}`} className="flex items-center justify-between text-sm py-1 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                                <div key={`${user.id}-${course.title}`} className="flex items-center text-sm py-1" style={{ borderBottom: "1px solid var(--border)" }}>
                                   <span style={{ color: "var(--foreground)" }}>{course.title}</span>
-                                  <span className="font-semibold" style={{ color: "#D9252A" }}>{Math.round(course.progress)}%</span>
                                 </div>
                               ))}
                             </div>

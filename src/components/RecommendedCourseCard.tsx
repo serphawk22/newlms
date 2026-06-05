@@ -82,10 +82,10 @@ export function RecommendedCourseCard() {
   // ── Loading skeleton ──
   if (loading) {
     return (
-      <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-        <CardHeader className="pb-3 border-b border-slate-50">
-          <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-            <Sparkles className="w-4 h-4 text-violet-500" />
+        <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }} className="overflow-hidden">
+          <CardHeader className="pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+            <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
             Recommended For You
           </CardTitle>
         </CardHeader>
@@ -102,14 +102,14 @@ export function RecommendedCourseCard() {
   // ── Error state ──
   if (error) {
     return (
-      <Card className="border-slate-200 shadow-sm bg-white">
-        <CardHeader className="pb-3 border-b border-slate-50">
-          <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-            <Sparkles className="w-4 h-4 text-violet-500" />
+      <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
+        <CardHeader className="pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+          <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
             Recommended For You
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 text-center text-xs text-slate-400">
+        <CardContent className="p-6 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
           {error}
         </CardContent>
       </Card>
@@ -122,58 +122,49 @@ export function RecommendedCourseCard() {
   // ── Empty state – all courses enrolled ──
   if (!hasAnything) {
     return (
-      <Card className="border-slate-200 shadow-sm bg-white">
-        <CardHeader className="pb-3 border-b border-slate-50">
-          <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-            <Sparkles className="w-4 h-4 text-violet-500" />
+      <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
+        <CardHeader className="pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+          <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+            <Sparkles className="w-4 h-4 text-[#D9252A]" />
             Recommended For You
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 text-center text-xs text-slate-400">
-          🎉 You&rsquo;re enrolled in all available courses!
+        <CardContent className="p-6 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
+          All courses covered!
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-      <CardHeader className="pb-3 border-b border-slate-50">
-        <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-700">
-          <Sparkles className="w-4 h-4 text-violet-500" />
+    <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }} className="overflow-hidden">
+      <CardHeader className="pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+        <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+          <Sparkles className="w-4 h-4 text-[#D9252A]" />
           Recommended For You
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="p-0 divide-y divide-slate-100">
+      <CardContent className="p-0" style={{ borderTop: "none" }}>
 
         {/* ── Nearly Complete hint ── */}
         {nearlyComplete && (
-          <div className="p-4 flex items-start gap-3 bg-emerald-50/50">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
+          <div className="p-4 flex items-start gap-3" style={{ background: "rgba(217,37,42,0.04)" }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: "rgba(217,37,42,0.08)" }}>
+              <TrendingUp className="w-4 h-4" style={{ color: "#D9252A" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-emerald-700 uppercase tracking-tight">
+              <p className="text-xs font-bold uppercase tracking-tight" style={{ color: "#D9252A" }}>
                 Almost There!
               </p>
-              <p className="text-sm font-semibold text-slate-800 truncate mt-0.5">
+              <p className="text-sm font-semibold truncate mt-0.5" style={{ color: "var(--foreground)" }}>
                 {nearlyComplete.title}
-              </p>
-              {/* Progress bar */}
-              <div className="mt-2 h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(nearlyComplete.progress, 100)}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-slate-500 mt-1">
-                {Math.round(nearlyComplete.progress)}% complete — keep going!
               </p>
               <Link href={`/student/courses/${nearlyComplete.id}`}>
                 <Button
                   size="sm"
-                  className="mt-2 h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="mt-2 h-7 text-xs"
+                  style={{ background: "var(--foreground)", color: "var(--background)" }}
                 >
                   Continue <ArrowRight className="w-3 h-3 ml-1" />
                 </Button>
@@ -184,25 +175,26 @@ export function RecommendedCourseCard() {
 
         {/* ── Low quiz score warning ── */}
         {lowScoreCourse && (
-          <div className="p-4 flex items-start gap-3 bg-amber-50/50">
-            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
-              <AlertTriangle className="w-4 h-4 text-amber-600" />
+          <div className="p-4 flex items-start gap-3" style={{ background: "var(--secondary-background)" }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: "var(--muted)" }}>
+              <AlertTriangle className="w-4 h-4" style={{ color: "var(--foreground)" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-amber-700 uppercase tracking-tight">
+              <p className="text-xs font-bold uppercase tracking-tight" style={{ color: "var(--foreground)" }}>
                 Needs Revision
               </p>
-              <p className="text-sm font-semibold text-slate-800 truncate mt-0.5">
+              <p className="text-sm font-semibold truncate mt-0.5" style={{ color: "var(--foreground)" }}>
                 {lowScoreCourse.title}
               </p>
-              <p className="text-[10px] text-slate-500 mt-1">
-                Avg quiz score: {lowScoreCourse.avgScore}% — revisit the lessons
+              <p className="text-[10px] mt-1" style={{ color: "var(--muted-foreground)" }}>
+                Avg quiz score: {lowScoreCourse.avgScore}%
               </p>
               <Link href={`/student/courses/${lowScoreCourse.id}?tab=quizzes`}>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="mt-2 h-7 text-xs border-amber-400 text-amber-700 hover:bg-amber-50"
+                  className="mt-2 h-7 text-xs"
+                  style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
                 >
                   Review Course <ArrowRight className="w-3 h-3 ml-1" />
                 </Button>
@@ -214,22 +206,22 @@ export function RecommendedCourseCard() {
         {/* ── Recommended next course ── */}
         {recommendedNext && !enrolled && (
           <div className="p-4 flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
-              <GraduationCap className="w-4 h-4 text-violet-600" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: "rgba(217,37,42,0.08)" }}>
+              <GraduationCap className="w-4 h-4" style={{ color: "#D9252A" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-violet-600 uppercase tracking-tight">
+              <p className="text-xs font-bold uppercase tracking-tight" style={{ color: "#D9252A" }}>
                 Next Course
               </p>
-              <p className="text-sm font-semibold text-slate-800 truncate mt-0.5">
+              <p className="text-sm font-semibold truncate mt-0.5" style={{ color: "var(--foreground)" }}>
                 {recommendedNext.title}
               </p>
               {recommendedNext.description && (
-                <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">
+                <p className="text-[10px] mt-1 line-clamp-2" style={{ color: "var(--muted-foreground)" }}>
                   {recommendedNext.description}
                 </p>
               )}
-              <p className="text-[10px] text-violet-500 mt-1 flex items-center gap-1">
+              <p className="text-[10px] mt-1 flex items-center gap-1" style={{ color: "#D9252A" }}>
                 <BookMarked className="w-3 h-3" />
                 {recommendedNext.reason}
               </p>
@@ -237,7 +229,8 @@ export function RecommendedCourseCard() {
                 size="sm"
                 onClick={() => handleEnroll(recommendedNext.id)}
                 disabled={enrolling}
-                className="mt-2 h-7 text-xs bg-violet-600 hover:bg-violet-700 text-white"
+                className="mt-2 h-7 text-xs"
+                style={{ background: "var(--foreground)", color: "var(--background)" }}
               >
                 {enrolling ? (
                   <>
@@ -255,13 +248,14 @@ export function RecommendedCourseCard() {
 
         {/* Enrolled confirmation */}
         {recommendedNext && enrolled && (
-          <div className="p-4 text-center text-xs text-emerald-600 font-semibold">
-            ✓ Enrolled! Head to{" "}
+          <div className="p-4 text-center text-xs font-semibold" style={{ color: "var(--muted-foreground)" }}>
+            Enrolled!{" "}
             <Link
               href={`/student/courses/${recommendedNext.id}`}
               className="underline"
+              style={{ color: "#D9252A" }}
             >
-              the course
+              Go to course
             </Link>
           </div>
         )}

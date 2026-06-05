@@ -446,7 +446,7 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
             return (
               <div
                 key={field}
-                className={`border rounded-lg p-3 cursor-pointer transition-all ${isSelected ? "border-blue-400 bg-blue-50" : "border-zinc-200 bg-white hover:border-zinc-300"}`}
+                className={`border rounded-lg p-3 cursor-pointer transition-all ${isSelected ? "border-[#D9252A] bg-[rgba(217,37,42,0.08)]" : "border-zinc-200 bg-white hover:border-zinc-300"}`}
                 onClick={() => setSelectedField(isSelected ? null : field)}
               >
                 <div className="flex items-center justify-between mb-2">

@@ -110,37 +110,37 @@ export function LearningActivitiesTable({ rows, filters, summary }: LearningActi
         ))}
       </div>
 
-      <Card className="border-zinc-200 overflow-hidden">
+      <Card className="overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-sm">
-            <thead className="bg-zinc-50 border-b border-zinc-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Student</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Lesson</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Status</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Time spent</th>
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-zinc-500">Last accessed</th>
-                <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">Attempts</th>
+          <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Student</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Lesson</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Status</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Time spent</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Last accessed</th>
+                <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Attempts</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody>
               {visible.map((row) => (
-                <tr key={`${row.id}-${row.studentName}`} className="hover:bg-zinc-50">
-                  <td className="px-4 py-3 text-zinc-900">{row.studentName}</td>
-                  <td className="px-4 py-3 text-zinc-600">{row.lessonName}</td>
+                <tr key={`${row.id}-${row.studentName}`} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                  <td className="px-4 py-3 text-sm" style={{ color: "var(--foreground)" }}>{row.studentName}</td>
+                  <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{row.lessonName}</td>
                   <td className="px-4 py-3">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${row.status === "Viewed" ? "bg-green-100 text-green-600" : "bg-zinc-200 text-zinc-600"}`}>
                       {row.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-zinc-600">{row.timeSpent}</td>
-                  <td className="px-4 py-3 text-zinc-600">{row.lastAccessed}</td>
-                  <td className="px-4 py-3 text-center text-zinc-900">{row.attempts}</td>
+                  <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{row.timeSpent}</td>
+                  <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{row.lastAccessed}</td>
+                  <td className="px-4 py-3 text-center text-sm" style={{ color: "var(--foreground)" }}>{row.attempts}</td>
                 </tr>
               ))}
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-zinc-400">No activity found.</td>
+                  <td colSpan={6} className="px-4 py-10 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>No activity found.</td>
                 </tr>
               )}
             </tbody>

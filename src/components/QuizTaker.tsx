@@ -157,12 +157,8 @@ export function QuizTaker({ quiz, existingSubmission }: QuizTakerProps) {
           </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="h-2 bg-slate-200">
-          <div
-            className={`h-2 transition-all duration-700 ${c.bar}`}
-            style={{ width: `${pct}%` }}
-          />
+        <div className="px-6 py-3">
+          <span className="text-sm font-bold" style={{ color: "var(--muted-foreground)" }}>{pct}%</span>
         </div>
 
         {/* Per-question breakdown — MCQ only */}
@@ -239,15 +235,15 @@ export function QuizTaker({ quiz, existingSubmission }: QuizTakerProps) {
               return (
                 <div
                   key={q.id}
-                  className="rounded-xl p-3 bg-blue-50 border border-blue-200"
+                  className="rounded-xl p-3 bg-[rgba(217,37,42,0.08)] border border-[rgba(217,37,42,0.25)]"
                 >
                   <div className="flex items-start gap-2">
-                    <FileText className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    <FileText className="w-4 h-4 text-[#D9252A] mt-0.5 shrink-0" />
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-slate-800">
                         Q{mcqQuestions.length + i + 1}. {q.text}
                       </p>
-                      <p className="mt-1 text-xs text-slate-600 bg-white rounded-lg p-2 border border-blue-100">
+                      <p className="mt-1 text-xs text-slate-600 bg-white rounded-lg p-2 border border-[rgba(217,37,42,0.15)]">
                         {studentAns
                           ? String(studentAns)
                           : <span className="italic text-slate-400">No answer provided</span>}
@@ -305,16 +301,9 @@ export function QuizTaker({ quiz, existingSubmission }: QuizTakerProps) {
             {quiz.questions.length} question{quiz.questions.length !== 1 ? "s" : ""} total
           </span>
         </div>
-        <div className="h-1.5 bg-slate-200 rounded-full">
-          <div
-            className="h-1.5 bg-emerald-500 rounded-full transition-all duration-300"
-            style={{
-              width: mcqQuestions.length > 0
-                ? `${(answeredMcq / mcqQuestions.length) * 100}%`
-                : "0%",
-            }}
-          />
-        </div>
+        <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
+          {mcqQuestions.length > 0 ? `${answeredMcq}/${mcqQuestions.length} (${((answeredMcq / mcqQuestions.length) * 100).toFixed(0)}%)` : "0/0 (0%)"}
+        </span>
 
         {/* Questions */}
         {quiz.questions.map((q, i) => (

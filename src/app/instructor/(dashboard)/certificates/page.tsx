@@ -63,11 +63,11 @@ export default async function InstructorCertificatesPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
                   {["Certificate #", "Student", "Course", "Issue Date", "Actions"].map((h) => (
-                    <th key={h} className="text-left px-5 py-3.5 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>
                       {h}
                     </th>
                   ))}

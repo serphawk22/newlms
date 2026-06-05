@@ -106,23 +106,23 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
   };
 
   return (
-    <div className="rounded-xl border border-dashed border-violet-300 bg-violet-50/40 overflow-hidden">
+    <div className="rounded-xl border border-dashed border-[#D9252A] bg-[rgba(217,37,42,0.04)] overflow-hidden">
       {/* Header row */}
       <button
         type="button"
         onClick={() => setCollapsed((c) => !c)}
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-violet-50 transition-colors text-left"
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[rgba(217,37,42,0.06)] transition-colors text-left"
       >
-        <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
-          <FileText className="w-4 h-4 text-violet-600" />
+        <div className="w-8 h-8 rounded-lg bg-[rgba(217,37,42,0.08)] flex items-center justify-center shrink-0">
+          <FileText className="w-4 h-4 text-[#D9252A]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-violet-800">Import Questions from PDF</p>
-          <p className="text-xs text-violet-500">Upload a PDF — AI will extract MCQ questions automatically</p>
+          <p className="text-sm font-semibold text-[#D9252A]">Import Questions from PDF</p>
+          <p className="text-xs text-[#D9252A]">Upload a PDF — AI will extract MCQ questions automatically</p>
         </div>
         {collapsed
-          ? <ChevronDown className="w-4 h-4 text-violet-400 shrink-0" />
-          : <ChevronUp className="w-4 h-4 text-violet-400 shrink-0" />}
+          ? <ChevronDown className="w-4 h-4 text-[#D9252A] shrink-0" />
+          : <ChevronUp className="w-4 h-4 text-[#D9252A] shrink-0" />}
       </button>
 
       {!collapsed && (
@@ -135,7 +135,7 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
               </p>
               <label
                 htmlFor={`pdf-upload-${quizId}`}
-                className="flex items-center gap-2 cursor-pointer bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 cursor-pointer bg-[#D9252A] hover:bg-[#C21F24] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 Choose PDF File
@@ -154,7 +154,7 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
           {/* PARSING */}
           {stage === "parsing" && (
             <div className="flex flex-col items-center gap-3 py-6">
-              <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+              <Loader2 className="w-8 h-8 text-[#D9252A] animate-spin" />
               <p className="text-sm font-medium text-slate-600">Analysing &ldquo;{fileName}&rdquo;…</p>
               <p className="text-xs text-slate-400">Extracting text and generating questions with AI</p>
             </div>
@@ -232,7 +232,7 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
 
               <Button
                 onClick={handleSave}
-                className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold"
+                className="w-full bg-[#D9252A] hover:bg-[#C21F24] text-white font-semibold"
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 Add All {questions.length} Questions to Quiz
@@ -243,7 +243,7 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
           {/* SAVING */}
           {stage === "saving" && (
             <div className="flex flex-col items-center gap-3 py-6">
-              <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+              <Loader2 className="w-8 h-8 text-[#D9252A] animate-spin" />
               <p className="text-sm font-medium text-slate-600">Saving {questions.length} questions…</p>
             </div>
           )}

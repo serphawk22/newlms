@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Users, Search, Download, Plus, Trash2, X, AlertCircle, 
-  CheckCircle2, Eye, Check, Ban, GraduationCap, Briefcase, Calendar, Mail
+  CheckCircle2, Eye, Check, Ban
 } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import type { UsersData, StudentRow, InstructorRow, PendingUserRow } from "./page";
@@ -409,8 +409,7 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
               <div>
                 <h4 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{viewingUser.name || "Unnamed"}</h4>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
-                    {viewingUser.role === "STUDENT" ? <GraduationCap className="w-3 h-3" /> : <Briefcase className="w-3 h-3" />}
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
                     {viewingUser.role}
                   </span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
@@ -422,11 +421,9 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center gap-2" style={{ color: "var(--muted-foreground)" }}>
-                <Mail className="w-4 h-4 shrink-0" />
                 <span>{viewingUser.email}</span>
               </div>
               <div className="flex items-center gap-2" style={{ color: "var(--muted-foreground)" }}>
-                <Calendar className="w-4 h-4 shrink-0" />
                 <span>Joined Date: {viewingUser.joinedDate || "N/A"}</span>
               </div>
               <div className="flex items-center gap-2" style={{ color: "var(--muted-foreground)" }}>
@@ -576,15 +573,15 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
       {/* Table Card */}
       <Card className="overflow-hidden rounded-xl" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-left">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>User</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Email</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Role</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Status</th>
-                <th className="text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Stats / Details</th>
-                <th className="text-right text-[10px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Actions</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>User</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Role</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Status</th>
+                <th className="text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Stats / Details</th>
+                <th className="text-right text-[11px] font-bold uppercase tracking-widest px-6 py-3.5" style={{ color: "var(--muted-foreground)" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -601,8 +598,7 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
                   </td>
                   <td className="px-6 py-4 text-sm" style={{ color: "var(--muted-foreground)" }}>{u.email}</td>
                   <td className="px-6 py-4">
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider inline-flex items-center gap-1" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
-                      {u.role === "STUDENT" ? <GraduationCap className="w-3.5 h-3.5" /> : <Briefcase className="w-3.5 h-3.5" />}
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider inline-flex items-center" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
                       {u.role.toLowerCase()}
                     </span>
                   </td>

@@ -89,7 +89,7 @@ export function ExpertiseEditor({ initialSkills }: ExpertiseEditorProps) {
               onKeyDown={(e) => e.key === "Enter" && addSkill()}
               placeholder="Add a skill…"
               maxLength={40}
-              className="flex-1 text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)]"
             />
             <Button
               type="button"
@@ -127,7 +127,7 @@ export function ExpertiseEditor({ initialSkills }: ExpertiseEditorProps) {
           variant="ghost"
           size="sm"
           onClick={() => setEditing(true)}
-          className="mt-1 text-xs text-slate-500 hover:text-blue-600 px-0"
+          className="mt-1 text-xs text-slate-500 hover:text-[#D9252A] px-0"
         >
           <Pencil className="w-3 h-3 mr-1" /> Edit Skills
         </Button>

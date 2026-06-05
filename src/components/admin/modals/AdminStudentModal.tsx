@@ -83,10 +83,10 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-violet-500" />
+            <Users className="w-5 h-5 text-[#D9252A]" />
             <h2 className="text-base font-bold text-slate-900">Student Directory</h2>
             {!loading && (
-              <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold ml-1">
+              <span className="text-xs bg-[rgba(217,37,42,0.08)] text-[#D9252A] px-2 py-0.5 rounded-full font-bold ml-1">
                 {students.length}
               </span>
             )}
@@ -98,7 +98,7 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
 
         {/* Add form */}
         {showAdd && (
-          <form onSubmit={handleAdd} className="px-6 py-4 border-b border-slate-100 bg-violet-50/50">
+          <form onSubmit={handleAdd} className="px-6 py-4 border-b border-slate-100 bg-[rgba(217,37,42,0.04)]">
             <div className="flex items-end gap-3">
               <div className="flex-1">
                 <label className="block text-xs font-medium text-slate-500 mb-1">Name (optional)</label>
@@ -107,7 +107,7 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
                   value={addName}
                   onChange={(e) => setAddName(e.target.value)}
                   placeholder="Student name"
-                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-300"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
                 />
               </div>
               <div className="flex-1">
@@ -118,10 +118,10 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
                   onChange={(e) => setAddEmail(e.target.value)}
                   placeholder="student@example.com"
                   required
-                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-300"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[rgba(217,37,42,0.25)] focus:border-[#D9252A]"
                 />
               </div>
-              <Button type="submit" disabled={adding} className="h-10 px-5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-lg">
+              <Button type="submit" disabled={adding} className="h-10 px-5 bg-[#D9252A] hover:bg-[#C21F24] text-white text-sm font-medium rounded-lg">
                 {adding ? <RingLoader size="sm" className="inline-flex" /> : "Add"}
               </Button>
             </div>
@@ -139,19 +139,20 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
           ) : students.length === 0 ? (
             <p className="text-center text-slate-400 text-sm py-16">No students in this workspace yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-slate-50 border-b border-slate-100 z-10">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+              <thead className="sticky top-0 z-10" style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
                 <tr>
-                  <th className="text-left py-3 px-5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
-                  <th className="py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                  <th className="text-left py-3 px-5 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Name</th>
+                  <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                  <th className="py-3 px-4 text-[11px] font-bold uppercase tracking-widest text-right" style={{ color: "var(--muted-foreground)" }}>Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody>
                 {students.map((s) => (
-                  <tr key={s.memberId} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-5 font-medium text-slate-800">{s.name}</td>
-                    <td className="py-3 px-4 text-slate-500 text-xs">{s.email}</td>
+                  <tr key={s.memberId} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                    <td className="py-3 px-5 text-sm font-medium" style={{ color: "var(--foreground)" }}>{s.name}</td>
+                    <td className="py-3 px-4 text-sm" style={{ color: "var(--muted-foreground)" }}>{s.email}</td>
                     <td className="py-3 px-4 text-right">
                       <Button
                         size="sm"
@@ -170,6 +171,7 @@ export function AdminStudentModal({ orgId, onClose }: Props) {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
 

@@ -171,13 +171,13 @@ export function getFileIcon(
     case "pdf":
       return { Icon: FileText,        color: "text-red-500",    bg: "bg-red-50 border-red-100"     };
     case "image":
-      return { Icon: ImageIcon,        color: "text-purple-500", bg: "bg-purple-50 border-purple-100" };
+      return { Icon: ImageIcon,        color: "text-[#D9252A]", bg: "bg-[rgba(217,37,42,0.08)] border-[rgba(217,37,42,0.25)]" };
     case "spreadsheet":
       return { Icon: FileSpreadsheet,  color: "text-green-600",  bg: "bg-green-50 border-green-100" };
     case "office":
       if (["ppt","pptx","odp"].includes(ext))
         return { Icon: BarChart2,      color: "text-orange-500", bg: "bg-orange-50 border-orange-100" };
-      return { Icon: FileText,         color: "text-blue-500",   bg: "bg-blue-50 border-blue-100"   };
+      return { Icon: FileText,         color: "text-[#D9252A]",   bg: "bg-[rgba(217,37,42,0.08)] border-[rgba(217,37,42,0.25)]"   };
     case "code":
       return { Icon: Code,             color: "text-slate-500",  bg: "bg-slate-50 border-slate-200" };
     case "text":
@@ -187,7 +187,7 @@ export function getFileIcon(
     case "video":
       return { Icon: Video,            color: "text-pink-500",   bg: "bg-pink-50 border-pink-100"   };
     case "audio":
-      return { Icon: Music,            color: "text-indigo-500", bg: "bg-indigo-50 border-indigo-100" };
+      return { Icon: Music,            color: "text-[#D9252A]", bg: "bg-[rgba(217,37,42,0.08)] border-[rgba(217,37,42,0.25)]" };
     default:
       return { Icon: File,             color: "text-slate-400",  bg: "bg-slate-50 border-slate-200" };
   }

@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
           const studentName = comment.student?.name || "a student";
           message = `Admin ${adminName} added feedback for student ${studentName} on your course "${course.title}"`;
         }
-
+        
         const { createNotification } = await import("@/lib/notifications");
         await createNotification({
           userId: course.creatorId,

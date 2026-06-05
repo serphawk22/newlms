@@ -118,7 +118,7 @@ function DownloadCard({ url, fileName, label }: { url: string; fileName: string;
           <a
             href={url}
             download={fileName}
-            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#D9252A] hover:bg-[#C21F24] text-white text-sm font-semibold rounded-lg transition-colors"
           >
             <Download className="w-4 h-4" /> Download
           </a>
@@ -290,7 +290,7 @@ function OfficeViewer({ url, fileName }: { url: string; fileName: string }) {
             setEngine((e) => e === "microsoft" ? "google" : "microsoft");
             setLoaded(false);
           }}
-          className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+          className="flex items-center gap-1 text-[#D9252A] hover:text-[#C21F24] transition-colors"
           suppressHydrationWarning
         >
           <RefreshCw className="w-3 h-3" />
@@ -365,7 +365,7 @@ function SpreadsheetViewer({ url, fileName }: { url: string; fileName: string })
             setEngine((e) => (e === "microsoft" ? "google" : "microsoft"));
             setLoaded(false);
           }}
-          className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+          className="flex items-center gap-1 text-[#D9252A] hover:text-[#C21F24] transition-colors"
           suppressHydrationWarning
         >
           <RefreshCw className="w-3 h-3" />
@@ -488,7 +488,7 @@ function CodeViewer({ url, ext, fileName }: { url: string; ext: string; fileName
       {/* Code toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700 shrink-0">
         <div className="flex items-center gap-2">
-          <Code2 className="w-3.5 h-3.5 text-violet-400" />
+          <Code2 className="w-3.5 h-3.5 text-[#D9252A]" />
           <span className="text-xs text-slate-400 font-mono">{fileName}</span>
           <span className="text-xs text-slate-600 font-mono bg-slate-700 px-1.5 py-0.5 rounded">{lang}</span>
         </div>
@@ -627,7 +627,7 @@ export function UniversalFileViewer({ url, fileName, mimeType, fileSize }: Unive
   const topBar = (
     <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-700 shrink-0">
       <div className="flex items-center gap-2 min-w-0">
-        <FileText className="w-4 h-4 text-violet-400 shrink-0" />
+        <FileText className="w-4 h-4 text-[#D9252A] shrink-0" />
         <span className="text-sm font-semibold text-slate-200 truncate">{fileName}</span>
         {ext && (
           <span className="shrink-0 text-xs font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">

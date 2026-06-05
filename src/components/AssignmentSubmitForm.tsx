@@ -222,7 +222,7 @@ export function AssignmentSubmitForm({
         {file.url && (
           <div className="flex items-center justify-between text-xs text-slate-500 pt-1 flex-wrap gap-2">
             <FileViewerModal url={file.url} title="My Submission" fileName={file.name} mimeType={file.mime} fileSize={file.size}>
-              <span className="flex items-center gap-1 text-blue-600 hover:underline font-medium cursor-pointer">
+              <span className="flex items-center gap-1 text-[#D9252A] hover:underline font-medium cursor-pointer">
                 {(() => { const { Icon, color: c } = getFileIcon(file.name, file.mime); return <Icon className={`w-3 h-3 ${c}`} />; })()}
                 {file.name}
               </span>
@@ -241,10 +241,10 @@ export function AssignmentSubmitForm({
     const { Icon, color, bg } = getFileIcon(file.name, file.mime);
 
     return (
-      <div className="mt-4 rounded-xl border-2 border-blue-200 bg-blue-50 p-4 space-y-3">
+      <div className="mt-4 rounded-xl border-2 border-[rgba(217,37,42,0.25)] bg-[rgba(217,37,42,0.08)] p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <CheckCircle className="w-5 h-5 text-blue-600" />
-          <span className="font-bold text-blue-800">Submitted — Awaiting Grade</span>
+          <CheckCircle className="w-5 h-5 text-[#D9252A]" />
+          <span className="font-bold text-[#D9252A]">Submitted — Awaiting Grade</span>
         </div>
 
         {(submission.file ?? submission.fileUrl) && (
@@ -260,7 +260,7 @@ export function AssignmentSubmitForm({
         <div className="flex items-center justify-between flex-wrap gap-2">
           {file.url && (
             <FileViewerModal url={file.url} title="My Submission" fileName={file.name} mimeType={file.mime} fileSize={file.size}>
-              <span className="flex items-center gap-1.5 text-sm text-blue-700 hover:underline font-medium cursor-pointer">
+              <span className="flex items-center gap-1.5 text-sm text-[#D9252A] hover:underline font-medium cursor-pointer">
                 <Icon className={`w-3.5 h-3.5 ${color}`} /> View Submission
               </span>
             </FileViewerModal>
@@ -301,7 +301,7 @@ export function AssignmentSubmitForm({
           onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
           onClick={() => !uploading && fileInputRef.current?.click()}
           className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all
-            ${isDragging ? "border-blue-400 bg-blue-50" : selectedFile ? "border-indigo-300 bg-indigo-50/40" : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50"}
+            ${isDragging ? "border-[#D9252A] bg-[rgba(217,37,42,0.08)]" : selectedFile ? "border-[#D9252A] bg-[rgba(217,37,42,0.06)]" : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50"}
             ${uploading ? "pointer-events-none opacity-60" : ""}`}
         >
           <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} disabled={uploading} />
@@ -343,12 +343,9 @@ export function AssignmentSubmitForm({
                 <BarsLoader size="sm" />
                 {progressMsg || (progress < 95 ? "Uploading file…" : "Saving submission…")}
               </span>
-              <span className="font-bold text-blue-600">{progress}%</span>
+              <span className="font-bold text-[#D9252A]">{progress}%</span>
             </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-200"
-                style={{ width: `${progress}%` }} />
-            </div>
+
           </div>
         )}
 
@@ -365,7 +362,7 @@ export function AssignmentSubmitForm({
 
         <div className="flex gap-2">
           <Button onClick={handleSubmit} disabled={uploading || !selectedFile}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex-1 disabled:opacity-60"
+            className="bg-[#D9252A] hover:bg-[#C21F24] text-white flex-1 disabled:opacity-60"
             id="submit-assignment-btn">
             {uploading
               ? <><BarsLoader size="sm" />Uploading… {progress > 0 && `${progress}%`}</>
@@ -387,7 +384,7 @@ export function AssignmentSubmitForm({
     <div className="mt-4">
       <Button
         onClick={() => { setShowForm(true); setError(""); setSelectedFile(null); }}
-        className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+        className="bg-[#D9252A] hover:bg-[#C21F24] text-white w-full sm:w-auto"
         id="submit-assignment-open-btn"
       >
         <Upload className="w-4 h-4 mr-2" /> Upload & Submit Assignment

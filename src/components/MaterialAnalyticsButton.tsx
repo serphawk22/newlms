@@ -73,7 +73,7 @@ export function MaterialAnalyticsButton({ materialId, materialTitle, courseId }:
         onClick={handleOpen}
         title="View analytics"
         id={`analytics-btn-${materialId}`}
-        className="text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+        style={{ color: "var(--muted-foreground)" }}
       >
         <Eye className="w-4 h-4" />
       </Button>
@@ -86,37 +86,38 @@ export function MaterialAnalyticsButton({ materialId, materialTitle, courseId }:
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+          <div className="rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "0 10px 22px rgba(17,24,39,0.10)" }}>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border)", background: "var(--secondary-background)" }}>
               <div className="flex items-center gap-2 min-w-0">
-                <BarChart2 className="w-5 h-5 text-indigo-600 shrink-0" />
+                <BarChart2 className="w-5 h-5 shrink-0" style={{ color: "#D9252A" }} />
                 <div className="min-w-0">
-                  <h2 className="font-bold text-slate-800 truncate">View Analytics</h2>
-                  <p className="text-xs text-slate-400 truncate">{materialTitle}</p>
+                  <h2 className="font-bold truncate" style={{ color: "var(--foreground)" }}>View Analytics</h2>
+                  <p className="text-xs truncate" style={{ color: "var(--muted-foreground)" }}>{materialTitle}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0 ml-4">
                 {analytics && (
-                  <span className="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: "rgba(217,37,42,0.08)", color: "#D9252A" }}>
                     {viewedCount} / {total} viewed
                   </span>
                 )}
-                {/* Refresh button */}
                 <button
                   onClick={fetchAnalytics}
                   disabled={loading}
                   title="Refresh analytics"
                   aria-label="Refresh analytics"
-                  className="text-slate-400 hover:text-indigo-600 transition-colors p-1 disabled:opacity-50"
+                  className="p-1 disabled:opacity-50 transition-colors"
+                  style={{ color: "var(--muted-foreground)" }}
                 >
                   <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                 </button>
                 <button
                   onClick={handleClose}
                   aria-label="Close analytics"
-                  className="text-slate-400 hover:text-slate-700 transition-colors p-1"
+                  className="p-1 transition-colors"
+                  style={{ color: "var(--muted-foreground)" }}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -126,75 +127,76 @@ export function MaterialAnalyticsButton({ materialId, materialTitle, courseId }:
             {/* Body */}
             <div className="overflow-y-auto flex-1">
               {loading && (
-                <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
+                <div className="flex items-center justify-center py-16 gap-3" style={{ color: "var(--muted-foreground)" }}>
                   <RingLoader size="sm" />
                   <span>Loading analytics…</span>
                 </div>
               )}
 
               {!loading && error && (
-                <div className="text-center py-12 text-red-500 text-sm px-6">{error}</div>
+                <div className="text-center py-12 text-sm px-6" style={{ color: "#D9252A" }}>{error}</div>
               )}
 
               {!loading && !error && analytics?.length === 0 && (
-                <div className="text-center py-16 text-slate-400 text-sm">
+                <div className="text-center py-16 text-sm" style={{ color: "var(--muted-foreground)" }}>
                   No students enrolled in this course yet.
                 </div>
               )}
 
               {!loading && !error && analytics && analytics.length > 0 && (
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-white border-b border-slate-100 z-10">
-                    <tr>
-                      <th className="text-left px-6 py-3 font-semibold text-slate-600">#</th>
-                      <th className="text-left px-6 py-3 font-semibold text-slate-600">Student</th>
-                      <th className="text-left px-6 py-3 font-semibold text-slate-600">Email</th>
-                      <th className="text-center px-6 py-3 font-semibold text-slate-600">Status</th>
-                      <th className="text-left px-6 py-3 font-semibold text-slate-600">Last Opened</th>
-                      <th className="text-center px-6 py-3 font-semibold text-slate-600">Opens</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {analytics.map((row, idx) => (
-                      <tr
-                        key={row.studentId}
-                        className={`hover:bg-slate-50 transition-colors ${row.viewed ? "" : "opacity-60"}`}
-                      >
-                        <td className="px-6 py-3 text-slate-400 font-mono text-xs">{idx + 1}</td>
-                        <td className="px-6 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                              row.viewed ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-500"
-                            }`}>
-                              {row.name[0]?.toUpperCase() ?? "?"}
-                            </div>
-                            <span className="font-medium text-slate-800">{row.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-3 text-slate-500 text-xs">{row.email}</td>
-                        <td className="px-6 py-3 text-center">
-                          {row.viewed ? (
-                            <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">
-                              <CheckCircle2 className="w-3 h-3" /> Viewed
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
-                              <XCircle className="w-3 h-3" /> Not Viewed
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-3 text-slate-500 text-xs">
-                          {row.viewedAt ? formatDateTime(row.viewedAt) : "—"}
-                        </td>
-                        <td className="px-6 py-3 text-center">
-                          <span className={`text-xs font-bold ${row.viewCount > 0 ? "text-indigo-600" : "text-slate-300"}`}>
-                            {row.viewCount}
-                          </span>
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
+                    <thead className="sticky top-0 z-10" style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}>
+                      <tr>
+                        <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>#</th>
+                        <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Student</th>
+                        <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                        <th className="text-center px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Status</th>
+                        <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Last Opened</th>
+                        <th className="text-center px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Opens</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {analytics.map((row, idx) => (
+                        <tr
+                          key={row.studentId}
+                          className={`transition-colors ${row.viewed ? "" : "opacity-60"}`}
+                          style={{ borderBottom: "1px solid var(--border)" }}
+                        >
+                          <td className="px-6 py-3 font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{idx + 1}</td>
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={row.viewed ? { background: "rgba(217,37,42,0.08)", color: "#D9252A" } : { background: "var(--muted)", color: "var(--muted-foreground)" }}>
+                                {row.name[0]?.toUpperCase() ?? "?"}
+                              </div>
+                              <span className="font-medium text-sm" style={{ color: "var(--foreground)" }}>{row.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-3 text-xs" style={{ color: "var(--muted-foreground)" }}>{row.email}</td>
+                          <td className="px-6 py-3 text-center">
+                            {row.viewed ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "rgba(217,37,42,0.08)", color: "#D9252A" }}>
+                                <CheckCircle2 className="w-3 h-3" /> Viewed
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
+                                <XCircle className="w-3 h-3" /> Not Viewed
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-3 text-xs" style={{ color: "var(--muted-foreground)" }}>
+                            {row.viewedAt ? formatDateTime(row.viewedAt) : "—"}
+                          </td>
+                          <td className="px-6 py-3 text-center">
+                            <span className="text-xs font-bold" style={{ color: row.viewCount > 0 ? "#D9252A" : "var(--muted-foreground)" }}>
+                              {row.viewCount}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </div>

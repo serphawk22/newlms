@@ -312,10 +312,7 @@ export function CertificateTemplateManager() {
                       </span>
                       <span className="font-bold text-[#D9252A]">{progress}%</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-2 bg-[#D9252A] rounded-full transition-all duration-200"
-                        style={{ width: `${progress}%` }} />
-                    </div>
+
                   </div>
                 )}
 

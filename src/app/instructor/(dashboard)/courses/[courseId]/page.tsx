@@ -691,10 +691,11 @@ export default async function CourseBuilderPage({
           <div className="space-y-4">
             <Link href={`/instructor/courses/${course.id}/roadmap`}>
               <Button
-                style={{ background: "#D9252A", color: "#FFFFFF" }}
-                className="w-full justify-start hover:bg-[#C21F24] font-semibold py-6 mb-4 rounded-xl shadow-md transition-colors"
+                variant="ghost"
+                className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                style={{ color: "var(--muted-foreground)" }}
               >
-                <MapIcon className="w-5 h-5 mr-3" /> View Interactive Roadmap
+                <MapIcon className="w-4 h-4 mr-2" /> View Interactive Roadmap
               </Button>
             </Link>
             <div className="space-y-2">
@@ -1578,19 +1579,20 @@ export default async function CourseBuilderPage({
                     <p className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>No students enrolled yet.</p>
                     <p className="text-sm mt-1">Students will appear here once they enrol in this course.</p>
                   </div>
-                ) : (
+                  ) : (
                   <div className="rounded-xl border overflow-hidden" style={{ background: "var(--card)", borderColor: "var(--border)", boxShadow: "none" }}>
-                    <table className="w-full text-sm min-w-[1000px]">
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[600px] whitespace-nowrap text-sm">
                       <thead>
                         <tr style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
-                          <th className="text-left px-5 py-3 font-semibold w-12" style={{ color: "var(--muted-foreground)" }}>#</th>
-                          <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Student</th>
-                          <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Email</th>
-                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Assignments</th>
-                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Quizzes</th>
-                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Materials</th>
-                          <th className="text-left px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Progress</th>
-                          <th className="text-center px-5 py-3 font-semibold" style={{ color: "var(--muted-foreground)" }}>Certificate Status</th>
+                          <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest w-12" style={{ color: "var(--muted-foreground)" }}>#</th>
+                          <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Student</th>
+                          <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Email</th>
+                          <th className="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Assignments</th>
+                          <th className="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Quizzes</th>
+                          <th className="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Materials</th>
+                          <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Progress</th>
+                          <th className="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Certificate Status</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
@@ -1659,13 +1661,7 @@ export default async function CourseBuilderPage({
                               </td>
                               <td className="px-5 py-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
-                                    <div
-                                      className="h-full rounded-full transition-all"
-                                      style={{ width: `${pct}%`, background: pct >= 50 ? "#D9252A" : "var(--muted-foreground)" }}
-                                    />
-                                  </div>
-                                  <span className="text-xs font-bold w-8" style={{ color: "var(--foreground)" }}>{pct}%</span>
+                                  <span className="text-xs font-bold" style={{ color: "var(--foreground)" }}>{pct}%</span>
                                 </div>
                               </td>
                               <td className="px-5 py-3 text-center">
@@ -1705,6 +1701,7 @@ export default async function CourseBuilderPage({
                         })}
                       </tbody>
                     </table>
+                    </div>
                   </div>
                 )}
               </div>

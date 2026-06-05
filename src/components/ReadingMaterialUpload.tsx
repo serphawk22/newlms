@@ -315,9 +315,9 @@ export function ReadingMaterialUpload({ courseId }: Props) {
               onClick={() => !uploading && fileInputRef.current?.click()}
               className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all
                 ${isDragging
-                  ? "border-blue-400 bg-blue-50"
+                  ? "border-[#D9252A] bg-[rgba(217,37,42,0.08)]"
                   : selectedFile
-                  ? "border-indigo-300 bg-indigo-50/40"
+                  ? "border-[#D9252A] bg-[rgba(217,37,42,0.06)]"
                   : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50"}
                 ${uploading ? "pointer-events-none opacity-60" : ""}`}
             >
@@ -363,19 +363,16 @@ export function ReadingMaterialUpload({ courseId }: Props) {
                   <RingLoader size="sm" className="inline-flex" />
                   {progressMsg || "Uploading…"}
                 </span>
-                <span className="font-bold text-blue-600">{progress}%</span>
+                <span className="font-bold text-[#D9252A]">{progress}%</span>
               </div>
-              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-200"
-                  style={{ width: `${progress}%` }} />
-              </div>
+
             </div>
           )}
 
           <Button
             onClick={handleUpload}
             disabled={uploading || !selectedFile || !title.trim()}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-10 disabled:opacity-60"
+            className="w-full bg-[#D9252A] hover:bg-[#C21F24] text-white font-semibold h-10 disabled:opacity-60"
             id="upload-material-btn"
           >
             {uploading
@@ -457,7 +454,7 @@ export function ReadingMaterialUpload({ courseId }: Props) {
                         fileSize={size}
                       >
                         <Button variant="ghost" size="sm" title="Preview file"
-                          className="text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                          className="text-slate-500 hover:text-[#D9252A] hover:bg-[rgba(217,37,42,0.08)] transition-colors">
                           <BookOpen className="w-4 h-4" />
                         </Button>
                       </FileViewerModal>

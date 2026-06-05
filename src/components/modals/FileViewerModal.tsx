@@ -109,7 +109,7 @@ export function FileViewerModal({
           <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-700/60 shadow-lg shrink-0 gap-3">
             {/* Left: file info */}
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-[#D9252A] flex items-center justify-center shrink-0">
                 <BookOpen className="w-4 h-4 text-white" />
               </div>
               <div className="min-w-0">

@@ -136,7 +136,7 @@ export default function InstructorLoginPage() {
             <Label htmlFor="instructor-email">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-              <Input id="instructor-email" name="email" type="email" required autoComplete="email" className="pl-10 h-11 rounded-lg" />
+              <Input id="instructor-email" name="email" type="email" required autoComplete="email" className="pl-10 h-11 rounded-lg" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
             </div>
           </motion.div>
 
@@ -151,8 +151,9 @@ export default function InstructorLoginPage() {
                 required
                 autoComplete="current-password"
                 className="pl-10 pr-10 h-11 rounded-lg"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1}>
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" tabIndex={-1} style={{ color: "var(--muted-foreground)" }}>
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
@@ -170,6 +171,7 @@ export default function InstructorLoginPage() {
                 maxLength={10}
                 placeholder="Institution code"
                 className="pl-10 h-11 rounded-lg uppercase tracking-widest"
+                style={{ background: "var(--input)", borderColor: "var(--border)" }}
               />
             </div>
           </motion.div>

@@ -9,7 +9,7 @@ export interface PendingUserItem {
   id: string;
   name: string | null;
   email: string;
-  role: "STUDENT" | "INSTRUCTOR";
+  role: string;
 }
 
 interface Props {
