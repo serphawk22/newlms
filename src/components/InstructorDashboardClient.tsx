@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import {
   HelpCircle, ChevronRight, ArrowRight,
-  Video, ChevronLeft,
+  Video, ChevronLeft, ClipboardList, PlusCircle, Users, BookOpen,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -132,9 +132,17 @@ function MiniCalendar({ sessionDates }: { sessionDates: string[] }) {
   );
 }
 
+interface TaskItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+}
+
 interface Props {
   greeting: string;
   userName: string;
+  userId: string;
   totalCourses: number;
   totalStudents: number;
   activeQuizzes: number;
@@ -148,17 +156,69 @@ interface Props {
 }
 
 export function InstructorDashboardClient({
-  greeting, userName, totalCourses, totalStudents,
+  greeting, userName, userId, totalCourses, totalStudents,
   activeQuizzes, pendingAssignments,
   allQuizzes, allLiveSessions, enrollCounts, weekDays, monthLabels, monthCounts,
 }: Props) {
   const [chartView, setChartView] = useState<"weekly" | "monthly">("weekly");
 
+  const [tasks, setTasks] = useState<TaskItem[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(`tasks-${userId}`);
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+  const [newTaskText, setNewTaskText] = useState("");
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
+
+  const saveTasks = (newTasks: TaskItem[]) => {
+    setTasks(newTasks);
+    localStorage.setItem(`tasks-${userId}`, JSON.stringify(newTasks));
+  };
+
+  const handleAddTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTaskText.trim()) return;
+    const newTask: TaskItem = {
+      id: `task-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      text: newTaskText.trim(),
+      completed: false,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [newTask, ...tasks];
+    saveTasks(updated);
+    setNewTaskText("");
+  };
+
+  const toggleTask = (id: string) => {
+    const updated = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+    saveTasks(updated);
+  };
+
+  const deleteTask = (id: string) => {
+    const updated = tasks.filter(t => t.id !== id);
+    saveTasks(updated);
+  };
+
+  const startEditing = (id: string, text: string) => {
+    setEditingTaskId(id);
+    setEditingText(text);
+  };
+
+  const saveEditing = (id: string) => {
+    if (!editingText.trim()) return;
+    const updated = tasks.map(t => t.id === id ? { ...t, text: editingText.trim() } : t);
+    saveTasks(updated);
+    setEditingTaskId(null);
+  };
+
   const stats = [
-    { label: "Total Students", value: totalStudents, suffix: "+" },
-    { label: "Total Courses", value: totalCourses, suffix: "+" },
-    { label: "Active Quizzes", value: activeQuizzes, suffix: "" },
-    { label: "Pending Assignments", value: pendingAssignments, suffix: "" },
+    { label: "Total Students", value: totalStudents, suffix: "+", icon: Users, href: "/instructor/students" },
+    { label: "Total Courses", value: totalCourses, suffix: "+", icon: BookOpen, href: "/instructor/courses" },
+    { label: "Total Quizzes", value: activeQuizzes, suffix: "", icon: HelpCircle, href: "/instructor/quizzes" },
+    { label: "Pending Assignments", value: pendingAssignments, suffix: "", icon: ClipboardList, href: "/instructor/assignments" },
   ];
 
   const chartData = chartView === "weekly"
@@ -187,17 +247,27 @@ export function InstructorDashboardClient({
 
       {/* Stats Row */}
       <motion.div initial="hidden" animate="visible" variants={stagger} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <motion.div key={stat.label} variants={cardItem}>
-            <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }} className="hover:shadow-sm transition-shadow">
-              <CardContent className="p-4 sm:p-5">
-
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                <p className="text-xs font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <motion.div key={stat.label} variants={cardItem}>
+              <Link href={stat.href} className="block group focus:outline-none">
+                <Card className="transition-all duration-200 cursor-pointer hover:-translate-y-0.5" style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
+                  <CardContent className="p-4 sm:p-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-110" style={{ background: "var(--muted)", color: "var(--foreground)" }}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <ArrowRight className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+                    </div>
+                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                    <p className="text-xs font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       {/* Calendar + Chart */}
@@ -296,45 +366,108 @@ export function InstructorDashboardClient({
 
       {/* Bottom Two Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Active Quizzes */}
+        {/* Tasks to be done widget replacing Active Quizzes */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, ease: "easeOut", duration: 0.4 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Active Quizzes</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tasks to be done</h3>
+            </div>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
+              {tasks.filter(t => !t.completed).length} pending
+            </span>
           </div>
           <Card style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
-            <CardContent className="p-0" style={{ borderColor: "var(--border)" }}>
-              {allQuizzes.length === 0 ? (
-                <div className="p-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  No quizzes created yet.
-                </div>
-              ) : (
-                <div className="divide-y" style={{ borderColor: "var(--border)" }}>
-                  {allQuizzes.map((quiz) => (
-                    <div
-                      key={quiz.id}
-                      className="flex items-center gap-4 p-4 transition-colors"
-                      onMouseEnter={e => (e.currentTarget.style.background = "var(--muted)")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                    >
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)" }}
-                      >
-                        <HelpCircle className="w-4 h-4" style={{ color: "var(--foreground)" }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>{quiz.title}</p>
-                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{quiz.courseTitle} &middot; {quiz.questionCount} questions</p>
-                      </div>
-                      <ChevronRight className="w-4 h-4" style={{ color: "var(--border)" }} />
+            <CardContent className="p-4 space-y-4">
+              <form onSubmit={handleAddTask} className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add a new task..."
+                  value={newTaskText}
+                  onChange={(e) => setNewTaskText(e.target.value)}
+                  className="flex-1 px-3 py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
+                  style={{ background: "var(--muted)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                />
+                <Button type="submit" size="sm" className="gap-1 shrink-0" style={{ background: "var(--foreground)", color: "var(--background)" }}>
+                  <PlusCircle className="w-4 h-4" /> Add
+                </Button>
+              </form>
+
+              <div className="max-h-64 overflow-y-auto divide-y pr-1" style={{ borderColor: "var(--border)" }}>
+                {tasks.length === 0 ? (
+                  <div className="py-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <ClipboardList className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border)" }} />
+                    All tasks completed!
+                  </div>
+                ) : (
+                  tasks.map((task) => (
+                    <div key={task.id} className="flex items-center gap-3 py-2.5 group" style={{ borderColor: "var(--border)" }}>
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => toggleTask(task.id)}
+                        className="w-4 h-4 rounded cursor-pointer"
+                        style={{ accentColor: "#D9252A" }}
+                      />
+
+                      {editingTaskId === task.id ? (
+                        <div className="flex-1 flex gap-2">
+                          <input
+                            type="text"
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && saveEditing(task.id)}
+                            className="flex-1 px-2 py-0.5 text-sm rounded focus:outline-none"
+                            style={{ border: "1px solid var(--border)", background: "var(--muted)", color: "var(--foreground)" }}
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => saveEditing(task.id)}
+                            className="text-xs font-semibold"
+                            style={{ color: "var(--foreground)" }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      ) : (
+                        <span
+                          className={`flex-1 text-sm cursor-pointer select-none ${task.completed ? "line-through" : ""}`}
+                          style={{ color: task.completed ? "var(--muted-foreground)" : "var(--foreground)" }}
+                          onClick={() => toggleTask(task.id)}
+                        >
+                          {task.text}
+                        </span>
+                      )}
+
+                      {editingTaskId !== task.id && (
+                        <div className="opacity-0 group-hover:opacity-100 flex gap-2 transition-opacity">
+                          <button
+                            onClick={() => startEditing(task.id, task.text)}
+                            className="text-xs"
+                            style={{ color: "var(--muted-foreground)" }}
+                            onMouseEnter={e => (e.currentTarget.style.color = "var(--foreground)")}
+                            onMouseLeave={e => (e.currentTarget.style.color = "var(--muted-foreground)")}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteTask(task.id)}
+                            className="text-xs"
+                            style={{ color: "var(--muted-foreground)" }}
+                            onMouseEnter={e => { e.currentTarget.style.color = "#D9252A"; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = "var(--muted-foreground)"; }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              )}
+                  ))
+                )}
+              </div>
             </CardContent>
           </Card>
         </motion.div>

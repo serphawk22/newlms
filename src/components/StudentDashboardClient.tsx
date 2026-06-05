@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
 import { Card } from "@/components/ui/card";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,20 +90,29 @@ function getFirstDayOfMonth(month: number, year: number) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value,
+  label, value, href,
 }: {
-  label: string; value: number;
+  label: string; value: number; href: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ease: "easeOut", duration: 0.35 }}
-      style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
-      className="rounded-2xl p-5 hover:shadow-sm transition-shadow"
+      className="w-full"
     >
-      <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{value}</p>
-      <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{label}</p>
+      <Link href={href} className="block group focus:outline-none w-full">
+        <div
+          className="rounded-2xl p-5 transition-all duration-200 cursor-pointer group-hover:-translate-y-0.5"
+          style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{value}</p>
+            <ArrowRight className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+          </div>
+          <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{label}</p>
+        </div>
+      </Link>
     </motion.div>
   );
 }
@@ -340,11 +350,14 @@ export function StudentDashboardClient({
   const [trendingTab, setTrendingTab] = useState<"recent" | "popular" | "featured">("recent");
   const router = useRouter();
 
+  const firstActiveCourseId = enrolledCourses.length > 0 ? enrolledCourses[0].id : "";
+  const firstPendingQuizCourseId = pendingQuizzes.length > 0 ? pendingQuizzes[0].courseId : firstActiveCourseId;
+
   const stats = [
-    { label: "Enrolled Courses",       value: enrolledCoursesCount },
-    { label: "Completed Assignments",  value: completedAssignments },
-    { label: "Pending Quizzes",        value: pendingQuizzesCount },
-    { label: "Study Sessions",         value: studySessions },
+    { label: "Enrolled Courses",       value: enrolledCoursesCount, href: "/student/courses" },
+    { label: "Completed Assignments",  value: completedAssignments, href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=assignments` : "/student" },
+    { label: "Pending Quizzes",        value: pendingQuizzesCount, href: firstPendingQuizCourseId ? `/student/courses/${firstPendingQuizCourseId}?tab=quizzes` : "/student" },
+    { label: "Study Sessions",         value: studySessions, href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=reading` : "/student" },
   ];
 
   const sortedTrending = [...trendingCourses].sort((a, b) => {
@@ -355,7 +368,7 @@ export function StudentDashboardClient({
   const totalPending = pendingQuizzes.length + pendingAssignments.length;
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen" style={{ background: "var(--background)" }}>
+    <div className="flex flex-col lg:flex-row min-h-screen w-full" style={{ background: "var(--background)" }}>
       {/* ── LEFT / MAIN COLUMN ─────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 p-5 lg:p-8 space-y-6">
 
@@ -375,21 +388,26 @@ export function StudentDashboardClient({
               Keep pushing your limits!
             </p>
           </motion.div>
-          {currentStreak > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.35 }}
-              style={{
-                background: "rgba(217,37,42,0.12)",
-                color: "#D9252A",
-                borderColor: "rgba(217,37,42,0.25)",
-              }}
-              className="flex items-center gap-1.5 border px-3 py-1 rounded-full text-xs font-bold"
-            >
-              {currentStreak} day streak
-            </motion.div>
-          )}
+          <div className="flex items-center gap-3 shrink-0">
+            {currentStreak > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.35 }}
+                style={{
+                  background: "rgba(217,37,42,0.12)",
+                  color: "#D9252A",
+                  borderColor: "rgba(217,37,42,0.25)",
+                }}
+                className="flex items-center gap-1.5 border px-3 py-1 rounded-full text-xs font-bold"
+              >
+                {currentStreak} day streak
+              </motion.div>
+            )}
+            <div className="rounded-full border p-0.5 flex items-center justify-center" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
+              <NotificationsDropdown />
+            </div>
+          </div>
         </div>
 
         {/* Stats Row */}

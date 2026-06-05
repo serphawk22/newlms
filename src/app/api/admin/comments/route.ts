@@ -142,6 +142,33 @@ export async function POST(req: NextRequest) {
         student: { select: { id: true, name: true } },
       },
     });
+
+    // Notify the instructor of the course
+    try {
+      const course = await prisma.course.findUnique({
+        where: { id: courseId },
+        select: { creatorId: true, title: true }
+      });
+      if (course) {
+        const adminName = comment.author.name || "Admin";
+        let message = `Admin ${adminName} posted feedback on your course "${course.title}"`;
+        if (targetType === "STUDENT") {
+          const studentName = comment.student?.name || "a student";
+          message = `Admin ${adminName} added feedback for student ${studentName} on your course "${course.title}"`;
+        }
+
+        const { createNotification } = await import("@/lib/notifications");
+        await createNotification({
+          userId: course.creatorId,
+          message,
+          type: "ADMIN_COMMENT",
+          link: `/instructor/courses/${courseId}`
+        });
+      }
+    } catch (notifErr) {
+      console.error("[POST /api/admin/comments] Notification trigger error:", notifErr);
+    }
+
     return NextResponse.json({ comment }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/comments]", err);

@@ -15,6 +15,7 @@ interface CourseRow {
 
 interface Props {
   courses: CourseRow[];
+  defaultPublished?: boolean;
 }
 
 function ConfirmDialog({ open, onClose, onConfirm, title, message, loading }: {
@@ -61,10 +62,19 @@ function ConfirmDialog({ open, onClose, onConfirm, title, message, loading }: {
   );
 }
 
-export function CoursesClient({ courses }: Props) {
+export function CoursesClient({ courses, defaultPublished }: Props) {
   const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "draft">(
+    defaultPublished === true ? "published" : "all"
+  );
+
+  const visibleCourses = publishedFilter === "published"
+    ? courses.filter(c => c.published)
+    : publishedFilter === "draft"
+    ? courses.filter(c => !c.published)
+    : courses;
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -96,6 +106,34 @@ export function CoursesClient({ courses }: Props) {
         loading={deleting}
       />
 
+      {/* Filter tabs */}
+      <div className="flex gap-1.5 rounded-xl p-1 border m-4" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
+        {(["all", "published", "draft"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setPublishedFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+              publishedFilter === f
+                ? "shadow-sm border"
+                : ""
+            }`}
+            style={
+              publishedFilter === f
+                ? { background: "var(--card)", color: "var(--foreground)", borderColor: "var(--border)" }
+                : { color: "var(--muted-foreground)" }
+            }
+            onMouseEnter={e => {
+              if (publishedFilter !== f) (e.currentTarget as HTMLButtonElement).style.color = "var(--foreground)";
+            }}
+            onMouseLeave={e => {
+              if (publishedFilter !== f) (e.currentTarget as HTMLButtonElement).style.color = "var(--muted-foreground)";
+            }}
+          >
+            {f === "all" ? `All (${courses.length})` : f === "published" ? `Published (${courses.filter(c => c.published).length})` : `Draft (${courses.filter(c => !c.published).length})`}
+          </button>
+        ))}
+      </div>
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -108,7 +146,7 @@ export function CoursesClient({ courses }: Props) {
             </tr>
           </thead>
           <tbody>
-            {courses.map((c) => (
+            {visibleCourses.map((c) => (
               <tr key={c.id} className="transition-colors" style={{ borderBottom: "1px solid var(--border)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(217,37,42,0.04)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                 <td className="px-4 py-3 text-sm font-medium" style={{ color: "var(--foreground)" }}>{c.title}</td>
                 <td className="px-4 py-3 text-sm" style={{ color: "var(--muted-foreground)" }}>{c.creator?.name || "Unknown"}</td>
