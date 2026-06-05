@@ -6,10 +6,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer,
 } from "recharts";
-import {
-  BookOpen, CheckCircle2, FileText, HelpCircle,
-  Trophy, Star, BarChart3, BookMarked,
-} from "lucide-react";
+
+
+// Icons are kept only for functional chart legend rendering; decorative usage removed.
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -109,9 +108,9 @@ function buildChartData(
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col">
-      <div className="px-6 py-4 border-b border-gray-100">
-        <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+    <div className="rounded-2xl flex flex-col" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+      <div className="px-6 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+        <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{title}</h2>
       </div>
       <div className="flex-1 p-6">{children}</div>
     </div>
@@ -120,10 +119,9 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2 text-gray-400">
-      <BookMarked className="w-10 h-10 opacity-30" />
+    <div className="flex flex-col items-center justify-center h-full min-h-[160px] gap-2" style={{ color: "var(--muted-foreground)" }}>
       <p className="text-sm font-medium">{message}</p>
-      <Link href="/student/courses" className="text-xs text-blue-500 hover:underline">
+      <Link href="/student/courses" className="text-xs hover:underline" style={{ color: "var(--accent)" }}>
         Find and add courses from the catalog
       </Link>
     </div>
@@ -140,11 +138,11 @@ function OverviewCard({
   | "completedAssignments" | "completedQuizzes"
 >) {
   const stats = [
-    { label: "Enrolled Courses",    value: totalEnrolled,               icon: BookOpen,      color: "text-blue-500",   bg: "bg-blue-50" },
-    { label: "Completed Courses",   value: completedCourses,            icon: CheckCircle2,  color: "text-emerald-500", bg: "bg-emerald-50" },
-    { label: "Completed Modules",   value: estimatedCompletedModules,   icon: BookMarked,    color: "text-violet-500", bg: "bg-violet-50" },
-    { label: "Completed Assignments", value: completedAssignments,      icon: FileText,      color: "text-amber-500",  bg: "bg-amber-50" },
-    { label: "Completed Quizzes",   value: completedQuizzes,            icon: HelpCircle,    color: "text-rose-500",   bg: "bg-rose-50" },
+    { label: "Enrolled Courses",    value: totalEnrolled },
+    { label: "Completed Courses",   value: completedCourses },
+    { label: "Completed Modules",   value: estimatedCompletedModules },
+    { label: "Completed Assignments", value: completedAssignments },
+    { label: "Completed Quizzes",   value: completedQuizzes },
   ];
 
   if (totalEnrolled === 0 && completedAssignments === 0 && completedQuizzes === 0) {
@@ -153,14 +151,11 @@ function OverviewCard({
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {stats.map(({ label, value, icon: Icon, color, bg }) => (
-        <div key={label} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-          <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center shrink-0`}>
-            <Icon className={`w-4 h-4 ${color}`} />
-          </div>
+      {stats.map(({ label, value }) => (
+        <div key={label} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--muted)", border: "1px solid var(--border)" }}>
           <div className="min-w-0">
-            <p className="text-xs text-gray-500 truncate">{label}</p>
-            <p className="text-lg font-bold text-gray-800 leading-tight">{value}</p>
+            <p className="text-xs truncate" style={{ color: "var(--muted-foreground)" }}>{label}</p>
+            <p className="text-lg font-bold leading-tight" style={{ color: "var(--foreground)" }}>{value}</p>
           </div>
         </div>
       ))}
@@ -183,11 +178,12 @@ function ActivityCard({
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-xs text-gray-500">Track your engagement over time</span>
+        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>Track your engagement over time</span>
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value as Period)}
-          className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
+          className="text-xs rounded-lg px-2.5 py-1.5 cursor-pointer"
+          style={{ border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}
         >
           {(["Week", "Month", "Year"] as Period[]).map((p) => (
             <option key={p} value={p}>{p}</option>
@@ -198,16 +194,16 @@ function ActivityCard({
       <div style={{ width: "100%", height: 220 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+            <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} allowDecimals={false} />
             <Tooltip
-              contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e5e7eb", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
-              cursor={{ fill: "rgba(99,102,241,0.06)" }}
+              contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}
+              cursor={{ fill: "rgba(217,37,42,0.06)" }}
             />
             <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
-            <Bar dataKey="Logins"   fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={28} />
-            <Bar dataKey="Activity" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={28} />
+            <Bar dataKey="Logins"   fill="#D9252A" radius={[4, 4, 0, 0]} maxBarSize={28} />
+            <Bar dataKey="Activity" fill="var(--muted-foreground)" radius={[4, 4, 0, 0]} maxBarSize={28} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -226,31 +222,15 @@ function CoursesCard({ courses }: Pick<Props, "courses">) {
     <div className="space-y-4 overflow-y-auto max-h-[260px] pr-1">
       {courses.map((course) => (
         <div key={course.id}>
-          <div className="flex items-center justify-between mb-1.5">
-            <p className="text-sm font-medium text-gray-800 truncate max-w-[75%]">{course.title}</p>
-            <span className={`text-xs font-semibold ${
-              course.progress >= 100
-                ? "text-emerald-600"
-                : course.progress > 0
-                ? "text-blue-600"
-                : "text-gray-400"
-            }`}>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-sm font-medium truncate max-w-[75%]" style={{ color: "var(--foreground)" }}>{course.title}</p>
+            <span className="text-xs font-semibold" style={{
+              color: course.progress >= 100 ? "var(--accent)" : course.progress > 0 ? "var(--foreground)" : "var(--muted-foreground)"
+            }}>
               {course.progress}%
             </span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all duration-500 ${
-                course.progress >= 100
-                  ? "bg-emerald-500"
-                  : course.progress > 0
-                  ? "bg-blue-500"
-                  : "bg-gray-300"
-              }`}
-              style={{ width: `${Math.min(course.progress, 100)}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-gray-400 mt-1">
+          <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
             {course.progress >= 100 ? "✓ Completed" : course.progress > 0 ? "In progress" : "Not started"}{" "}
             · {course.moduleCount} module{course.moduleCount !== 1 ? "s" : ""}
           </p>
@@ -264,46 +244,30 @@ function CoursesCard({ courses }: Pick<Props, "courses">) {
 
 function AchievementsCard({ points, level }: Pick<Props, "points" | "level">) {
   const nextLevelPoints = level * 50;
-  const progressPct = Math.min(Math.round((points % 50) / 50 * 100), 100);
 
   return (
     <div className="space-y-6">
       {/* Points */}
-      <div className="flex items-center gap-4 p-4 rounded-xl bg-amber-50 border border-amber-100">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200">
-          <Star className="w-6 h-6 text-white" />
-        </div>
+      <div className="flex items-center gap-4 p-4 rounded-xl" style={{ background: "var(--muted)", border: "1px solid var(--border)" }}>
         <div>
-          <p className="text-xs text-amber-700 font-medium uppercase tracking-wide">Points</p>
-          <p className="text-3xl font-bold text-amber-800 leading-none">{points}</p>
+          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>Points</p>
+          <p className="text-3xl font-bold leading-none" style={{ color: "var(--foreground)" }}>{points}</p>
         </div>
       </div>
 
       {/* Level */}
-      <div className="flex items-center gap-4 p-4 rounded-xl bg-violet-50 border border-violet-100">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-200">
-          <Trophy className="w-6 h-6 text-white" />
-        </div>
+      <div className="flex items-center gap-4 p-4 rounded-xl" style={{ background: "var(--muted)", border: "1px solid var(--border)" }}>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-violet-700 font-medium uppercase tracking-wide">Level</p>
-          <p className="text-3xl font-bold text-violet-800 leading-none">{level}</p>
+          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>Level</p>
+          <p className="text-3xl font-bold leading-none" style={{ color: "var(--foreground)" }}>{level}</p>
         </div>
       </div>
 
-      {/* Progress to next level */}
+      {/* Progress to next level - text only, no visual bar */}
       <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-xs text-gray-500 font-medium">Progress to Level {level + 1}</p>
-          <p className="text-xs text-gray-500">{points % 50} / 50 pts</p>
-        </div>
-        <div className="w-full bg-gray-100 rounded-full h-2">
-          <div
-            className="h-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-700"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-        <p className="text-[11px] text-gray-400 mt-1">
-          {nextLevelPoints - points} points needed for Level {level + 1}
+        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>Progress to Level {level + 1}</p>
+        <p className="text-[11px] mt-1" style={{ color: "var(--muted-foreground)" }}>
+          {nextLevelPoints - points} points needed
         </p>
       </div>
     </div>
@@ -314,16 +278,11 @@ function AchievementsCard({ points, level }: Pick<Props, "points" | "level">) {
 
 export function StudentProgressClient(props: Props) {
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen p-6" style={{ background: "var(--background)" }}>
       {/* Page header */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow">
-          <BarChart3 className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">My Progress</h1>
-          <p className="text-sm text-gray-500">Track your learning journey</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>My Progress</h1>
+        <p className="text-sm mt-0.5" style={{ color: "var(--muted-foreground)" }}>Track your learning journey</p>
       </div>
 
       {/* 2×2 grid */}

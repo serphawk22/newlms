@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  ArrowLeft, BookOpen, MapPin, Settings, Trophy, Star,
-  Building2, Mail, Camera, Award, X, Plus, Flame, GraduationCap
+  ArrowLeft, MapPin, Settings,
+  Building2, Mail, Camera, X, Plus,
 } from "lucide-react";
 import { RingLoader } from "@/components/ui/ring-loader";
 
@@ -52,19 +52,6 @@ interface ProfileData {
   };
   achievements: Achievement[];
   recentActivity: ActivityItem[];
-}
-
-function ActivityIcon({ type }: { type: string }) {
-  const cls = "w-4 h-4";
-  switch (type) {
-    case "quiz":       return <Star className={`${cls} text-emerald-600`} />;
-    case "assignment": return <BookOpen className={`${cls} text-blue-600`} />;
-    case "badge":      return <Award className={`${cls} text-purple-600`} />;
-    case "live":       return <GraduationCap className={`${cls} text-red-600`} />;
-    case "course":     return <Award className={`${cls} text-amber-600`} />;
-    case "login":      return <Flame className={`${cls} text-orange-600`} />;
-    default:           return <BookOpen className={`${cls} text-blue-600`} />;
-  }
 }
 
 const fadeTop: Variants = {
@@ -198,28 +185,28 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
       {/* Back link */}
       <motion.div initial="hidden" animate="visible" variants={fadeTop}>
         <Link href="/student">
-          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 px-0 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
+          <Button variant="ghost" className="px-0 transition-colors" style={{ color: "var(--muted-foreground)" }}>
+            Back to Dashboard
           </Button>
         </Link>
       </motion.div>
 
       {/* Profile Header */}
       <motion.div initial="hidden" animate="visible" variants={fadeTop} className="relative">
-        <Card className="border border-zinc-100 shadow-sm bg-white overflow-hidden rounded-2xl">
-          {/* Cover Photo */}
-          <div
-            className="h-44 w-full bg-cover bg-center relative"
-            style={coverImage ? { backgroundImage: `url(${coverImage})` } : {}}
-          >
-            {!coverImage && <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 to-zinc-700" />}
-          </div>
+          <Card className="overflow-hidden rounded-2xl" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
+            {/* Cover Photo */}
+            <div
+              className="h-44 w-full bg-cover bg-center relative"
+              style={coverImage ? { backgroundImage: `url(${coverImage})` } : {}}
+            >
+              {!coverImage && <div className="absolute inset-0" style={{ background: "var(--muted)" }} />}
+            </div>
 
           <CardContent className="px-6 sm:px-8 pb-8 pt-0 relative">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 mb-4">
               {/* Profile Picture */}
               <div className="relative shrink-0 z-10">
-                <div className="w-32 h-32 rounded-full ring-4 ring-white shadow-md overflow-hidden bg-zinc-50 flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center" style={{ boxShadow: "0 0 0 4px var(--card)", background: "var(--muted)" }}>
                   {avatar ? (
                     <img src={avatar} alt="Student Avatar" className="w-full h-full object-cover" />
                   ) : (
@@ -235,25 +222,15 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
               {/* Identity & Basic details */}
               <div className="flex-1 min-w-0 text-center md:text-left pt-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">{userName}</h2>
-                  <Badge variant="secondary" className="w-fit mx-auto sm:mx-0 text-[10px] bg-zinc-100 text-zinc-800 font-semibold tracking-wider uppercase py-1 px-2.5 rounded-full border border-zinc-200">
-                    <GraduationCap className="w-3 h-3 mr-1" /> Student
+                  <h2 className="text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>{userName}</h2>
+                  <Badge variant="secondary" className="w-fit mx-auto sm:mx-0 text-[10px] font-semibold tracking-wider uppercase py-1 px-2.5 rounded-full" style={{ background: "var(--muted)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }}>
+                    Student
                   </Badge>
                 </div>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm text-zinc-500">
-                  <div className="flex items-center gap-1.5">
-                    <Mail className="w-4 h-4 text-zinc-400 shrink-0" />
-                    <span className="truncate">{profileData.user.email}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-zinc-400 shrink-0" />
-                    <span>Campus Location</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-zinc-400 shrink-0" />
-                    <span>{org.name}</span>
-                  </div>
+                <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  <span className="truncate">{profileData.user.email}</span>
+                  <span>{org.name}</span>
                 </div>
               </div>
 
@@ -262,28 +239,29 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                 <Button
                   onClick={openModal}
                   variant="outline"
-                  className="bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200 shadow-sm font-semibold text-xs py-2 px-4 rounded-xl transition-all"
+                  className="font-semibold text-xs py-2 px-4 rounded-xl transition-all"
+                  style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                 >
-                  <Settings className="w-3.5 h-3.5 mr-2" /> Account Settings
+                  Account Settings
                 </Button>
               </div>
             </div>
 
             {/* Bio & Interests Section inside header wrapper */}
             {(userBio || skills.length > 0) && (
-              <div className="mt-6 pt-6 border-t border-zinc-100 flex flex-col gap-4 text-center md:text-left">
+              <div className="mt-6 pt-6 flex flex-col gap-4 text-center md:text-left" style={{ borderTop: "1px solid var(--border)" }}>
                 {userBio && (
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">About Me</h4>
-                    <p className="text-zinc-600 text-sm leading-relaxed max-w-2xl mx-auto md:mx-0">{userBio}</p>
+                    <h4 className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: "var(--muted-foreground)" }}>About Me</h4>
+                    <p className="text-sm leading-relaxed max-w-2xl mx-auto md:mx-0" style={{ color: "var(--foreground)" }}>{userBio}</p>
                   </div>
                 )}
                 {skills.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Interests & Skills</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "var(--muted-foreground)" }}>Interests & Skills</h4>
                     <div className="flex flex-wrap justify-center md:justify-start gap-2">
                       {skills.map((skill, idx) => (
-                        <Badge key={idx} variant="secondary" className="bg-blue-50/50 hover:bg-blue-50 text-blue-700 border border-blue-100/80 px-3 py-1 text-xs rounded-full font-medium transition-colors">
+                        <Badge key={idx} variant="secondary" className="px-3 py-1 text-xs rounded-full font-medium transition-colors" style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
                           {skill}
                         </Badge>
                       ))}
@@ -304,22 +282,19 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
         className="space-y-6"
       >
         {/* Achievements Card */}
-        <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+        <Card className="rounded-2xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-500" /> Achievements
-              </h3>
-              <span className="text-xs font-semibold text-zinc-500 bg-zinc-100 px-3 py-1 rounded-full border border-zinc-200">
+              <h3 className="text-lg font-bold" style={{ color: "var(--foreground)" }}>Achievements</h3>
+              <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "var(--muted)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }}>
                 {unlockedAchievements.length}/{achievements.length} Unlocked
               </span>
             </div>
           </CardHeader>
-          <Separator className="bg-zinc-100" />
+          <Separator />
           <CardContent className="p-6">
             {achievements.length === 0 ? (
-              <div className="text-center py-8 text-zinc-400 text-sm">
-                <Award className="w-10 h-10 mx-auto mb-3 text-zinc-300" />
+              <div className="text-center py-8 text-sm" style={{ color: "var(--muted-foreground)" }}>
                 Complete courses and quizzes to earn achievements!
               </div>
             ) : (
@@ -327,20 +302,21 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                 {achievements.map((badge, i) => (
                   <div
                     key={i}
-                    className={`flex flex-col items-center p-4 rounded-2xl border transition-all duration-300 ${
-                      badge.unlocked
-                        ? "border-zinc-100 bg-zinc-50/50 hover:border-zinc-200 hover:bg-zinc-50 hover:shadow-sm"
-                        : "border-dashed border-zinc-200 bg-zinc-50/30 opacity-40 grayscale"
-                    }`}
+                    className="flex flex-col items-center p-4 rounded-2xl border transition-all duration-300"
+                    style={badge.unlocked
+                      ? { borderColor: "var(--border)", background: "var(--muted)" }
+                      : { borderStyle: "dashed", borderColor: "var(--border)", background: "transparent", opacity: 0.4 }
+                    }
                   >
                     <div
-                      className={`w-12 h-12 rounded-full bg-gradient-to-br ${badge.color} flex items-center justify-center shadow-sm mb-3`}
+                      className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
+                      style={{ background: `var(--${badge.color})` }}
                     >
                       <span className="text-lg">{badge.icon}</span>
                     </div>
-                    <p className="text-xs font-bold text-zinc-700 text-center truncate w-full">{badge.name}</p>
-                    {!badge.unlocked && <p className="text-[9px] text-zinc-400 mt-1 uppercase font-semibold">Locked</p>}
-                    {badge.unlocked && <p className="text-[9px] text-emerald-600 mt-1 uppercase font-semibold">Unlocked</p>}
+                    <p className="text-xs font-bold text-center truncate w-full" style={{ color: "var(--foreground)" }}>{badge.name}</p>
+                    {!badge.unlocked && <p className="text-[9px] mt-1 uppercase font-semibold" style={{ color: "var(--muted-foreground)" }}>Locked</p>}
+                    {badge.unlocked && <p className="text-[9px] mt-1 uppercase font-semibold" style={{ color: "var(--accent)" }}>Unlocked</p>}
                   </div>
                 ))}
               </div>
@@ -348,29 +324,23 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
           </CardContent>
         </Card>
 
-        {/* Recent Activity Card - below Achievements */}
-        <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+        {/* Recent Activity Card */}
+        <Card className="rounded-2xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
           <CardHeader className="pb-4">
-            <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-zinc-500" /> Recent Activity
-            </h3>
+            <h3 className="text-lg font-bold" style={{ color: "var(--foreground)" }}>Recent Activity</h3>
           </CardHeader>
-          <Separator className="bg-zinc-100" />
+          <Separator />
           <CardContent className="p-6 space-y-4">
             {recentActivity.length === 0 ? (
-              <div className="text-center py-8 text-zinc-400 text-sm">
-                <BookOpen className="w-10 h-10 mx-auto mb-3 text-zinc-300" />
+              <div className="text-center py-8 text-sm" style={{ color: "var(--muted-foreground)" }}>
                 No recent activity yet. Start learning!
               </div>
             ) : (
               recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4 p-3 rounded-xl hover:bg-zinc-50/50 transition-colors">
-                  <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                    <ActivityIcon type={activity.type} />
-                  </div>
+                <div key={activity.id} className="flex items-start gap-4 p-3 rounded-xl transition-colors" style={{ color: "var(--foreground)" }}>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-zinc-800 leading-snug">{activity.title}</p>
-                    <p className="text-xs text-zinc-400 mt-0.5">{activity.time}</p>
+                    <p className="text-sm font-semibold leading-snug" style={{ color: "var(--foreground)" }}>{activity.title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{activity.time}</p>
                   </div>
                 </div>
               ))
@@ -381,18 +351,20 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
 
       {/* Account Settings / Edit Profile Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-sm transition-opacity">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" style={{ background: "rgba(0,0,0,0.6)" }}>
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-zinc-100 flex flex-col max-h-[90vh] overflow-hidden"
+            className="rounded-3xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden"
+            style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-              <h3 className="text-base font-bold text-zinc-900">Edit Profile</h3>
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+              <h3 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Edit Profile</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-50 transition-colors"
+                className="p-1.5 rounded-full transition-colors"
+                style={{ color: "var(--muted-foreground)" }}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -402,18 +374,19 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Cover Photo Upload */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Cover Photo</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Cover Photo</label>
                 <div
-                  className="h-28 w-full bg-cover bg-center rounded-2xl relative border border-zinc-200 overflow-hidden bg-zinc-800"
-                  style={modalCover ? { backgroundImage: `url(${modalCover})` } : {}}
+                  className="h-28 w-full bg-cover bg-center rounded-2xl relative overflow-hidden"
+                  style={modalCover ? { backgroundImage: `url(${modalCover})`, border: "1px solid var(--border)" } : { background: "var(--muted)", border: "1px solid var(--border)" }}
                 >
                   <button
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
                     disabled={uploadingCover}
-                    className="absolute bottom-3 right-3 bg-white/95 text-zinc-700 shadow-sm border border-zinc-200 hover:bg-white px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                   >
-                    {uploadingCover ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                    {uploadingCover ? <RingLoader size="sm" className="inline-flex" /> : null}
                     Upload cover image
                   </button>
                 </div>
@@ -421,9 +394,9 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
 
               {/* Profile Photo Upload */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Profile Photo</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Profile Photo</label>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-zinc-50 border border-zinc-200 shrink-0 shadow-sm">
+                  <div className="w-16 h-16 rounded-full overflow-hidden shrink-0" style={{ background: "var(--muted)", border: "1px solid var(--border)" }}>
                     {modalAvatar ? (
                       <img src={modalAvatar} alt="Preview Avatar" className="w-full h-full object-cover" />
                     ) : (
@@ -439,16 +412,18 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploadingAvatar}
-                      className="bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200 px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                      className="px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                      style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                     >
-                      {uploadingAvatar ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                      {uploadingAvatar ? <RingLoader size="sm" className="inline-flex" /> : null}
                       Upload profile photo
                     </button>
                     {modalAvatar && (
                       <button
                         type="button"
                         onClick={() => setModalAvatar(null)}
-                        className="text-red-500 hover:text-red-600 font-semibold text-xs px-2.5 py-1.5 rounded-xl hover:bg-red-50/50 transition-colors"
+                        className="font-semibold text-xs px-2.5 py-1.5 rounded-xl transition-colors"
+                        style={{ color: "var(--accent)" }}
                       >
                         Remove photo
                       </button>
@@ -459,31 +434,33 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
 
               {/* Full Name */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Full Name</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Full Name</label>
                 <input
                   type="text"
                   value={modalName}
                   onChange={(e) => setModalName(e.target.value)}
-                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all font-medium"
+                  className="w-full rounded-xl px-4 py-2.5 text-sm transition-all font-medium"
+                  style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                   placeholder="Enter your name"
                 />
               </div>
 
               {/* Bio */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Bio</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Bio</label>
                 <textarea
                   value={modalBio}
                   onChange={(e) => setModalBio(e.target.value)}
                   rows={3}
-                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all font-medium resize-none"
+                  className="w-full rounded-xl px-4 py-2.5 text-sm transition-all font-medium resize-none"
+                  style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                   placeholder="Tell us about yourself"
                 />
               </div>
 
               {/* Interests / Skills */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Interests / Skills</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Interests / Skills</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -495,13 +472,15 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                         addSkill();
                       }
                     }}
-                    className="flex-1 bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all"
+                    className="flex-1 rounded-xl px-4 py-2 text-sm transition-all"
+                    style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                     placeholder="Add a skill or interest"
                   />
                   <Button
                     type="button"
                     onClick={addSkill}
-                    className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl px-3 border border-zinc-200 shadow-sm transition-colors"
+                    className="rounded-xl px-3 transition-colors"
+                    style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -512,32 +491,35 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="bg-blue-50/70 text-blue-700 border border-blue-100 px-2.5 py-1 text-xs rounded-full font-medium flex items-center gap-1.5 shadow-sm"
+                      className="px-2.5 py-1 text-xs rounded-full font-medium flex items-center gap-1.5"
+                      style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                     >
                       {skill}
                       <button
                         type="button"
                         onClick={() => removeSkill(skill)}
-                        className="hover:bg-blue-100 p-0.5 rounded-full text-blue-500 hover:text-blue-700 transition-colors"
+                        className="p-0.5 rounded-full transition-colors"
+                        style={{ color: "var(--muted-foreground)" }}
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </Badge>
                   ))}
                   {modalSkills.length === 0 && (
-                    <span className="text-xs text-zinc-400">No skills or interests added yet.</span>
+                    <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>No skills or interests added yet.</span>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-zinc-100 bg-zinc-50/50 flex justify-end gap-3 shrink-0">
+            <div className="px-6 py-4 flex justify-end gap-3 shrink-0" style={{ borderTop: "1px solid var(--border)", background: "var(--secondary-background)" }}>
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-600 hover:bg-zinc-100 border border-zinc-200 px-4 py-2 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 rounded-xl text-xs font-semibold"
+                style={{ border: "1px solid var(--border)", color: "var(--muted-foreground)" }}
               >
                 Cancel
               </Button>
@@ -545,7 +527,8 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                 type="button"
                 onClick={handleSaveChanges}
                 disabled={isSaving}
-                className="bg-zinc-900 hover:bg-zinc-800 text-white px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
+                className="px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
+                style={{ background: "var(--foreground)", color: "var(--background)" }}
               >
                 {isSaving && <RingLoader size="sm" className="inline-flex" />}
                 Save Changes

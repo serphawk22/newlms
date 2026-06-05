@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import {
-  MonitorPlay, Play, Pause, Calendar,
-  Clock, Video, RefreshCw,
-} from "lucide-react";
+import { Play, Pause, RefreshCw } from "lucide-react";
 import { RingLoader } from "@/components/ui/ring-loader";
 
 interface Recording {
@@ -54,7 +51,8 @@ function RecordingCard({ rec }: { rec: Recording }) {
 
   return (
     <div
-      className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md hover:border-indigo-300 transition-all group"
+      className="rounded-2xl overflow-hidden transition-all group"
+      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
       id={`recording-card-${rec.id}`}
     >
       {/* Video player */}
@@ -94,26 +92,17 @@ function RecordingCard({ rec }: { rec: Recording }) {
 
       {/* Card body */}
       <div className="p-5">
-        <h3 className="font-bold text-lg text-slate-800 leading-snug line-clamp-2">
+        <h3 className="font-bold text-lg leading-snug line-clamp-2" style={{ color: "var(--foreground)" }}>
           {rec.title}
         </h3>
 
-        <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-slate-500">
-          <span className="flex items-center gap-1.5">
-            <Calendar className="w-4 h-4 text-indigo-400" />
-            {formatDate(rec.createdAt)}
-          </span>
+        <div className="flex flex-wrap items-center gap-3 mt-3 text-sm" style={{ color: "var(--muted-foreground)" }}>
+          <span className="text-xs">{formatDate(rec.createdAt)}</span>
           {rec.duration && (
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-indigo-400" />
-              {formatDuration(rec.duration)}
-            </span>
+            <span className="text-xs">{formatDuration(rec.duration)}</span>
           )}
           {rec.instructor.name && (
-            <span className="flex items-center gap-1.5">
-              <Video className="w-4 h-4 text-indigo-400" />
-              {rec.instructor.name}
-            </span>
+            <span className="text-xs">{rec.instructor.name}</span>
           )}
         </div>
       </div>
@@ -155,15 +144,13 @@ export function RecordedClassesTab({ courseId, isInstructor }: Props) {
     <div className="space-y-6" id="recorded-classes-tab">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <MonitorPlay className="w-6 h-6 text-indigo-600" />
-          <h3 className="text-2xl font-bold text-slate-800">Recorded Classes</h3>
-        </div>
+        <h3 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Recorded Classes</h3>
         <button
           onClick={() => fetchRecordings(true)}
           disabled={refreshing}
           id="refresh-recordings-btn"
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-indigo-50 border border-transparent hover:border-indigo-200"
+          className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors"
+          style={{ color: "var(--muted-foreground)" }}
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
           Refresh
@@ -171,7 +158,7 @@ export function RecordedClassesTab({ courseId, isInstructor }: Props) {
       </div>
 
       {isInstructor && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-sm text-indigo-700">
+        <div className="rounded-xl p-4 text-sm" style={{ background: "rgba(217,37,42,0.08)", border: "1px solid rgba(217,37,42,0.25)", color: "#D9252A" }}>
           <strong>Auto-recording enabled:</strong> When you stop a recording during a live class,
           it uploads automatically to Cloudinary and appears here.
         </div>
@@ -179,18 +166,19 @@ export function RecordedClassesTab({ courseId, isInstructor }: Props) {
 
       {/* States */}
       {loading && (
-        <div className="flex items-center justify-center py-20 text-slate-400 gap-3">
+        <div className="flex items-center justify-center py-20 gap-3" style={{ color: "var(--muted-foreground)" }}>
           <RingLoader size="md" />
           <span>Loading recordings…</span>
         </div>
       )}
 
       {!loading && error && (
-        <div className="text-center py-16 bg-red-50 rounded-xl border border-red-200 text-red-600 text-sm">
+        <div className="text-center py-16 rounded-xl text-sm" style={{ background: "rgba(217,37,42,0.08)", border: "1px solid rgba(217,37,42,0.25)", color: "#D9252A" }}>
           {error}
           <button
             onClick={() => fetchRecordings()}
-            className="block mx-auto mt-3 underline text-red-700 hover:text-red-900"
+            className="block mx-auto mt-3 underline"
+            style={{ color: "#D9252A" }}
           >
             Try again
           </button>
@@ -198,13 +186,10 @@ export function RecordedClassesTab({ courseId, isInstructor }: Props) {
       )}
 
       {!loading && !error && recordings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-slate-200 shadow-sm text-slate-400 gap-4">
-          <div className="w-20 h-20 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-            <MonitorPlay className="w-10 h-10 text-indigo-300" />
-          </div>
+        <div className="flex flex-col items-center justify-center py-20 rounded-2xl gap-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
           <div className="text-center">
-            <p className="text-lg font-semibold text-slate-600">No recorded classes yet</p>
-            <p className="text-sm mt-1">
+            <p className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>No recorded classes yet</p>
+            <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
               {isInstructor
                 ? "Start a live class and use the Record button — recordings appear here automatically."
                 : "Check back after your instructor records a live session."}

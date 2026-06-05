@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  ArrowLeft, BookOpen, Users, Star, PlayCircle,
-  Building2, Mail, MapPin, Settings, Camera, Award, X, Plus, GraduationCap
+  ArrowLeft, PlayCircle,
+  Settings, Camera, X, Plus
 } from "lucide-react";
 import { RingLoader } from "@/components/ui/ring-loader";
 
@@ -65,7 +65,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} className={`text-xs ${s <= rating ? "text-amber-400" : "text-zinc-200"}`}>★</span>
+        <span key={s} className="text-xs" style={{ color: s <= rating ? "#D9252A" : "var(--border)" }}>★</span>
       ))}
     </div>
   );
@@ -226,7 +226,7 @@ export function InstructorProfileClient({
       {/* Back link */}
       <motion.div initial="hidden" animate="visible" variants={fadeTop}>
         <Link href={dashboardLink}>
-          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 px-0 transition-colors">
+          <Button variant="ghost" className="px-0 transition-colors" style={{ color: "var(--muted-foreground)" }}>
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </Button>
         </Link>
@@ -234,20 +234,20 @@ export function InstructorProfileClient({
 
       {/* Profile Header */}
       <motion.div initial="hidden" animate="visible" variants={fadeTop} className="relative">
-        <Card className="border border-zinc-100 shadow-sm bg-white overflow-hidden rounded-2xl">
+        <Card className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
           {/* Cover Photo */}
           <div
             className="h-44 w-full bg-cover bg-center relative"
             style={coverImage ? { backgroundImage: `url(${coverImage})` } : {}}
           >
-            {!coverImage && <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 to-zinc-700" />}
+            {!coverImage && <div className="absolute inset-0" style={{ background: "linear-gradient(to right, var(--foreground), #444)" }} />}
           </div>
 
           <CardContent className="px-6 sm:px-8 pb-8 pt-0 relative">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 mb-4">
               {/* Profile Picture */}
               <div className="relative shrink-0 z-10">
-                <div className="w-32 h-32 rounded-full ring-4 ring-white shadow-md overflow-hidden bg-zinc-50 flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center" style={{ border: "4px solid var(--card)", background: "var(--muted)" }}>
                   {avatar ? (
                     <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
@@ -263,25 +263,16 @@ export function InstructorProfileClient({
               {/* Identity & Basic details */}
               <div className="flex-1 min-w-0 text-center md:text-left pt-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">{userName}</h2>
-                  <Badge variant="default" className="w-fit mx-auto sm:mx-0 text-[10px] bg-zinc-900 text-white font-semibold tracking-wider uppercase py-1 px-2.5 rounded-full border border-zinc-800">
+                  <h2 className="text-2xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>{userName}</h2>
+                  <Badge variant="default" className="w-fit mx-auto sm:mx-0 text-[10px] font-semibold tracking-wider uppercase py-1 px-2.5 rounded-full" style={{ background: "#D9252A", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.15)" }}>
                     {role}
                   </Badge>
                 </div>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm text-zinc-500">
-                  <div className="flex items-center gap-1.5">
-                    <Mail className="w-4 h-4 text-zinc-400 shrink-0" />
-                    <span className="truncate">{userEmail}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-zinc-400 shrink-0" />
-                    <span>Campus Location</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-zinc-400 shrink-0" />
-                    <span>{orgName}</span>
-                  </div>
+                <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  <span className="truncate">{userEmail}</span>
+                  <span>Campus Location</span>
+                  <span>{orgName}</span>
                 </div>
               </div>
 
@@ -290,7 +281,8 @@ export function InstructorProfileClient({
                 <Button
                   onClick={openModal}
                   variant="outline"
-                  className="bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200 shadow-sm font-semibold text-xs py-2 px-4 rounded-xl transition-all"
+                  className="font-semibold text-xs py-2 px-4 rounded-xl transition-all"
+                  style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                 >
                   <Settings className="w-3.5 h-3.5 mr-2" /> Account Settings
                 </Button>
@@ -299,19 +291,19 @@ export function InstructorProfileClient({
 
             {/* Bio & Skills Section inside header wrapper */}
             {(bio || skills.length > 0) && (
-              <div className="mt-6 pt-6 border-t border-zinc-100 flex flex-col gap-4 text-center md:text-left">
+              <div className="mt-6 pt-6 flex flex-col gap-4 text-center md:text-left" style={{ borderTop: "1px solid var(--border)" }}>
                 {bio && (
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">About Me</h4>
-                    <p className="text-zinc-600 text-sm leading-relaxed max-w-2xl mx-auto md:mx-0">{bio}</p>
+                    <h4 className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: "var(--muted-foreground)" }}>About Me</h4>
+                    <p className="text-sm leading-relaxed max-w-2xl mx-auto md:mx-0" style={{ color: "var(--foreground)" }}>{bio}</p>
                   </div>
                 )}
                 {skills.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Expertise & Skills</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "var(--muted-foreground)" }}>Expertise & Skills</h4>
                     <div className="flex flex-wrap justify-center md:justify-start gap-2">
                       {skills.map((skill, idx) => (
-                        <Badge key={idx} variant="secondary" className="bg-blue-50/50 hover:bg-blue-50 text-blue-700 border border-blue-100/80 px-3 py-1 text-xs rounded-full font-medium transition-colors">
+                        <Badge key={idx} variant="secondary" className="px-3 py-1 text-xs rounded-full font-medium" style={{ background: "rgba(217,37,42,0.08)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
                           {skill}
                         </Badge>
                       ))}
@@ -332,16 +324,13 @@ export function InstructorProfileClient({
         className={`grid grid-cols-1 ${isAdmin ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-6`}
       >
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-          <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50/50 flex items-center justify-center shrink-0">
-                <PlayCircle className="w-6 h-6 text-blue-600" />
-              </div>
+          <Card className="p-6 rounded-2xl" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
+            <div>
               <div>
-                <p className="text-2xl font-black text-zinc-900">
+                <p className="text-2xl font-black" style={{ color: "var(--foreground)" }}>
                   <AnimatedNumber value={courses.length} />
                 </p>
-                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">My Courses</p>
+                <p className="text-xs font-bold uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>My Courses</p>
               </div>
             </div>
           </Card>
@@ -349,16 +338,13 @@ export function InstructorProfileClient({
 
         {!isAdmin && (
           <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-            <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50/50 flex items-center justify-center shrink-0">
-                  <Star className="w-6 h-6 text-amber-600" />
-                </div>
+            <Card className="p-6 rounded-2xl" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
+              <div>
                 <div>
-                  <p className="text-2xl font-black text-zinc-900">
+                  <p className="text-2xl font-black" style={{ color: "var(--foreground)" }}>
                     {avgRating !== null ? avgRating.toFixed(1) : "N/A"}
                   </p>
-                  <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Average Rating</p>
+                  <p className="text-xs font-bold uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>Average Rating</p>
                 </div>
               </div>
             </Card>
@@ -366,16 +352,13 @@ export function InstructorProfileClient({
         )}
 
         <motion.div variants={staggerItem} whileHover={{ y: -2 }}>
-          <Card className="border border-zinc-100 shadow-sm bg-white p-6 rounded-2xl hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-50/50 flex items-center justify-center shrink-0">
-                <Users className="w-6 h-6 text-purple-600" />
-              </div>
+          <Card className="p-6 rounded-2xl" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
+            <div>
               <div>
-                <p className="text-2xl font-black text-zinc-900">
+                <p className="text-2xl font-black" style={{ color: "var(--foreground)" }}>
                   <AnimatedNumber value={totalStudents} />
                 </p>
-                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Total Students</p>
+                <p className="text-xs font-bold uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>Total Students</p>
               </div>
             </div>
           </Card>
@@ -391,38 +374,36 @@ export function InstructorProfileClient({
       >
         {/* Left Column (Published Courses) */}
         <div className={`space-y-6 ${isAdmin ? "lg:col-span-3" : "lg:col-span-2"}`}>
-          <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+          <Card className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-bold text-zinc-900">My Published Courses</CardTitle>
+              <CardTitle className="text-lg font-bold" style={{ color: "var(--foreground)" }}>My Published Courses</CardTitle>
             </CardHeader>
-            <Separator className="bg-zinc-100" />
+            <Separator style={{ background: "var(--border)" }} />
             <CardContent className="p-0">
               {courses.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
-                  <BookOpen className="w-12 h-12 text-zinc-300 mb-4" />
-                  <p className="text-zinc-500 font-semibold mb-1">No courses yet</p>
-                  <p className="text-sm text-zinc-400 mb-6">Create your first course to get started.</p>
+                  <p className="font-semibold mb-1" style={{ color: "var(--muted-foreground)" }}>No courses yet</p>
+                  <p className="text-sm mb-6" style={{ color: "var(--muted-foreground)" }}>Create your first course to get started.</p>
                   <Link href={dashboardLink}>
-                    <Button variant="default" className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider py-2 px-4 rounded-xl">
+                    <Button variant="default" className="font-bold text-xs uppercase tracking-wider py-2 px-4 rounded-xl" style={{ background: "#D9252A", color: "#FFFFFF" }}>
                       <Plus className="w-3.5 h-3.5 mr-2" /> Create Course
                     </Button>
                   </Link>
                 </div>
               ) : (
-                <div className="divide-y divide-zinc-100">
+                <div style={{ borderTop: "1px solid var(--border)" }}>
                   {courses.map((course) => (
-                    <div key={course.id} className="p-5 flex items-center gap-4 hover:bg-zinc-50/50 transition-colors">
-                      <div className="w-12 h-12 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <div key={course.id} className="p-5 flex items-center gap-4 transition-colors" style={{ borderBottom: "1px solid var(--border)" }}>
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--muted)", border: "1px solid var(--border)" }}>
                         {course.published ? (
-                          <PlayCircle className="w-6 h-6 text-zinc-400" />
-                        ) : (
-                          <BookOpen className="w-6 h-6 text-zinc-400" />
-                        )}
+                          <PlayCircle className="w-6 h-6" style={{ color: "var(--muted-foreground)" }} />
+                        ) : null}
                       </div>
                       <div className="flex-1 min-w-0">
                         <Link
                           href={`${dashboardLink}/courses/${course.id}`}
-                          className="font-semibold text-zinc-900 hover:text-blue-600 transition-colors"
+                          className="font-semibold transition-colors"
+                          style={{ color: "var(--foreground)" }}
                         >
                           {course.title}
                         </Link>
@@ -436,7 +417,7 @@ export function InstructorProfileClient({
                         </div>
                       </div>
                       <Link href={`${dashboardLink}/courses/${course.id}`}>
-                        <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-blue-600 font-semibold">
+                        <Button variant="ghost" size="sm" className="font-semibold" style={{ color: "var(--muted-foreground)" }}>
                           Manage
                         </Button>
                       </Link>
@@ -451,38 +432,37 @@ export function InstructorProfileClient({
         {/* Right Column (Recent Feedback) - Hidden for Admin */}
         {!isAdmin && (
           <div className="space-y-6">
-            <Card className="border border-zinc-100 shadow-sm bg-white rounded-2xl overflow-hidden">
+            <Card className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold text-zinc-900">Recent Feedback</CardTitle>
+                <CardTitle className="text-lg font-bold" style={{ color: "var(--foreground)" }}>Recent Feedback</CardTitle>
               </CardHeader>
-              <Separator className="bg-zinc-100" />
+              <Separator style={{ background: "var(--border)" }} />
               <CardContent className="p-6 space-y-5">
                 {reviews.length === 0 ? (
-                  <div className="text-center py-4 text-zinc-400 text-sm">
-                    <GraduationCap className="w-8 h-8 mx-auto mb-2 text-zinc-300" />
+                  <div className="text-center py-4 text-sm" style={{ color: "var(--muted-foreground)" }}>
                     No reviews yet for your courses.
                   </div>
                 ) : (
                   reviews.map((review, i) => (
                     <div key={review.id}>
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-sm border border-blue-100">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}>
                           {review.studentInitial}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
                             <div>
-                              <span className="text-sm font-bold text-zinc-800 truncate block max-w-[120px]">{review.studentName}</span>
-                              <span className="text-[10px] text-zinc-400 truncate block max-w-[120px]">{review.courseTitle}</span>
+                              <span className="text-sm font-bold truncate block max-w-[120px]" style={{ color: "var(--foreground)" }}>{review.studentName}</span>
+                              <span className="text-[10px] truncate block max-w-[120px]" style={{ color: "var(--muted-foreground)" }}>{review.courseTitle}</span>
                             </div>
                             <StarRating rating={review.rating} />
                           </div>
-                          <p className="text-xs text-zinc-500 italic mt-2 bg-zinc-50/50 p-3 rounded-xl border border-zinc-100">
+                          <p className="text-xs italic mt-2 p-3 rounded-xl" style={{ color: "var(--foreground)", background: "var(--secondary-background, var(--card))", border: "1px solid var(--border)" }}>
                             &ldquo;{review.comment}&rdquo;
                           </p>
                         </div>
                       </div>
-                      {i < reviews.length - 1 && <Separator className="mt-5 bg-zinc-100" />}
+                      {i < reviews.length - 1 && <Separator className="mt-5" style={{ background: "var(--border)" }} />}
                     </div>
                   ))
                 )}
@@ -494,18 +474,20 @@ export function InstructorProfileClient({
 
       {/* Unified Account Settings / Edit Profile Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-sm transition-opacity animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity animate-in fade-in" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}>
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-zinc-100 flex flex-col max-h-[90vh] overflow-hidden"
+            className="rounded-3xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden"
+            style={{ background: "var(--card)", border: "1px solid var(--border)" }}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-              <h3 className="text-base font-bold text-zinc-900">Edit Profile</h3>
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+              <h3 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Edit Profile</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-50 transition-colors"
+                className="p-1.5 rounded-full transition-colors"
+                style={{ color: "var(--muted-foreground)" }}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -515,18 +497,19 @@ export function InstructorProfileClient({
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Cover Photo Upload */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Cover Photo</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Cover Photo</label>
                 <div
-                  className="h-28 w-full bg-cover bg-center rounded-2xl relative border border-zinc-200 overflow-hidden bg-zinc-800"
-                  style={modalCover ? { backgroundImage: `url(${modalCover})` } : {}}
+                  className="h-28 w-full bg-cover bg-center rounded-2xl relative overflow-hidden"
+                  style={modalCover ? { backgroundImage: `url(${modalCover})` } : { background: "var(--foreground)" }}
                 >
                   <button
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
                     disabled={uploadingCover}
-                    className="absolute bottom-3 right-3 bg-white/95 text-zinc-700 shadow-sm border border-zinc-200 hover:bg-white px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                   >
-                    {uploadingCover ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                    {uploadingCover ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5" />}
                     Upload cover image
                   </button>
                 </div>
@@ -534,9 +517,9 @@ export function InstructorProfileClient({
 
               {/* Profile Photo Upload */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Profile Photo</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Profile Photo</label>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-zinc-50 border border-zinc-200 shrink-0 shadow-sm">
+                  <div className="w-16 h-16 rounded-full overflow-hidden shrink-0" style={{ background: "var(--muted)", border: "1px solid var(--border)" }}>
                     {modalAvatar ? (
                       <img src={modalAvatar} alt="Preview Avatar" className="w-full h-full object-cover" />
                     ) : (
@@ -552,16 +535,18 @@ export function InstructorProfileClient({
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={uploadingAvatar}
-                      className="bg-white hover:bg-zinc-50 text-zinc-700 shadow-sm border border-zinc-200 px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                      className="px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                      style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                     >
-                      {uploadingAvatar ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5 text-zinc-500" />}
+                      {uploadingAvatar ? <RingLoader size="sm" className="inline-flex" /> : <Camera className="w-3.5 h-3.5" />}
                       Upload profile photo
                     </button>
                     {modalAvatar && (
                       <button
                         type="button"
                         onClick={() => setModalAvatar("")}
-                        className="text-red-500 hover:text-red-600 font-semibold text-xs px-2.5 py-1.5 rounded-xl hover:bg-red-50/50 transition-colors"
+                        className="font-semibold text-xs px-2.5 py-1.5 rounded-xl transition-colors"
+                        style={{ color: "#D9252A" }}
                       >
                         Remove photo
                       </button>
@@ -572,31 +557,33 @@ export function InstructorProfileClient({
 
               {/* Full Name */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Full Name</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Full Name</label>
                 <input
                   type="text"
                   value={modalName}
                   onChange={(e) => setModalName(e.target.value)}
-                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all font-medium"
+                  className="w-full rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all font-medium"
+                  style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                   placeholder="Enter your name"
                 />
               </div>
 
               {/* Bio */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Bio</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Bio</label>
                 <textarea
                   value={modalBio}
                   onChange={(e) => setModalBio(e.target.value)}
                   rows={3}
-                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all font-medium resize-none"
+                  className="w-full rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all font-medium resize-none"
+                  style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                   placeholder="Tell us about yourself"
                 />
               </div>
 
               {/* Interests / Skills */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Interests / Skills</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider block" style={{ color: "var(--muted-foreground)" }}>Interests / Skills</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -608,13 +595,15 @@ export function InstructorProfileClient({
                         addSkill();
                       }
                     }}
-                    className="flex-1 bg-zinc-50/50 border border-zinc-200 rounded-xl px-4 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300 focus:border-zinc-300 transition-all"
+                    className="flex-1 rounded-xl px-4 py-2 text-sm focus:outline-none transition-all"
+                    style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                     placeholder="Add a skill or interest"
                   />
                   <Button
                     type="button"
                     onClick={addSkill}
-                    className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl px-3 border border-zinc-200 shadow-sm transition-colors"
+                    className="rounded-xl px-3 transition-colors"
+                    style={{ background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--border)" }}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
@@ -625,32 +614,35 @@ export function InstructorProfileClient({
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="bg-blue-50/70 text-blue-700 border border-blue-100 px-2.5 py-1 text-xs rounded-full font-medium flex items-center gap-1.5 shadow-sm"
+                      className="px-2.5 py-1 text-xs rounded-full font-medium flex items-center gap-1.5"
+                      style={{ background: "rgba(217,37,42,0.08)", color: "#D9252A", border: "1px solid rgba(217,37,42,0.25)" }}
                     >
                       {skill}
                       <button
                         type="button"
                         onClick={() => removeSkill(skill)}
-                        className="hover:bg-blue-100 p-0.5 rounded-full text-blue-500 hover:text-blue-700 transition-colors"
+                        className="p-0.5 rounded-full transition-colors"
+                        style={{ color: "#D9252A" }}
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </Badge>
                   ))}
                   {modalSkills.length === 0 && (
-                    <span className="text-xs text-zinc-400">No skills or interests added yet.</span>
+                    <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>No skills or interests added yet.</span>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-zinc-100 bg-zinc-50/50 flex justify-end gap-3 shrink-0">
+            <div className="px-6 py-4 flex justify-end gap-3 shrink-0" style={{ borderTop: "1px solid var(--border)", background: "var(--secondary-background, var(--card))" }}>
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-600 hover:bg-zinc-100 border border-zinc-200 px-4 py-2 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 rounded-xl text-xs font-semibold"
+                style={{ color: "var(--muted-foreground)", border: "1px solid var(--border)" }}
               >
                 Cancel
               </Button>
@@ -658,7 +650,8 @@ export function InstructorProfileClient({
                 type="button"
                 onClick={handleSaveChanges}
                 disabled={isSaving}
-                className="bg-zinc-900 hover:bg-zinc-800 text-white px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
+                className="px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
+                style={{ background: "#D9252A", color: "#FFFFFF" }}
               >
                 {isSaving && <RingLoader size="sm" className="inline-flex" />}
                 Save Changes

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, HelpCircle, Clock, ChevronRight,
-  Video, Flame, Zap, LayoutGrid, TrendingUp, Users,
+  Video, LayoutGrid, Users,
   PlayCircle, ArrowRight,
 } from "lucide-react";
 import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
@@ -290,17 +290,9 @@ function TrendingCourseCard({
         </div>
         {localStatus === "ACTIVE" && (
           <>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
-                <span className="font-semibold" style={{ color: "var(--foreground)" }}>{course.progress}%</span>
-              </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{ width: `${course.progress}%`, background: "#D9252A" }}
-                />
-              </div>
+            <div className="flex items-center justify-between text-xs">
+              <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
+              <span className="font-semibold" style={{ color: "var(--foreground)" }}>{course.progress}%</span>
             </div>
             <button
               type="button"
@@ -526,15 +518,7 @@ export function StudentDashboardClient({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>{course.title}</p>
-                        <div className="flex items-center gap-3 mt-1.5">
-                          <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)" }}>
-                            <div
-                              className="h-full rounded-full transition-all duration-700"
-                              style={{ width: `${course.progress}%`, background: "#D9252A" }}
-                            />
-                          </div>
-                          <span className="text-[11px] font-semibold shrink-0" style={{ color: "var(--muted-foreground)" }}>{course.progress}%</span>
-                        </div>
+                        <span className="text-[11px] font-semibold shrink-0" style={{ color: "var(--muted-foreground)" }}>{course.progress}%</span>
                       </div>
                       <ChevronRight className="w-4 h-4 transition-all shrink-0" style={{ color: "var(--border)" }} />
                     </div>
@@ -565,13 +549,7 @@ export function StudentDashboardClient({
                   }}
                   className="text-[11px] font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer"
                 >
-                  {trendingTab === tab.key && (
-                    <span className="inline-flex items-center gap-1 mr-1">
-                      {tab.key === "recent" && <Zap className="w-3 h-3" style={{ color: "#D9252A" }} />}
-                      {tab.key === "popular" && <TrendingUp className="w-3 h-3" style={{ color: "#D9252A" }} />}
-                      {tab.key === "featured" && <Flame className="w-3 h-3" style={{ color: "#D9252A" }} />}
-                    </span>
-                  )}{tab.label}
+                  {tab.label}
                 </button>
               ))}
             </div>

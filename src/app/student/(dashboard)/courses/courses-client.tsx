@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BookOpen, CheckCircle2, Clock, XCircle, Search, Users, BookMarked } from "lucide-react";
+import { BookOpen, BookMarked, CheckCircle2, Clock, XCircle, Search } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 
 type CourseWithStatus = {
@@ -390,12 +390,10 @@ export default function StudentCoursesClient({
                         className="flex items-center justify-between text-xs"
                         style={{ color: "var(--muted-foreground)" }}
                       >
-                        <span className="flex items-center gap-1">
-                          <BookOpen className="w-3.5 h-3.5" />
+                        <span>
                           {course.modulesCount} modules
                         </span>
-                        <span className="flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5" />
+                        <span>
                           {course.enrollmentsCount} students
                         </span>
                       </div>
@@ -410,7 +408,6 @@ export default function StudentCoursesClient({
             </div>
           ) : (
             <div className="empty-state">
-              <BookOpen />
               <p style={{ color: "var(--foreground)" }}>No courses found</p>
               <p className="text-sm mt-2" style={{ color: "var(--muted-foreground)" }}>
                 Try adjusting your search or filters
@@ -460,25 +457,11 @@ export default function StudentCoursesClient({
                         )}
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-xs">
-                            <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
-                            <span
-                              className="font-medium"
-                              style={{ color: "var(--foreground)" }}
-                            >
-                              {course.progress}%
-                            </span>
-                          </div>
-                          <div
-                            className="w-full rounded-full h-1.5"
-                            style={{ background: "var(--muted)" }}
-                          >
-                            <div
-                              className="h-1.5 rounded-full transition-all"
-                              style={{ width: `${course.progress}%`, background: "var(--foreground)" }}
-                            />
-                          </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span style={{ color: "var(--muted-foreground)" }}>Progress</span>
+                          <span className="font-medium" style={{ color: "var(--foreground)" }}>
+                            {course.progress}%
+                          </span>
                         </div>
                         <Button
                           size="sm"
