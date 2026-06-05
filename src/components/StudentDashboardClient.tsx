@@ -375,14 +375,16 @@ export function StudentDashboardClient({
           
           <div className="flex items-center gap-3 shrink-0">
             {currentStreak > 0 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.35 }}
-                className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 text-xs font-semibold px-3 py-1.5 rounded-full"
-              >
-                <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
-              </motion.div>
+              <Link href="/student/progress">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2, duration: 0.35 }}
+                  className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 hover:bg-orange-100 hover:border-orange-300 transition-colors text-orange-600 text-xs font-semibold px-3 py-1.5 rounded-full cursor-pointer"
+                >
+                  <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
+                </motion.div>
+              </Link>
             )}
             <div className="bg-white rounded-full border border-zinc-200 shadow-sm p-0.5 flex items-center justify-center">
               <NotificationsDropdown />

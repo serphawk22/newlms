@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, PlayCircle, FileText, CheckCircle, ExternalLink,
-  BookOpen, ClipboardList, BookMarked, LayoutList, HelpCircle, Radio, Video, Link2, Star, MonitorPlay, MessageSquare, Eye, MapIcon, Clock, XCircle
+  BookOpen, ClipboardList, BookMarked, LayoutList, HelpCircle, Radio, Video, Link2, Star, MonitorPlay, MessageSquare, Eye, MapIcon, Clock, XCircle, Share2
 } from "lucide-react";
 import { CourseChatbotWrapper } from "@/components/CourseChatbotWrapper";
 import { AssignmentSubmitForm } from "@/components/AssignmentSubmitForm";
@@ -17,6 +17,7 @@ import { VideoPlayerModal } from "@/components/VideoPlayerModal";
 import { FileViewerModal } from "@/components/modals/FileViewerModal";
 import { StudentFeedbackTab } from "@/components/admin/StudentFeedbackTab";
 import { CourseCommentsTab } from "@/components/CourseCommentsTab";
+import { ShareWhatYouLearned } from "@/components/ShareWhatYouLearned";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
@@ -53,6 +54,13 @@ export default async function StudentCourseView({
   } catch { /* not logged in */ }
 
   const isInstructorOrAdmin = userRole === "INSTRUCTOR" || userRole === "ADMIN";
+
+  const studentUser = studentId ? await prisma.user.findUnique({
+    where: { id: studentId },
+    select: { name: true, email: true },
+  }) : null;
+  const studentName = studentUser?.name || "Student";
+  const studentEmail = studentUser?.email || "";
 
   const course = await prisma.course.findUnique({
     where: { id: courseId },
@@ -293,6 +301,11 @@ export default async function StudentCourseView({
             <Link href={`?tab=feedback`}>
               <Button variant={tab === "feedback" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "feedback" ? "bg-violet-100 text-violet-700 font-bold" : "text-zinc-600 hover:bg-zinc-100"}`}>
                 <MessageSquare className="w-4 h-4 mr-3" /> Feedback
+              </Button>
+            </Link>
+            <Link href={`?tab=share`}>
+              <Button variant={tab === "share" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "share" ? "bg-purple-100 text-purple-700 font-bold" : "text-zinc-600 hover:bg-zinc-100"}`}>
+                <Share2 className="w-4 h-4 mr-3" /> Share Your Learning
               </Button>
             </Link>
           </div>
@@ -727,6 +740,14 @@ export default async function StudentCourseView({
               <CourseCommentsTab courseId={courseId} />
             )}
 
+            {/* ---- SHARE YOUR LEARNING ---- */}
+            {tab === "share" && (
+              <ShareWhatYouLearned
+                studentName={studentName}
+                studentEmail={studentEmail}
+                courseTitle={course.title}
+              />
+            )}
           </div>
         </div>
       </div>

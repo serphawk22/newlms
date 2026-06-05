@@ -44,18 +44,33 @@ interface InstructorProfileClientProps {
 }
 
 function AnimatedNumber({ value }: { value: number }) {
-  const motionValue = useMotionValue(0);
-  const rounded = useTransform(motionValue, (v) => Math.round(v));
-  const spring = useSpring(motionValue, { stiffness: 60, damping: 20 });
   const [display, setDisplay] = useState(0);
 
-  useMotionValueEvent(rounded, "change", (latest) => {
-    setDisplay(latest);
-  });
-
   useEffect(() => {
-    spring.set(value);
-  }, [value, spring]);
+    let start = 0;
+    const end = value;
+    if (end <= 0) {
+      setDisplay(0);
+      return;
+    }
+    const duration = 1000; // 1s
+    const startTime = performance.now();
+    let animationFrameId: number;
+
+    const updateNumber = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = progress * (2 - progress); // easeOutQuad
+      const current = Math.round(start + ease * (end - start));
+      setDisplay(current);
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(updateNumber);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(updateNumber);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [value]);
 
   return <>{display}</>;
 }

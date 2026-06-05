@@ -92,7 +92,9 @@ export async function GET(req: NextRequest) {
       async function push() {
         if (closed) return;
         try {
-          const data = await fetchNotifications(userId);
+          const activeUserId = userId;
+          if (!activeUserId) return;
+          const data = await fetchNotifications(activeUserId);
           if (data.unreadCount !== lastUnreadCount || closed) {
             lastUnreadCount = data.unreadCount;
             controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
