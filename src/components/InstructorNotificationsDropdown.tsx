@@ -13,6 +13,7 @@ type Notification = {
   createdAt: string;
 };
 
+// ── Map notification type → fallback destination route ──────────────────
 function getFallbackLink(type: string): string {
   switch (type) {
     case "ADMIN_COMMENT":
@@ -22,6 +23,7 @@ function getFallbackLink(type: string): string {
   }
 }
 
+// ── Map notification type → icon + color ──────────────────────────────────
 const TYPE_META: Record<string, { icon: React.ReactNode; bg: string; dot: string; label: string }> = {
   COURSE:           { icon: <BookOpen className="w-3.5 h-3.5 text-blue-600" />,   bg: "bg-blue-50",   dot: "bg-blue-500",   label: "Course" },
   ASSIGNMENT:       { icon: <ClipboardList className="w-3.5 h-3.5 text-amber-600" />, bg: "bg-amber-50", dot: "bg-amber-500", label: "Assignment" },
@@ -68,6 +70,7 @@ export function InstructorNotificationsDropdown() {
         setUnreadCount(data.unreadCount ?? 0);
       }
     } catch {
+      // silent
     } finally {
       setLoading(false);
     }
@@ -77,6 +80,7 @@ export function InstructorNotificationsDropdown() {
     if (!mounted) return;
     fetchNotifications();
 
+    // SSE subscription for real-time updates
     const eventSource = new EventSource("/api/instructor/notifications", {
       withCredentials: true,
     });
@@ -88,6 +92,7 @@ export function InstructorNotificationsDropdown() {
         setUnreadCount(data.unreadCount ?? 0);
         setLoading(false);
       } catch {
+        // silent
       }
     };
 
@@ -104,6 +109,7 @@ export function InstructorNotificationsDropdown() {
     };
   }, [mounted, fetchNotifications]);
 
+  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
@@ -143,6 +149,7 @@ export function InstructorNotificationsDropdown() {
 
   return (
     <div className="relative" ref={panelRef}>
+      {/* Bell button */}
       <button
         id="instructor-notifications-btn"
         onClick={() => setOpen((v) => !v)}
@@ -157,8 +164,10 @@ export function InstructorNotificationsDropdown() {
         )}
       </button>
 
+      {/* Dropdown panel */}
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-zinc-200 z-50 overflow-hidden">
+          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 bg-zinc-50/50">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-zinc-500" />
@@ -180,6 +189,7 @@ export function InstructorNotificationsDropdown() {
             )}
           </div>
 
+          {/* Body */}
           <div className="max-h-96 overflow-y-auto divide-y divide-zinc-50">
             {loading && notifications.length === 0 && (
               <div className="p-6 text-center text-sm text-zinc-400">Loading...</div>
@@ -205,6 +215,7 @@ export function InstructorNotificationsDropdown() {
                       : "bg-blue-50/60 hover:bg-blue-50"
                   }`}
                 >
+                  {/* Type icon */}
                   <div className={`w-8 h-8 rounded-lg ${meta.bg} flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform`}>
                     {meta.icon}
                   </div>
@@ -219,6 +230,7 @@ export function InstructorNotificationsDropdown() {
                     </div>
                   </div>
 
+                  {/* Unread dot */}
                   {!n.isRead && (
                     <div className={`w-2 h-2 rounded-full ${meta.dot} shrink-0 mt-1.5`} />
                   )}
@@ -227,8 +239,10 @@ export function InstructorNotificationsDropdown() {
             })}
           </div>
 
+          {/* Footer */}
           {notifications.length > 0 && (
             <div className="px-4 py-2.5 border-t border-zinc-100 bg-zinc-50/50">
+              {/* Footer */}
               <p className="text-[11px] text-zinc-400 text-center">
                 Click a notification to go to the related page
               </p>

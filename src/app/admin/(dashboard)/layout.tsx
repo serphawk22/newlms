@@ -11,6 +11,7 @@ import {
   Settings,
   FolderKanban,
   Award,
+  Video,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,7 @@ export default async function AdminLayout({
     { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "Users", href: "/admin/users", icon: <Users className="w-5 h-5" /> },
     { label: "All Courses", href: "/admin/all-courses", icon: <FolderKanban className="w-5 h-5" /> },
+    { label: "Learning Videos", href: "/admin/learning-videos", icon: <Video className="w-5 h-5" /> },
     { label: "Reports", href: "/admin/reports", icon: <BarChart2 className="w-5 h-5" /> },
     { label: "Certificates", href: "/admin/certificates", icon: <Award className="w-5 h-5" /> },
     { label: "Admin Panel", href: "/admin/admin-panel", icon: <PanelTop className="w-5 h-5" /> },

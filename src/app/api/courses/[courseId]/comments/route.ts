@@ -81,7 +81,7 @@ export async function POST(
       if (course && course.creatorId !== userId) {
         const studentName = newComment.author.name || "A student";
         const message = `${studentName} posted a comment/question on your course "${course.title}"`;
-
+        
         const { createNotification } = await import("@/lib/notifications");
         await createNotification({
           userId: course.creatorId,

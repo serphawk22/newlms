@@ -25,7 +25,8 @@ async function getAuthUser(): Promise<string | null> {
   try {
     const { payload } = await jwtVerify(token, secret);
     const userId = payload.userId as string;
-
+    
+    // Verify user is an instructor or admin
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -81,6 +82,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // SSE streaming response
   const encoder = new TextEncoder();
   let lastUnreadCount = 0;
   let closed = false;
@@ -90,12 +92,15 @@ export async function GET(req: NextRequest) {
       async function push() {
         if (closed) return;
         try {
-          const data = await fetchNotifications(userId);
+          const activeUserId = userId;
+          if (!activeUserId) return;
+          const data = await fetchNotifications(activeUserId);
           if (data.unreadCount !== lastUnreadCount || closed) {
             lastUnreadCount = data.unreadCount;
             controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
           }
         } catch {
+          // silent
         }
         if (!closed) {
           setTimeout(push, 25000);
@@ -107,6 +112,7 @@ export async function GET(req: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
         setTimeout(push, 25000);
       }).catch(() => {
+        // silent
       });
     },
     cancel() {

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import {
   CheckCircle2, HelpCircle, Clock, ChevronRight,
   Video, LayoutGrid, Users,
-  PlayCircle, ArrowRight,
+  PlayCircle, ArrowRight, Flame,
 } from "lucide-react";
 import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
 import { Card } from "@/components/ui/card";
@@ -90,9 +90,10 @@ function getFirstDayOfMonth(month: number, year: number) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value, href,
+  label, value, icon: Icon, iconBg, iconColor, href,
 }: {
-  label: string; value: number; href: string;
+  label: string; value: number; icon: React.ElementType;
+  iconBg: string; iconColor: string; href: string;
 }) {
   return (
     <motion.div
@@ -106,10 +107,13 @@ function StatCard({
           className="rounded-2xl p-5 transition-all duration-200 cursor-pointer group-hover:-translate-y-0.5"
           style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
         >
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>{value}</p>
+          <div className="flex items-center justify-between mb-4">
+            <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+            </div>
             <ArrowRight className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
           </div>
+          <p className="text-2xl font-semibold" style={{ color: "var(--foreground)" }}>{value}</p>
           <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{label}</p>
         </div>
       </Link>
@@ -342,14 +346,15 @@ export function StudentDashboardClient({
   const [trendingTab, setTrendingTab] = useState<"recent" | "popular" | "featured">("recent");
   const router = useRouter();
 
+  // Find first active course for reading materials and quizzes fallback
   const firstActiveCourseId = enrolledCourses.length > 0 ? enrolledCourses[0].id : "";
   const firstPendingQuizCourseId = pendingQuizzes.length > 0 ? pendingQuizzes[0].courseId : firstActiveCourseId;
 
   const stats = [
-    { label: "Enrolled Courses",       value: enrolledCoursesCount, href: "/student/courses" },
-    { label: "Completed Assignments",  value: completedAssignments, href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=assignments` : "/student" },
-    { label: "Pending Quizzes",        value: pendingQuizzesCount, href: firstPendingQuizCourseId ? `/student/courses/${firstPendingQuizCourseId}?tab=quizzes` : "/student" },
-    { label: "Study Sessions",         value: studySessions, href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=reading` : "/student" },
+    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen,      iconBg: "bg-blue-50",   iconColor: "text-blue-500", href: "/student/courses" },
+    { label: "Completed Assignments",  value: completedAssignments,   icon: CheckCircle2,  iconBg: "bg-green-50",  iconColor: "text-green-500", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=assignments` : "/student" },
+    { label: "Pending Quizzes",        value: pendingQuizzesCount,    icon: HelpCircle,    iconBg: "bg-amber-50",  iconColor: "text-amber-500", href: firstPendingQuizCourseId ? `/student/courses/${firstPendingQuizCourseId}?tab=quizzes` : "/student" },
+    { label: "Study Sessions",         value: studySessions,          icon: Clock,         iconBg: "bg-purple-50", iconColor: "text-purple-500", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=reading` : "/student" },
   ];
 
   const sortedTrending = [...trendingCourses].sort((a, b) => {
@@ -365,7 +370,7 @@ export function StudentDashboardClient({
       <div className="flex-1 min-w-0 p-5 lg:p-8 space-y-6">
 
         {/* Welcome Section */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-4">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -382,19 +387,21 @@ export function StudentDashboardClient({
           </motion.div>
           <div className="flex items-center gap-3 shrink-0">
             {currentStreak > 0 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.35 }}
-                style={{
-                  background: "rgba(217,37,42,0.12)",
-                  color: "#D9252A",
-                  borderColor: "rgba(217,37,42,0.25)",
-                }}
-                className="flex items-center gap-1.5 border px-3 py-1 rounded-full text-xs font-bold"
-              >
-                {currentStreak} day streak
-              </motion.div>
+              <Link href="/student/progress">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2, duration: 0.35 }}
+                  style={{
+                    background: "rgba(217,37,42,0.12)",
+                    color: "#D9252A",
+                    borderColor: "rgba(217,37,42,0.25)",
+                  }}
+                  className="flex items-center gap-1.5 border px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer hover:bg-[rgba(217,37,42,0.2)] transition-colors"
+                >
+                  <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
+                </motion.div>
+              </Link>
             )}
             <div className="rounded-full border p-0.5 flex items-center justify-center" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
               <NotificationsDropdown />

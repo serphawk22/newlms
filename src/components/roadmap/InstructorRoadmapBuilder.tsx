@@ -67,7 +67,14 @@ export default function InstructorRoadmapBuilder({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const openModal = (type: ModalType, payload?: { targetId?: string; parentId?: string; initialTitle?: string; initialDesc?: string | null }) => {
-    setModalState({ isOpen: true, type, ...payload });
+    setModalState({ 
+      isOpen: true, 
+      type, 
+      targetId: payload?.targetId, 
+      parentId: payload?.parentId, 
+      initialTitle: payload?.initialTitle, 
+      initialDesc: payload?.initialDesc ?? undefined 
+    });
     setFormTitle(payload?.initialTitle || "");
     setFormDesc(payload?.initialDesc || "");
   };
