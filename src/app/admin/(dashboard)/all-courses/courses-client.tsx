@@ -15,6 +15,7 @@ interface CourseRow {
 
 interface Props {
   courses: CourseRow[];
+  defaultPublished?: boolean;
 }
 
 function ConfirmDialog({ open, onClose, onConfirm, title, message, loading }: {
@@ -57,10 +58,13 @@ function ConfirmDialog({ open, onClose, onConfirm, title, message, loading }: {
   );
 }
 
-export function CoursesClient({ courses }: Props) {
+export function CoursesClient({ courses, defaultPublished }: Props) {
   const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "draft">(
+    defaultPublished === true ? "published" : "all"
+  );
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -81,6 +85,12 @@ export function CoursesClient({ courses }: Props) {
     setDeleting(false);
   }, [deleteTarget, router]);
 
+  const visibleCourses = publishedFilter === "published"
+    ? courses.filter(c => c.published)
+    : publishedFilter === "draft"
+    ? courses.filter(c => !c.published)
+    : courses;
+
   return (
     <>
       <ConfirmDialog
@@ -91,6 +101,23 @@ export function CoursesClient({ courses }: Props) {
         message={`Are you sure you want to delete "${deleteTarget?.title || "this course"}"? All modules, lessons, enrollments, and submissions related to this course will be permanently removed.`}
         loading={deleting}
       />
+
+      {/* Filter tabs */}
+      <div className="flex gap-1.5 bg-zinc-100 rounded-xl p-1 w-fit border border-zinc-200 m-4">
+        {(["all", "published", "draft"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setPublishedFilter(f)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+              publishedFilter === f
+                ? "bg-white text-zinc-900 shadow-sm border border-zinc-200/50"
+                : "text-zinc-500 hover:text-zinc-800"
+            }`}
+          >
+            {f === "all" ? `All (${courses.length})` : f === "published" ? `Published (${courses.filter(c => c.published).length})` : `Draft (${courses.filter(c => !c.published).length})`}
+          </button>
+        ))}
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -104,7 +131,7 @@ export function CoursesClient({ courses }: Props) {
             </tr>
           </thead>
           <tbody>
-            {courses.map((c) => (
+            {visibleCourses.map((c) => (
               <tr key={c.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
                 <td className="px-4 py-3 text-sm font-medium text-zinc-900">{c.title}</td>
                 <td className="px-4 py-3 text-sm text-zinc-500">{c.creator?.name || "Unknown"}</td>

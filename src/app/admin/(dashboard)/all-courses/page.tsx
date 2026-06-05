@@ -6,8 +6,13 @@ import { CoursesClient } from "./courses-client";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminAllCoursesPage() {
+export default async function AdminAllCoursesPage({
+  searchParams,
+}: {
+  searchParams?: { published?: string };
+}) {
   const ctx = await getAdminContext();
+  const filterPublished = searchParams?.published === "true";
 
   const courses = await prisma.course.findMany({
     where: { organizationId: ctx.orgId },
@@ -29,7 +34,7 @@ export default async function AdminAllCoursesPage() {
       </div>
 
       <Card className="border-zinc-200 shadow-sm overflow-hidden bg-white">
-        <CoursesClient courses={courses} />
+        <CoursesClient courses={courses} defaultPublished={filterPublished} />
         {courses.length === 0 && (
           <div className="text-center py-12 text-zinc-400 text-sm">No courses found.</div>
         )}

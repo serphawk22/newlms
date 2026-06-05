@@ -72,6 +72,28 @@ export async function POST(
       },
     });
 
+    // Notify the instructor of the course if comment is by student/another user
+    try {
+      const course = await prisma.course.findUnique({
+        where: { id: courseId },
+        select: { creatorId: true, title: true }
+      });
+      if (course && course.creatorId !== userId) {
+        const studentName = newComment.author.name || "A student";
+        const message = `${studentName} posted a comment/question on your course "${course.title}"`;
+        
+        const { createNotification } = await import("@/lib/notifications");
+        await createNotification({
+          userId: course.creatorId,
+          message,
+          type: "STUDENT_QUESTION",
+          link: `/instructor/courses/${courseId}`
+        });
+      }
+    } catch (notifErr) {
+      console.error("[POST /api/courses/[courseId]/comments] Notification trigger error:", notifErr);
+    }
+
     return NextResponse.json({ comment: newComment });
   } catch (error) {
     console.error("POST Comment Error:", error);

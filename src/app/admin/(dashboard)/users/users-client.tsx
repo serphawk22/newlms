@@ -15,6 +15,7 @@ import type { UsersData, StudentRow, InstructorRow } from "./page";
 
 interface Props {
   data: UsersData;
+  defaultFilter?: "all" | "students" | "instructors";
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -267,11 +268,11 @@ function AddUserForm({ role, onClose, onSuccess }: { role: "STUDENT" | "INSTRUCT
   );
 }
 
-export function UsersPageClient({ data }: Props) {
+export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState<"all" | "students" | "instructors" | "pending" | "approved" | "rejected">("all");
+  const [filter, setFilter] = useState<"all" | "students" | "instructors" | "pending" | "approved" | "rejected">(defaultFilter);
   
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showAddInstructor, setShowAddInstructor] = useState(false);

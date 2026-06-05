@@ -1,8 +1,9 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Users, BookOpen, GraduationCap, CheckCircle, BarChart3 } from "lucide-react";
 import { AdminInstructorTable, AdminCourseTable } from "@/components/admin/AdminAnalyticsTables";
 import { AdminStudentSection } from "@/components/admin/AdminStudentSection";
 import { AdminCommentsPanel } from "@/components/admin/AdminCommentsPanel";
@@ -116,22 +117,75 @@ async function AdminDashboardContent() {
       <div className="px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
-            { label: "Total Students", value: adminStats.totalStudents, color: "bg-blue-100 text-blue-600" },
-            { label: "Instructors", value: adminStats.activeInstructors, color: "bg-emerald-100 text-emerald-600" },
-            { label: "Total Courses", value: adminStats.totalCourses, color: "bg-amber-100 text-amber-600" },
-            { label: "Published", value: adminStats.publishedCourses, color: "bg-purple-100 text-purple-600" },
-            { label: "Enrollments", value: adminStats.totalEnrollments, color: "bg-rose-100 text-rose-600" },
-          ].map((stat) => (
-            <Card key={stat.label} className="border-zinc-200 shadow-sm">
-              <CardContent className="p-4">
-                <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-2`}>
-                  <TrendingUp className="w-4 h-4" />
-                </div>
-                <p className="text-xl font-medium text-zinc-900">{stat.value}</p>
-                <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
+            {
+              label: "Total Students",
+              value: adminStats.totalStudents,
+              color: "bg-blue-100 text-blue-600",
+              hoverBorder: "hover:border-blue-200 hover:shadow-blue-50/50",
+              icon: GraduationCap,
+              href: "/admin/users?tab=students",
+              description: "View all students →",
+              descColor: "text-blue-500",
+            },
+            {
+              label: "Instructors",
+              value: adminStats.activeInstructors,
+              color: "bg-emerald-100 text-emerald-600",
+              hoverBorder: "hover:border-emerald-200 hover:shadow-emerald-50/50",
+              icon: Users,
+              href: "/admin/users?tab=instructors",
+              description: "View all instructors →",
+              descColor: "text-emerald-500",
+            },
+            {
+              label: "Total Courses",
+              value: adminStats.totalCourses,
+              color: "bg-amber-100 text-amber-600",
+              hoverBorder: "hover:border-amber-200 hover:shadow-amber-50/50",
+              icon: BookOpen,
+              href: "/admin/all-courses",
+              description: "Browse all courses →",
+              descColor: "text-amber-500",
+            },
+            {
+              label: "Published",
+              value: adminStats.publishedCourses,
+              color: "bg-purple-100 text-purple-600",
+              hoverBorder: "hover:border-purple-200 hover:shadow-purple-50/50",
+              icon: CheckCircle,
+              href: "/admin/all-courses?published=true",
+              description: "View published →",
+              descColor: "text-purple-500",
+            },
+            {
+              label: "Enrollments",
+              value: adminStats.totalEnrollments,
+              color: "bg-rose-100 text-rose-600",
+              hoverBorder: "hover:border-rose-200 hover:shadow-rose-50/50",
+              icon: BarChart3,
+              href: "/admin/reports",
+              description: "View enrollment report →",
+              descColor: "text-rose-500",
+            },
+          ].map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Link key={stat.label} href={stat.href} className="group block">
+                <Card className={`border-zinc-200 shadow-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:-translate-y-0.5 ${stat.hoverBorder}`}>
+                  <CardContent className="p-4">
+                    <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-2 transition-transform duration-200 group-hover:scale-110`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <p className="text-xl font-bold text-zinc-900">{stat.value}</p>
+                    <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                    <p className={`text-[10px] font-medium mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${stat.descColor}`}>
+                      {stat.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

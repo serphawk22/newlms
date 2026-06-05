@@ -35,8 +35,15 @@ export interface UsersData {
   totalInstructors: number;
 }
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams?: { tab?: string };
+}) {
   const ctx = await getAdminContext();
+  const defaultFilter = (searchParams?.tab === "students" || searchParams?.tab === "instructors")
+    ? searchParams.tab
+    : "all";
 
   const [studentMembers, instructorMembers, enrollments] = await Promise.all([
     prisma.organizationMember.findMany({
@@ -114,5 +121,5 @@ export default async function AdminUsersPage() {
     totalInstructors: instructors.length,
   };
 
-  return <UsersPageClient data={data} />;
+  return <UsersPageClient data={data} defaultFilter={defaultFilter as "all" | "students" | "instructors"} />;
 }

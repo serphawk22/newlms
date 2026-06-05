@@ -5,6 +5,7 @@ import { CompactSidebar, CompactNavItem } from "./CompactSidebar";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { InstructorNotificationsDropdown } from "./InstructorNotificationsDropdown";
 
 interface SidebarLayoutWrapperProps {
   items: CompactNavItem[];
@@ -49,7 +50,7 @@ export function SidebarLayoutWrapper({
       <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-zinc-950 text-white sticky top-0 z-30">
         <div className="font-medium tracking-tight text-lg">OG LMS</div>
         <div className="flex items-center gap-2">
-          {role === "STUDENT" && <NotificationsDropdown />}
+          {role === "INSTRUCTOR" && <InstructorNotificationsDropdown />}
           <button onClick={toggleMobile} className="p-2 -mr-2">
             <Menu className="w-6 h-6" />
           </button>
@@ -73,10 +74,9 @@ export function SidebarLayoutWrapper({
           mounted ? (isOpen ? "lg:ml-[240px]" : "lg:ml-[64px]") : "lg:ml-[64px]"
         )}
       >
-        {/* Floating Notification Dropdown for student on Desktop */}
-        {role === "STUDENT" && (
+        {role === "INSTRUCTOR" && (
           <div className="absolute top-6 right-8 z-30 hidden lg:block">
-            <NotificationsDropdown />
+            <InstructorNotificationsDropdown />
           </div>
         )}
         {children}

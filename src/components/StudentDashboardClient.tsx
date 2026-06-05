@@ -9,6 +9,7 @@ import {
   Video, Flame, Zap, LayoutGrid, TrendingUp, Users,
   PlayCircle, ArrowRight,
 } from "lucide-react";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -108,23 +109,30 @@ function getFirstDayOfMonth(month: number, year: number) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value, icon: Icon, iconBg, iconColor,
+  label, value, icon: Icon, iconBg, iconColor, href,
 }: {
   label: string; value: number; icon: React.ElementType;
-  iconBg: string; iconColor: string;
+  iconBg: string; iconColor: string; href: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ease: "easeOut", duration: 0.35 }}
-      className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-5 hover:shadow-md transition-shadow"
+      className="w-full"
     >
-      <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center mb-4`}>
-        <Icon className={`w-5 h-5 ${iconColor}`} />
-      </div>
-      <p className="text-2xl font-semibold text-zinc-900">{value}</p>
-      <p className="text-xs text-zinc-500 mt-0.5">{label}</p>
+      <Link href={href} className="block group focus:outline-none w-full">
+        <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-5 hover:shadow-md hover:border-zinc-200 active:scale-[0.98] transition-all duration-200 cursor-pointer group-focus-visible:ring-2 group-focus-visible:ring-zinc-400 group-focus-visible:ring-offset-2">
+          <div className="flex items-center justify-between mb-4">
+            <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+            </div>
+            <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all duration-200" />
+          </div>
+          <p className="text-2xl font-semibold text-zinc-900">{value}</p>
+          <p className="text-xs text-zinc-500 mt-0.5 group-hover:text-zinc-700 transition-colors duration-200">{label}</p>
+        </div>
+      </Link>
     </motion.div>
   );
 }
@@ -326,11 +334,15 @@ export function StudentDashboardClient({
   const [trendingTab, setTrendingTab] = useState<"recent" | "popular" | "featured">("recent");
   const router = useRouter();
 
+  // Find first active course for reading materials and quizzes fallback
+  const firstActiveCourseId = enrolledCourses.length > 0 ? enrolledCourses[0].id : "";
+  const firstPendingQuizCourseId = pendingQuizzes.length > 0 ? pendingQuizzes[0].courseId : firstActiveCourseId;
+
   const stats = [
-    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen,      iconBg: "bg-blue-50",   iconColor: "text-blue-500" },
-    { label: "Completed Assignments",  value: completedAssignments,   icon: CheckCircle2,  iconBg: "bg-green-50",  iconColor: "text-green-500" },
-    { label: "Pending Quizzes",        value: pendingQuizzesCount,    icon: HelpCircle,    iconBg: "bg-amber-50",  iconColor: "text-amber-500" },
-    { label: "Study Sessions",         value: studySessions,          icon: Clock,         iconBg: "bg-purple-50", iconColor: "text-purple-500" },
+    { label: "Enrolled Courses",       value: enrolledCoursesCount,  icon: BookOpen,      iconBg: "bg-blue-50",   iconColor: "text-blue-500", href: "/student/courses" },
+    { label: "Completed Assignments",  value: completedAssignments,   icon: CheckCircle2,  iconBg: "bg-green-50",  iconColor: "text-green-500", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=assignments` : "/student" },
+    { label: "Pending Quizzes",        value: pendingQuizzesCount,    icon: HelpCircle,    iconBg: "bg-amber-50",  iconColor: "text-amber-500", href: firstPendingQuizCourseId ? `/student/courses/${firstPendingQuizCourseId}?tab=quizzes` : "/student" },
+    { label: "Study Sessions",         value: studySessions,          icon: Clock,         iconBg: "bg-purple-50", iconColor: "text-purple-500", href: firstActiveCourseId ? `/student/courses/${firstActiveCourseId}?tab=reading` : "/student" },
   ];
 
   // Trending tab filter
@@ -342,12 +354,12 @@ export function StudentDashboardClient({
   const totalPending = pendingQuizzes.length + pendingAssignments.length;
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-zinc-50 w-full">
       {/* ── LEFT / MAIN COLUMN ─────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 p-5 lg:p-8 space-y-6">
 
         {/* Welcome Section */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-4">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -360,16 +372,22 @@ export function StudentDashboardClient({
               Keep pushing your limits!
             </p>
           </motion.div>
-          {currentStreak > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.35 }}
-              className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 text-xs font-semibold px-3 py-1.5 rounded-full"
-            >
-              <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
-            </motion.div>
-          )}
+          
+          <div className="flex items-center gap-3 shrink-0">
+            {currentStreak > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.35 }}
+                className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 text-xs font-semibold px-3 py-1.5 rounded-full"
+              >
+                <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
+              </motion.div>
+            )}
+            <div className="bg-white rounded-full border border-zinc-200 shadow-sm p-0.5 flex items-center justify-center">
+              <NotificationsDropdown />
+            </div>
+          </div>
         </div>
 
         {/* Stats Row */}
