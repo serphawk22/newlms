@@ -1,7 +1,9 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { Card, CardContent } from "@/components/ui/card";
+import { TrendingUp, Users, BookOpen, GraduationCap, CheckCircle, BarChart3 } from "lucide-react";
 import { AdminInstructorTable, AdminCourseTable } from "@/components/admin/AdminAnalyticsTables";
 import { AdminStudentSection } from "@/components/admin/AdminStudentSection";
 import { AdminCommentsPanel } from "@/components/admin/AdminCommentsPanel";
@@ -132,20 +134,55 @@ async function AdminDashboardContent() {
       <div className="px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
-            { label: "Total Students", value: adminStats.totalStudents },
-            { label: "Instructors", value: adminStats.activeInstructors },
-            { label: "Total Courses", value: adminStats.totalCourses },
-            { label: "Published", value: adminStats.publishedCourses },
-            { label: "Enrollments", value: adminStats.totalEnrollments },
-          ].map((stat) => (
-            <Card key={stat.label} style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
-              <CardContent className="p-4">
-
-                <p className="text-xl font-medium" style={{ color: "var(--foreground)" }}>{stat.value}</p>
-                <p className="text-[10px] font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
+            {
+              label: "Total Students",
+              value: adminStats.totalStudents,
+              icon: GraduationCap,
+              href: "/admin/users?tab=students",
+            },
+            {
+              label: "Instructors",
+              value: adminStats.activeInstructors,
+              icon: Users,
+              href: "/admin/users?tab=instructors",
+            },
+            {
+              label: "Total Courses",
+              value: adminStats.totalCourses,
+              icon: BookOpen,
+              href: "/admin/all-courses",
+            },
+            {
+              label: "Published",
+              value: adminStats.publishedCourses,
+              icon: CheckCircle,
+              href: "/admin/all-courses?published=true",
+            },
+            {
+              label: "Enrollments",
+              value: adminStats.totalEnrollments,
+              icon: BarChart3,
+              href: "/admin/reports",
+            },
+          ].map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Link key={stat.label} href={stat.href} className="group block">
+                <Card className="transition-all duration-200 cursor-pointer hover:-translate-y-0.5" style={{ border: "1px solid var(--border)", background: "var(--card)", boxShadow: "none" }}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-110" style={{ background: "var(--muted)", color: "var(--foreground)" }}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <TrendingUp className="w-3 h-3" style={{ color: "var(--muted-foreground)" }} />
+                    </div>
+                    <p className="text-xl font-bold" style={{ color: "var(--foreground)" }}>{stat.value}</p>
+                    <p className="text-[10px] font-medium uppercase tracking-wider mt-0.5" style={{ color: "var(--muted-foreground)" }}>{stat.label}</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
 
   // Don't bundle native Node modules — require them at runtime on the server only
-  serverExternalPackages: ["pdf-parse", "pg", "@prisma/adapter-pg", "bcryptjs", "@prisma/client"],
+  serverExternalPackages: ["pdf-parse", "pg", "@prisma/adapter-neon", "bcryptjs", "@prisma/client"],
 
   // Hide "X-Powered-By: Next.js" header to reduce attack surface
   poweredByHeader: false,

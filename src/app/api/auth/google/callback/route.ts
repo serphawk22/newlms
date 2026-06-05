@@ -59,6 +59,10 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL(getLoginUrl("Google OAuth credentials not configured on server"), request.url));
     }
 
+    console.log({
+      appUrl,
+      redirectUri: `${appUrl.replace(/\/$/, "")}/api/auth/google/callback`,
+    });
     const redirectUri = `${appUrl.replace(/\/$/, "")}/api/auth/google/callback`;
 
     // 2. Exchange code for access token

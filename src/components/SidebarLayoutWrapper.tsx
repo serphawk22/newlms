@@ -5,6 +5,7 @@ import { CompactSidebar, CompactNavItem } from "./CompactSidebar";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { InstructorNotificationsDropdown } from "./InstructorNotificationsDropdown";
 import { Logo } from "@/components/Logo";
 
 interface SidebarLayoutWrapperProps {
@@ -55,7 +56,9 @@ export function SidebarLayoutWrapper({
       >
         <Logo href={dashboardHome(role)} size="sm" />
         <div className="flex items-center gap-2">
-          {role === "STUDENT" && <NotificationsDropdown />}
+          {(role === "STUDENT" || role === "INSTRUCTOR") && (
+            role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />
+          )}
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -85,10 +88,10 @@ export function SidebarLayoutWrapper({
           mounted ? (isOpen ? "lg:ml-[240px]" : "lg:ml-[64px]") : "lg:ml-[64px]"
         )}
       >
-        {/* Floating Notification Dropdown for student on Desktop */}
-        {role === "STUDENT" && (
+        {/* Floating Notification Dropdown on Desktop */}
+        {(role === "STUDENT" || role === "INSTRUCTOR") && (
           <div className="absolute top-6 right-8 z-30 hidden lg:block">
-            <NotificationsDropdown />
+            {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
           </div>
         )}
         {children}

@@ -89,7 +89,7 @@ export async function createNotification({
 }: {
   userId: string;
   message: string;
-  type: NotifType;
+  type: string;
   link?: string;
 }): Promise<void> {
   try {
