@@ -28,6 +28,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "JWT_SECRET not configured" }, { status: 500 });
     }
 
+    console.log({
+      appUrl,
+      redirectUri: `${appUrl.replace(/\/$/, "")}/api/auth/google/callback`,
+    });
     const redirectUri = `${appUrl.replace(/\/$/, "")}/api/auth/google/callback`;
 
     // Sign a JWT as the state parameter — eliminates cookie dependency across origin redirects
