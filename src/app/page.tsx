@@ -51,7 +51,7 @@ export default function Home() {
       <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center z-30 backdrop-blur-lg border-b" style={{ background: "color-mix(in srgb, var(--card) 80%, transparent)", borderColor: "var(--border)" }}>
         <Logo />
         <div className="flex items-center gap-3">
-          <Link href="/login" className="px-5 py-2.5 bg-zinc-900 text-white rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors shadow-sm">
+          <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm" style={{ background: "var(--foreground)", color: "var(--background)" }}>
             <LogIn className="w-4 h-4 inline mr-1.5" /> Login
           </Link>
           <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hidden sm:inline-flex items-center" style={{ border: "1px solid var(--border)", color: "var(--foreground)" }}>
@@ -85,7 +85,7 @@ export default function Home() {
               A high-performance learning environment with live classes, AI-powered study tools, and comprehensive course management.
             </motion.p>
             <motion.div custom={3} variants={fadeUp} className="flex items-center justify-center gap-4 pt-4">
-              <Link href="/student/login" className="px-8 py-3.5 bg-zinc-900 text-white rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors shadow-lg shadow-zinc-900/20 inline-flex items-center gap-2">
+              <Link href="/student/login" className="px-8 py-3.5 rounded-xl text-sm font-medium transition-colors inline-flex items-center gap-2" style={{ background: "var(--foreground)", color: "var(--background)" }}>
                 Student Login
               </Link>
               <Link href="/student/signup" className="px-8 py-3.5 rounded-xl text-sm font-medium transition-colors" style={{ border: "2px solid var(--border)", color: "var(--foreground)" }}>
@@ -140,7 +140,7 @@ export default function Home() {
             <div className="hidden sm:block absolute top-16 left-[16.66%] right-[16.66%] h-0.5" style={{ background: "var(--border)" }} />
             {steps.map((step, i) => (
               <motion.div key={step.num} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }} className="text-center relative">
-                <div className="w-14 h-14 rounded-full bg-zinc-900 text-white flex items-center justify-center mx-auto mb-6 text-lg font-black relative z-10 shadow-md">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6 text-lg font-black relative z-10 shadow-md" style={{ background: "var(--foreground)", color: "var(--background)" }}>
                   {step.num}
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: "var(--foreground)" }}>{step.title}</h3>
@@ -153,7 +153,7 @@ export default function Home() {
 
       {/* ── CTA ── */}
       <section className="relative z-10 py-24 px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-3xl mx-auto text-center bg-zinc-900 rounded-3xl p-12 sm:p-16 shadow-xl">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-3xl mx-auto text-center rounded-3xl p-12 sm:p-16 shadow-xl" style={{ background: "var(--foreground)" }}>
           <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-6" />
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to get started?</h2>
           <p className="mb-8 max-w-lg mx-auto" style={{ color: "var(--muted-foreground)" }}>Join thousands of students and instructors already using our platform.</p>

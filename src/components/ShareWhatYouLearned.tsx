@@ -14,7 +14,6 @@ import {
   CheckCircle2, 
   AlertCircle,
   Clock,
-  Sparkles,
   RefreshCw,
   MessageSquare
 } from "lucide-react";
@@ -405,20 +404,17 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
   };
 
   return (
-    <section className="bg-gradient-to-br from-zinc-900 to-zinc-950 text-white rounded-3xl overflow-hidden shadow-2xl border border-zinc-800 relative group transition-all duration-300 hover:shadow-zinc-900/50">
-      
-      {/* Mic glow layout */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-800/10 via-transparent to-transparent pointer-events-none" />
+    <section className="rounded-3xl overflow-hidden transition-all duration-300" style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
 
       {/* Header */}
-      <div className="px-6 py-5 border-b border-zinc-800/70 flex items-center justify-between relative z-10">
+      <div className="px-6 py-5 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[rgba(217,37,42,0.12)] border-[rgba(217,37,42,0.25)] flex items-center justify-center shrink-0 shadow-inner">
-            <Sparkles className="w-5 h-5 text-[#D9252A]" />
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0" style={{ background: "rgba(217,37,42,0.12)", border: "1px solid rgba(217,37,42,0.25)" }}>
+            <Video className="w-5 h-5 text-[#D9252A]" />
           </div>
           <div>
-            <h3 className="text-base font-black tracking-tight text-white">Share Your Learning</h3>
-            <p className="text-xs text-zinc-400 font-medium mt-0.5">Record your webcam, screen, or both to share with your instructor</p>
+            <h3 className="text-base font-black tracking-tight" style={{ color: "var(--foreground)" }}>Share Your Learning</h3>
+            <p className="text-xs font-medium mt-0.5" style={{ color: "var(--muted-foreground)" }}>Record your webcam, screen, or both to share with your instructor</p>
           </div>
         </div>
 
@@ -426,9 +422,13 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
         {(recordingState === "recording" || recordingState === "paused") && (
           <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full border ${
             recordingState === "recording" 
-              ? "bg-red-950/80 border-red-500/30 text-red-400 animate-pulse" 
-              : "bg-amber-950/80 border-amber-500/30 text-amber-400"
-          }`}>
+              ? "animate-pulse" 
+              : ""
+          }`} style={{
+            background: recordingState === "recording" ? "var(--accent)" : "var(--secondary-background)",
+            borderColor: recordingState === "recording" ? "var(--accent)" : "var(--border)",
+            color: recordingState === "recording" ? "white" : "var(--foreground)",
+          }}>
             <Clock className="w-3.5 h-3.5" />
             <span className="text-xs font-bold font-mono tracking-widest">{formatTime(duration)}</span>
             <span className="text-[10px] uppercase font-bold tracking-widest ml-1">{recordingState}</span>
@@ -439,8 +439,8 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
       {/* Body Content */}
       <div className="p-6 relative z-10">
         {error && (
-          <div className="flex items-start gap-3 p-4 mb-5 text-xs bg-red-950/40 border border-red-900/50 rounded-2xl text-red-300 shadow-inner">
-            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
+          <div className="flex items-start gap-3 p-4 mb-5 text-xs rounded-2xl" style={{ background: "rgba(217,37,42,0.10)", border: "1px solid rgba(217,37,42,0.25)", color: "var(--accent)" }}>
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "var(--accent)" }} />
             <span className="leading-relaxed">{error}</span>
           </div>
         )}
@@ -452,21 +452,22 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               
               {/* Select Mode */}
-              <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between">
+              <div className="rounded-2xl p-4 flex flex-col justify-between" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
                 <div>
-                  <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Recording Mode</Label>
-                  <p className="text-[11px] text-zinc-500 mt-1">Select the capture layout</p>
+                  <Label className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Recording Mode</Label>
+                  <p className="text-[11px] mt-1" style={{ color: "var(--muted-foreground)" }}>Select the capture layout</p>
                 </div>
                 <div className="flex flex-col gap-2 mt-4">
                   {(["both", "screen", "camera"] as const).map((m) => (
                     <button
                       key={m}
                       onClick={() => setMode(m)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                        mode === m 
-                          ? "bg-[rgba(217,37,42,0.15)] border-[#D9252A] text-[#D9252A]" 
-                          : "border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
-                      }`}
+                      className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all"
+                      style={{
+                        background: mode === m ? "rgba(217,37,42,0.15)" : "transparent",
+                        borderColor: mode === m ? "#D9252A" : "var(--border)",
+                        color: mode === m ? "#D9252A" : "var(--muted-foreground)",
+                      }}
                     >
                       <span className="capitalize">{m === "both" ? "Screen + Camera" : m + " Only"}</span>
                       {m === "camera" && <Video className="w-3.5 h-3.5" />}
@@ -478,51 +479,54 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
               </div>
 
               {/* Camera configuration (Only applicable if camera mode/both is chosen) */}
-              <div className={`bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between transition-all ${
-                mode === "screen" ? "opacity-40" : ""
-              }`}>
+              <div className="rounded-2xl p-4 flex flex-col justify-between transition-all" style={{
+                background: "var(--secondary-background)",
+                border: "1px solid var(--border)",
+                opacity: mode === "screen" ? 0.4 : 1,
+              }}>
                 <div>
-                  <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Webcam Input</Label>
-                  <p className="text-[11px] text-zinc-500 mt-1">Enable or disable camera</p>
+                  <Label className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Webcam Input</Label>
+                  <p className="text-[11px] mt-1" style={{ color: "var(--muted-foreground)" }}>Enable or disable camera</p>
                 </div>
                 <div className="mt-4">
-                  <Button
+                  <button
                     type="button"
                     disabled={mode === "screen"}
                     onClick={() => setCameraEnabled(!cameraEnabled)}
-                    variant="outline"
-                    className={`w-full justify-between px-3 rounded-xl text-xs font-bold ${
-                      cameraEnabled && mode !== "screen"
-                        ? "bg-zinc-800 border-zinc-700 text-white"
-                        : "border-zinc-800 text-zinc-500 hover:bg-transparent"
-                    }`}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold border transition-all"
+                    style={{
+                      background: cameraEnabled && mode !== "screen" ? "var(--foreground)" : "transparent",
+                      borderColor: cameraEnabled && mode !== "screen" ? "var(--foreground)" : "var(--border)",
+                      color: cameraEnabled && mode !== "screen" ? "var(--background)" : "var(--muted-foreground)",
+                      opacity: mode === "screen" ? 0.5 : 1,
+                    }}
                   >
                     <span>{cameraEnabled && mode !== "screen" ? "Camera Enabled" : "Camera Disabled"}</span>
-                    {cameraEnabled && mode !== "screen" ? <Video className="w-4 h-4 text-emerald-400" /> : <VideoOff className="w-4 h-4 text-zinc-500" />}
-                  </Button>
+                    {cameraEnabled && mode !== "screen" ? <Video className="w-4 h-4" style={{ color: "var(--background)" }} /> : <VideoOff className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />}
+                  </button>
                 </div>
               </div>
 
               {/* Microphone configuration */}
-              <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between">
+              <div className="rounded-2xl p-4 flex flex-col justify-between" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
                 <div>
-                  <Label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Microphone Input</Label>
-                  <p className="text-[11px] text-zinc-500 mt-1">Capture your voice narration</p>
+                  <Label className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Microphone Input</Label>
+                  <p className="text-[11px] mt-1" style={{ color: "var(--muted-foreground)" }}>Capture your voice narration</p>
                 </div>
                 <div className="mt-4">
-                  <Button
+                  <button
                     type="button"
                     onClick={() => setMicEnabled(!micEnabled)}
-                    variant="outline"
-                    className={`w-full justify-between px-3 rounded-xl text-xs font-bold ${
-                      micEnabled 
-                        ? "bg-zinc-800 border-zinc-700 text-white" 
-                        : "border-zinc-800 text-zinc-500 hover:bg-transparent"
-                    }`}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold border transition-all"
+                    style={{
+                      background: micEnabled ? "var(--foreground)" : "transparent",
+                      borderColor: micEnabled ? "var(--foreground)" : "var(--border)",
+                      color: micEnabled ? "var(--background)" : "var(--muted-foreground)",
+                    }}
                   >
                     <span>{micEnabled ? "Microphone Enabled" : "Microphone Disabled"}</span>
-                    {micEnabled ? <Mic className="w-4 h-4 text-emerald-400" /> : <MicOff className="w-4 h-4 text-zinc-500" />}
-                  </Button>
+                    {micEnabled ? <Mic className="w-4 h-4" style={{ color: "var(--background)" }} /> : <MicOff className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />}
+                  </button>
                 </div>
               </div>
 
@@ -530,20 +534,21 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
 
             {/* Launch Block */}
             <div className="flex flex-col items-center py-6 text-center">
-              <div className="w-16 h-16 rounded-3xl bg-zinc-800/50 border border-zinc-700/80 flex items-center justify-center mb-4 shadow-inner">
-                <Video className="w-7 h-7 text-zinc-400" />
+              <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-4" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
+                <Video className="w-7 h-7" style={{ color: "var(--muted-foreground)" }} />
               </div>
-              <h4 className="text-sm font-bold text-zinc-200">Ready to present?</h4>
-              <p className="text-xs text-zinc-400 max-w-sm mt-1 leading-relaxed">
+              <h4 className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Ready to present?</h4>
+              <p className="text-xs max-w-sm mt-1 leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
                 Click start to begin capturing. You can pause, resume, and preview your recording before submitting it.
               </p>
-              <Button
+              <button
                 type="button"
                 onClick={startRecording}
-                className="bg-[#D9252A] hover:bg-[#EF4444] text-white rounded-xl px-6 h-11 text-xs font-bold tracking-wide mt-6 transition-all hover:scale-[1.03] active:scale-[0.98]"
+                className="rounded-xl px-6 h-11 text-xs font-bold tracking-wide mt-6 transition-all hover:scale-[1.03] active:scale-[0.98]"
+                style={{ background: "#D9252A", color: "white" }}
               >
-                <Play className="w-3.5 h-3.5 mr-2" /> Start Recording
-              </Button>
+                <Play className="w-3.5 h-3.5 inline mr-2" /> Start Recording
+              </button>
             </div>
           </div>
         )}
@@ -552,52 +557,54 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
         {(recordingState === "recording" || recordingState === "paused") && (
           <div className="space-y-6 py-6 text-center flex flex-col items-center">
             <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center animate-pulse">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center animate-pulse" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
                 {mode === "camera" ? <Video className="w-8 h-8 text-[#D9252A]" /> : <Monitor className="w-8 h-8 text-[#D9252A]" />}
               </div>
               {micEnabled && (
-                <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-emerald-500 rounded-full border-2 border-zinc-950 flex items-center justify-center">
+                <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full border-2 flex items-center justify-center" style={{ background: "#10B981", borderColor: "var(--card)" }}>
                   <Mic className="w-3.5 h-3.5 text-white" />
                 </div>
               )}
             </div>
 
             <div>
-              <p className="text-sm font-bold text-white">
+              <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>
                 {recordingState === "recording" ? "Recording active" : "Recording paused"}
               </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                Capturing layout: <span className="capitalize text-zinc-200 font-semibold">{mode}</span>
+              <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                Capturing layout: <span className="capitalize font-semibold" style={{ color: "var(--foreground)" }}>{mode}</span>
               </p>
             </div>
 
             <div className="flex items-center justify-center gap-3 mt-4">
               {recordingState === "recording" ? (
-                <Button
+                <button
                   type="button"
                   onClick={handlePauseRecording}
-                  variant="outline"
-                  className="border-zinc-800 hover:bg-zinc-800/80 text-zinc-300 rounded-xl px-5 h-10 text-xs font-bold"
+                  className="rounded-xl px-5 h-10 text-xs font-bold border transition-colors"
+                  style={{ borderColor: "var(--border)", color: "var(--foreground)", background: "transparent" }}
                 >
-                  <Pause className="w-3.5 h-3.5 mr-2" /> Pause
-                </Button>
+                  <Pause className="w-3.5 h-3.5 inline mr-2" /> Pause
+                </button>
               ) : (
-                <Button
+                <button
                   type="button"
                   onClick={handleResumeRecording}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-5 h-10 text-xs font-bold"
+                  className="rounded-xl px-5 h-10 text-xs font-bold"
+                  style={{ background: "#10B981", color: "white" }}
                 >
-                  <Play className="w-3.5 h-3.5 mr-2" /> Resume
-                </Button>
+                  <Play className="w-3.5 h-3.5 inline mr-2" /> Resume
+                </button>
               )}
 
-              <Button
+              <button
                 type="button"
                 onClick={handleStopRecording}
-                className="bg-red-600 hover:bg-red-500 text-white rounded-xl px-5 h-10 text-xs font-bold shadow-md shadow-red-950/20"
+                className="rounded-xl px-5 h-10 text-xs font-bold"
+                style={{ background: "#D9252A", color: "white" }}
               >
-                <Square className="w-3.5 h-3.5 mr-2" /> Stop & Preview
-              </Button>
+                <Square className="w-3.5 h-3.5 inline mr-2" /> Stop & Preview
+              </button>
             </div>
           </div>
         )}
@@ -605,7 +612,7 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
         {/* STATE: PREVIEW */}
         {recordingState === "preview" && recordedVideoUrl && (
           <div className="space-y-4">
-            <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 aspect-video shadow-inner flex items-center justify-center">
+            <div className="rounded-2xl overflow-hidden aspect-video flex items-center justify-center" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
               <video 
                 src={recordedVideoUrl} 
                 controls 
@@ -614,8 +621,8 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
               />
             </div>
 
-            <div className="space-y-1.5 bg-zinc-900/40 p-3 rounded-xl border border-zinc-800/60">
-              <Label htmlFor="video-caption" className="text-[11px] text-zinc-400 font-bold flex items-center gap-1.5 uppercase tracking-wider">
+            <div className="space-y-1.5 p-3 rounded-xl" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
+              <Label htmlFor="video-caption" className="text-[11px] font-bold flex items-center gap-1.5 uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                 <MessageSquare className="w-3.5 h-3.5 text-[#D9252A]" />
                 Add a caption or comment
               </Label>
@@ -624,27 +631,29 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
                 placeholder="Write a short note about what you are sharing (optional)"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                className="bg-zinc-950 border-zinc-800 text-xs text-white placeholder-zinc-500 h-9 rounded-lg focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
+                style={{ background: "var(--input)", borderColor: "var(--border)", color: "var(--foreground)" }}
+                className="text-xs h-9 rounded-lg focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Button
+              <button
                 type="button"
                 onClick={resetRecorder}
-                variant="outline"
-                className="border-zinc-800 hover:bg-zinc-850 text-zinc-300 rounded-xl text-xs h-11 font-bold"
+                className="rounded-xl text-xs h-11 font-bold border transition-colors"
+                style={{ borderColor: "var(--border)", color: "var(--foreground)", background: "transparent" }}
               >
-                <RefreshCw className="w-3.5 h-3.5 mr-2" /> Record Again
-              </Button>
+                <RefreshCw className="w-3.5 h-3.5 inline mr-2" /> Record Again
+              </button>
               
-              <Button
+              <button
                 type="button"
                 onClick={uploadRecording}
-                className="bg-[#D9252A] hover:bg-[#EF4444] text-white rounded-xl text-xs h-11 font-bold transition-all hover:scale-[1.02]"
+                className="rounded-xl text-xs h-11 font-bold transition-all hover:scale-[1.02]"
+                style={{ background: "#D9252A", color: "white" }}
               >
-                <Share2 className="w-3.5 h-3.5 mr-2" /> Submit Video
-              </Button>
+                <Share2 className="w-3.5 h-3.5 inline mr-2" /> Submit Video
+              </button>
             </div>
           </div>
         )}
@@ -655,12 +664,12 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
             <RingLoader size="lg" />
             
             <div className="space-y-1">
-              <p className="text-sm font-bold text-white">Saving learning video...</p>
-              <p className="text-xs text-zinc-500">Writing video metadata and uploading storage packet</p>
+              <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Saving learning video...</p>
+              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Writing video metadata and uploading storage packet</p>
             </div>
 
             <div className="w-full max-w-[240px]">
-              <p className="text-[10px] font-mono text-zinc-500">{uploadProgress}% uploaded</p>
+              <p className="text-[10px] font-mono" style={{ color: "var(--muted-foreground)" }}>{uploadProgress}% uploaded</p>
             </div>
           </div>
         )}
@@ -668,22 +677,23 @@ export function ShareWhatYouLearned({ studentName, studentEmail, courseTitle }: 
         {/* STATE: SUCCESS */}
         {recordingState === "success" && (
           <div className="text-center py-8 space-y-4 flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-[rgba(217,37,42,0.12)] border-[rgba(217,37,42,0.25)] flex items-center justify-center mx-auto text-[#D9252A] shadow-inner">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ background: "rgba(217,37,42,0.12)", border: "1px solid rgba(217,37,42,0.25)", color: "#D9252A" }}>
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div className="space-y-1">
-              <p className="text-base font-black text-white">Video Shared Successfully!</p>
-              <p className="text-xs text-zinc-400">Your presentation has been shared with your course instructor</p>
+              <p className="text-base font-black" style={{ color: "var(--foreground)" }}>Video Shared Successfully!</p>
+              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Your presentation has been shared with your course instructor</p>
             </div>
 
-            <Button
+            <button
               type="button"
               onClick={resetRecorder}
-              className="bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl px-6 h-11 text-xs font-bold tracking-wide mt-4"
+              className="rounded-xl px-6 h-11 text-xs font-bold tracking-wide mt-4"
+              style={{ background: "var(--foreground)", color: "var(--background)" }}
             >
               Record Another Video
-            </Button>
+            </button>
           </div>
         )}
 

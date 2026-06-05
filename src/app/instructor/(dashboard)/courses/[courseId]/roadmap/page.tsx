@@ -65,8 +65,8 @@ export default async function InstructorRoadmapPage({
           {/* SIDEBAR */}
           <div className="space-y-4">
             <Link href={`/instructor/courses/${course.id}/roadmap`}>
-              <Button className="w-full justify-start font-semibold py-5 mb-4 rounded-lg" style={{ background: "var(--foreground)", color: "var(--background)", border: "none" }}>
-                <MapIcon className="w-5 h-5 mr-3" /> View Interactive Roadmap
+              <Button variant="ghost" className="w-full justify-start transition-all" style={{ background: "rgba(217,37,42,0.12)", color: "#D9252A", fontWeight: 600 }}>
+                <MapIcon className="w-4 h-4 mr-2" /> View Interactive Roadmap
               </Button>
             </Link>
             <div className="space-y-2">

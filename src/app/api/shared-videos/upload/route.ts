@@ -43,7 +43,7 @@ async function uploadToCloudinary(
   const signature = crypto.createHash("sha1").update(signatureString).digest("hex");
 
   const form = new FormData();
-  form.append("file", new Blob([fileBuffer], { type: "video/mp4" }), fileName);
+  form.append("file", new Blob([new Uint8Array(fileBuffer.buffer, fileBuffer.byteOffset, fileBuffer.byteLength) as BlobPart], { type: "video/mp4" }), fileName);
   form.append("public_id", publicId);
   form.append("folder", folder);
   form.append("timestamp", timestamp);

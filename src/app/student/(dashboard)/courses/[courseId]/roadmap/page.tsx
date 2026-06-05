@@ -80,8 +80,8 @@ export default async function StudentRoadmapPage({
         {/* SIDEBAR TABS */}
         <div className="space-y-2">
           <Link href={`/student/courses/${course.id}/roadmap`}>
-            <Button className="w-full justify-start font-semibold py-5 mb-4 rounded-lg" style={{ background: "var(--foreground)", color: "var(--background)", border: "none" }}>
-              <MapIcon className="w-5 h-5 mr-3" /> View Interactive Roadmap
+            <Button variant="secondary" className="w-full justify-start bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]">
+              <MapIcon className="w-4 h-4 mr-3" /> View Interactive Roadmap
             </Button>
           </Link>
           <Link href={`/student/courses/${course.id}?tab=modules`}>

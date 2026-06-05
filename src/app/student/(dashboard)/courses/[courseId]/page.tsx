@@ -263,13 +263,11 @@ export default async function StudentCourseView({
           
           {/* SIDEBAR TABS */}
           <div className="space-y-2">
-            <div className="mb-3">
-              <Link href={`/student/courses/${course.id}/roadmap`} className="block w-full">
-                <Button className="w-full justify-start bg-[var(--secondary-background)] hover:bg-[var(--card)] text-[var(--foreground)] font-semibold py-5 rounded-lg border border-[var(--border)] shadow-none">
-                  <MapIcon className="w-4 h-4 mr-3 shrink-0" /> View Interactive Roadmap
-                </Button>
-              </Link>
-            </div>
+            <Link href={`/student/courses/${course.id}/roadmap`}>
+              <Button variant="ghost" className="w-full justify-start text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]">
+                <MapIcon className="w-4 h-4 mr-3 shrink-0" /> View Interactive Roadmap
+              </Button>
+            </Link>
             <Link href={`?tab=modules`}>
               <Button variant={tab === "modules" ? "secondary" : "ghost"} className={`w-full justify-start ${tab === "modules" ? "bg-[var(--card)] text-[var(--foreground)] font-semibold border-l-2 border-[var(--accent)]" : "text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)]"}`}>
                 <LayoutList className="w-4 h-4 mr-3" /> Modules
@@ -341,10 +339,10 @@ export default async function StudentCourseView({
 
                           {/* ── Lessons ── */}
                           <div className="divide-y divide-[var(--border)]">
-                            {module.lessons.length === 0 ? (
+                            {(module as any).lessons.length === 0 ? (
                               <div className="p-6 text-sm text-[var(--muted-foreground)] text-center bg-[var(--secondary-background)]/30">No lessons posted yet.</div>
                             ) : (
-                              module.lessons.map((lesson, lessonIndex) => (
+                              (module as any).lessons.map((lesson: any, lessonIndex: number) => (
                                 <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-[var(--secondary-background)]/60 transition-colors">
                                   <div className="flex items-center gap-4">
                                     <div className="w-8 h-8 rounded-full bg-[var(--secondary-background)] border border-[var(--border)] flex items-center justify-center shrink-0">
@@ -381,13 +379,13 @@ export default async function StudentCourseView({
                           </div>
 
                           {/* ── Live Classes ── */}
-                          {module.liveSessions.length > 0 && (
+                          {(module as any).liveSessions.length > 0 && (
                             <div className="border-t border-[var(--border)] px-4 py-3">
                               <p className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-2 flex items-center gap-1.5">
                                 <Radio className="w-3.5 h-3.5" /> Live Classes
                               </p>
                               <div className="space-y-2">
-                                {(module.liveSessions || []).map((session: any) => {
+                                {(module as any).liveSessions.map((session: any) => {
                                   const isLive = session.status === "ONGOING";
                                   const isScheduled = session.status === "SCHEDULED";
                                   const isCompleted = session.status === "COMPLETED";
@@ -442,13 +440,13 @@ export default async function StudentCourseView({
                           )}
 
                           {/* ── Recorded Videos ── */}
-                          {module.recordedClasses.length > 0 && (
+                          {(module as any).recordedClasses.length > 0 && (
                             <div className="border-t border-[var(--border)] px-4 py-3">
                               <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2 flex items-center gap-1.5">
                                 <MonitorPlay className="w-3.5 h-3.5" /> Recorded Videos
                               </p>
                               <div className="space-y-2">
-                                {module.recordedClasses.map((rec) => (
+                                {(module as any).recordedClasses.map((rec: any) => (
                                   <div key={rec.id} className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--secondary-background)]/40">
                                     <div className="flex items-center gap-3 min-w-0">
                                       <MonitorPlay className="w-4 h-4 text-[var(--muted-foreground)] shrink-0" />
