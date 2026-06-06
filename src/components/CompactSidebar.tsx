@@ -143,7 +143,7 @@ export function CompactSidebar({
   const sidebarShell = (expanded: boolean) => (
     <>
       <div
-        className="h-14 flex items-center px-3 shrink-0"
+        className={cn("h-14 flex items-center shrink-0", expanded ? "px-3" : "px-1")}
         style={{ borderBottom: "1px solid var(--sidebar-border)" }}
       >
         <Logo size="sm" collapsed={!expanded} />

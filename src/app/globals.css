@@ -240,10 +240,11 @@
   box-shadow: none;
 }
 
-/* Collapsed sidebar logo variant */
+/* Collapsed sidebar logo variant - minimal padding, maximize space */
 .lms-logo-mark-collapsed {
-  padding: 0.125rem;
+  padding: 2px;
   border-radius: 0.375rem;
+  width: 100%;
 }
 
 /* Course content compatibility layer: scoped to course detail/roadmap experiences only. */

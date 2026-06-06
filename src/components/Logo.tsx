@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  /** Collapsed state for sidebar - shows icon-only version */
+  /** Collapsed state for sidebar - scales logo to fill available width */
   collapsed?: boolean;
 }
 
@@ -13,7 +13,7 @@ export function Logo({ className = "", collapsed = false }: LogoProps) {
     return (
       <span
         className={cn(
-          "inline-flex shrink-0 items-center justify-center",
+          "inline-flex items-center justify-center w-full h-full",
           className
         )}
         style={{ userSelect: "none", pointerEvents: "none", cursor: "default" }}
@@ -22,7 +22,7 @@ export function Logo({ className = "", collapsed = false }: LogoProps) {
           <img
             src="/ally-tech-logo.png"
             alt="Ally Tech Services"
-            className="h-8 w-8 rounded object-cover object-left"
+            className="w-full h-auto max-h-[44px] object-contain"
             style={{ userSelect: "none", pointerEvents: "none" }}
             draggable={false}
           />
