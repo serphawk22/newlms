@@ -70,6 +70,7 @@ model User {
   dailyLogins              DailyLogin[]
   certificates             Certificate[]
   courseComments           CourseComment[]          @relation("CourseCommentAuthor")
+  userBadges               UserBadge[]
 }
 
 model OrganizationMember {
@@ -648,4 +649,17 @@ model CourseComment {
   @@index([courseId])
   @@index([authorId])
   @@index([parentId])
+}
+
+// ── User Badges (persisted achievement unlock state) ──────────────────────────
+
+model UserBadge {
+  id         String   @id @default(cuid())
+  userId     String
+  badgeName  String
+  unlockedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeName])
+  @@index([userId])
 }

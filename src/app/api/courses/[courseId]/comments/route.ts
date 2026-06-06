@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
+import { syncBadges } from "@/lib/badges";
 
 export async function GET(
   request: Request,
@@ -93,6 +94,9 @@ export async function POST(
     } catch (notifErr) {
       console.error("[POST /api/courses/[courseId]/comments] Notification trigger error:", notifErr);
     }
+
+    // Fire-and-forget badge sync — checks Helper badge (>10 Q&A posts)
+    syncBadges(userId).catch((e) => console.warn("[comments/POST] badge sync error:", e));
 
     return NextResponse.json({ comment: newComment });
   } catch (error) {
