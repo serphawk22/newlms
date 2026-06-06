@@ -146,16 +146,11 @@ model Module {
   id              String          @id @default(cuid())
   title           String
   courseId        String
-  lessons         Lesson[]
-<<<<<<< HEAD
-  liveSessions    LiveSession[]
-  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  recordedClasses RecordedClass[]
-=======
-  liveSessions    LiveSession[] // module-specific live classes (optional)
-  recordedClasses RecordedClass[] // module-specific recordings (optional)
+  lessons           Lesson[]
+  liveSessions      LiveSession[]
+  course            Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  recordedClasses   RecordedClass[]
   adminReviewVideos AdminReviewVideo[]
->>>>>>> e9b3122 (feat: implement admin-only review, email notification system, and vercel deployment readiness configurations)
 
   @@index([courseId])
 }
