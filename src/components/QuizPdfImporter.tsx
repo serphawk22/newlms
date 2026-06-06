@@ -131,7 +131,8 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
           {stage === "idle" && (
             <div className="flex flex-col items-center gap-3 py-4">
               <p className="text-xs text-slate-500 text-center max-w-xs">
-                Upload a PDF containing questions (or educational content). AI will extract up to 30 MCQ questions automatically.
+                Upload a PDF and get questions extracted
+              
               </p>
               <label
                 htmlFor={`pdf-upload-${quizId}`}
