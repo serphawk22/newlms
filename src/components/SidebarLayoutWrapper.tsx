@@ -16,12 +16,6 @@ interface SidebarLayoutWrapperProps {
   children: React.ReactNode;
 }
 
-function dashboardHome(role: string) {
-  if (role === "STUDENT") return "/student";
-  if (role === "ADMIN") return "/admin";
-  return "/instructor";
-}
-
 export function SidebarLayoutWrapper({
   items,
   role,
@@ -54,7 +48,7 @@ export function SidebarLayoutWrapper({
           boxShadow: "var(--shadow-sm)",
         }}
       >
-        <Logo href={dashboardHome(role)} size="sm" />
+        <Logo size="sm" />
         <div className="flex items-center gap-2">
           {(role === "STUDENT" || role === "INSTRUCTOR") && (
             role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />

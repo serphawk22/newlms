@@ -8,15 +8,14 @@ type AuthVariant = "student" | "instructor" | "admin";
 
 interface AuthPageShellProps {
   variant: AuthVariant;
-  logoHref?: string;
   children: React.ReactNode;
 }
 
-export function AuthPageShell({ variant, logoHref = "/", children }: AuthPageShellProps) {
+export function AuthPageShell({ variant, children }: AuthPageShellProps) {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--background)" }}>
       <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 py-4 sm:px-6">
-        <Logo href={logoHref} size="md" />
+        <Logo size="md" />
       </header>
 
       <div className="flex-1 flex items-center justify-center p-4 pt-16 sm:p-6 sm:pt-20">

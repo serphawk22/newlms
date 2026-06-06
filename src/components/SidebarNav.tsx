@@ -66,7 +66,7 @@ export function SidebarNav({
     <div className="flex flex-col h-full">
       {/* ── Logo + Org ── */}
       <div className={cn("px-4 pt-5 pb-4", collapsed && "px-3") } style={{ borderBottom: '1px solid var(--sidebar-border)', background: 'var(--sidebar)' }}>
-        <Logo href={role === "STUDENT" ? "/student" : "/instructor"} />
+        <Logo />
         {!collapsed && (
           <div className="mt-3 space-y-1.5">
             <p className="text-[10px] font-bold uppercase tracking-widest truncate" style={{ color: "var(--muted-foreground)" }}>

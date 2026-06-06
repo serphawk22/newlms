@@ -25,12 +25,6 @@ interface CompactSidebarProps {
   onCloseMobile: () => void;
 }
 
-function dashboardHome(role: string) {
-  if (role === "STUDENT") return "/student";
-  if (role === "ADMIN") return "/admin";
-  return "/instructor";
-}
-
 export function CompactSidebar({
   items,
   role,
@@ -40,7 +34,6 @@ export function CompactSidebar({
   onCloseMobile,
 }: CompactSidebarProps) {
   const pathname = usePathname();
-  const home = dashboardHome(role);
 
   useEffect(() => {
     onCloseMobile();
@@ -153,7 +146,7 @@ export function CompactSidebar({
         className="h-14 flex items-center px-3 shrink-0"
         style={{ borderBottom: "1px solid var(--sidebar-border)" }}
       >
-        <Logo href={home} size="sm" />
+        <Logo size="sm" collapsed={!expanded} />
       </div>
 
       <nav className="flex-1 flex flex-col items-center gap-1 py-4 px-2 overflow-y-auto overflow-x-hidden">

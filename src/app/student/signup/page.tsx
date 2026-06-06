@@ -103,7 +103,7 @@ export default function StudentSignupPage() {
 
   if (pendingApproval || generatedCode) {
     return (
-      <AuthPageShell variant="student" logoHref="/">
+      <AuthPageShell variant="student">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -186,7 +186,7 @@ export default function StudentSignupPage() {
   }
 
   return (
-    <AuthPageShell variant="student" logoHref="/">
+    <AuthPageShell variant="student">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

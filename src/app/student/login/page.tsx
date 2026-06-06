@@ -98,7 +98,7 @@ export default function StudentLoginPage() {
   };
 
   return (
-    <AuthPageShell variant="student" logoHref="/">
+    <AuthPageShell variant="student">
       <motion.div variants={containerVariants} initial="hidden" animate="visible">
         <motion.div variants={itemVariants}>
           <h1 className="text-2xl font-medium tracking-tight" style={{ color: "var(--foreground)" }}>

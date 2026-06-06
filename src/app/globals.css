@@ -219,18 +219,31 @@
   background: var(--secondary-hover);
 }
 
-/* Logo: same asset in both themes; dark mode only adds a subtle light holder for legibility. */
+/* Logo container: theme-aware. Light mode transparent, dark mode subtle light bg. */
 .lms-logo-mark {
   display: inline-flex;
   align-items: center;
-}
-
-.lms-logo-mark {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(222, 226, 230, 0.85);
   border-radius: 0.5rem;
   padding: 0.25rem 0.375rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+[data-theme="dark"] .lms-logo-mark {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(222, 226, 230, 0.85);
   box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .lms-logo-mark {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Collapsed sidebar logo variant */
+.lms-logo-mark-collapsed {
+  padding: 0.125rem;
+  border-radius: 0.375rem;
 }
 
 /* Course content compatibility layer: scoped to course detail/roadmap experiences only. */
