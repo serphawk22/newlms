@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  ArrowLeft, MapPin, Settings,
-  Building2, Mail, Camera, X, Plus,
+  ArrowLeft, BookOpen, MapPin, Settings, Trophy, Star,
+  Building2, Mail, Camera, Award, Loader, X, Plus, Flame, GraduationCap, ChevronDown
 } from "lucide-react";
 import { RingLoader } from "@/components/ui/ring-loader";
 
@@ -18,6 +18,7 @@ interface Achievement {
   icon: string;
   color: string;
   unlocked: boolean;
+  criteria?: string;
 }
 
 interface ActivityItem {
@@ -94,6 +95,14 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const unlockedAchievements = achievements.filter((a) => a.unlocked);
+
+  // Track which badge has its criteria panel expanded (null = all collapsed)
+  const [expandedBadge, setExpandedBadge] = useState<string | null>(null);
+
+  const toggleBadge = (name: string) => {
+    setExpandedBadge((prev) => (prev === name ? null : name));
+  };
+
 
   // Sync state when modal opens
   const openModal = () => {
@@ -298,29 +307,88 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                 Complete courses and quizzes to earn achievements!
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                {achievements.map((badge, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col items-center p-4 rounded-2xl border transition-all duration-300"
-                    style={badge.unlocked
-                      ? { borderColor: "var(--border)", background: "var(--muted)" }
-                      : { borderStyle: "dashed", borderColor: "var(--border)", background: "transparent", opacity: 0.4 }
-                    }
-                  >
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {achievements.map((badge, i) => {
+                  const isExpanded = expandedBadge === badge.name;
+                  return (
                     <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
-                      style={{ background: `var(--${badge.color})` }}
+                      key={i}
+                      className="flex flex-col rounded-2xl border transition-all duration-300 overflow-hidden"
+                      style={badge.unlocked
+                        ? { borderColor: "var(--border)", background: "var(--card)", boxShadow: "var(--shadow-sm)" }
+                        : { borderStyle: "dashed", borderColor: "var(--border)", background: "transparent", opacity: 0.45 }
+                      }
                     >
-                      <span className="text-lg">{badge.icon}</span>
+                      {/* Badge body - grayscale/opacity applied here so it doesn't affect the chevron */}
+                      <div className={`flex flex-col items-center p-4 pb-2 transition-all ${
+                        !badge.unlocked ? "opacity-60 grayscale" : ""
+                      }`}>
+                        <div
+                          className={`w-12 h-12 rounded-full bg-gradient-to-br ${badge.color} flex items-center justify-center shadow-sm mb-3 ${
+                            badge.unlocked ? "ring-2 ring-white shadow-md" : ""
+                          }`}
+                        >
+                          <span className="text-lg">{badge.icon}</span>
+                        </div>
+                        <p className="text-xs font-bold text-zinc-700 text-center truncate w-full leading-tight">
+                          {badge.name}
+                        </p>
+                        {badge.unlocked ? (
+                          <p className="text-[9px] text-emerald-600 mt-1 uppercase font-semibold tracking-wide">
+                            Unlocked
+                          </p>
+                        ) : (
+                          <p className="text-[9px] text-zinc-400 mt-1 uppercase font-semibold tracking-wide">
+                            Locked
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Chevron toggle button - fully opaque with high contrast */}
+                      <button
+                        type="button"
+                        onClick={() => toggleBadge(badge.name)}
+                        aria-expanded={isExpanded}
+                        aria-label={`${isExpanded ? "Hide" : "Show"} criteria for ${badge.name}`}
+                        className={`w-full flex items-center justify-center py-2.5 transition-all text-xs border-t border-zinc-100 ${
+                          badge.unlocked
+                            ? "text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50/60 bg-indigo-50/10"
+                            : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/60 bg-zinc-100/10"
+                        }`}
+                      >
+                        <ChevronDown
+                          className={`w-4.5 h-4.5 transition-transform duration-300 shrink-0 ${
+                            isExpanded ? "rotate-180 text-zinc-800" : "rotate-0"
+                          }`}
+                        />
+                      </button>
+
+                      {/* Criteria panel — smooth max-height animation */}
+                      <div
+                        className="overflow-hidden transition-all duration-300 ease-in-out"
+                        style={{
+                          maxHeight: isExpanded ? "120px" : "0px",
+                          opacity: isExpanded ? 1 : 0,
+                        }}
+                      >
+                        <div
+                          className={`px-3 pb-3 pt-2 text-center border-t ${
+                            badge.unlocked ? "border-indigo-100 bg-indigo-50/40" : "border-zinc-200 bg-zinc-100/40"
+                          }`}
+                        >
+                          <p className={`text-[10px] leading-snug font-medium ${
+                            badge.unlocked ? "text-indigo-700 font-semibold" : "text-zinc-600"
+                          }`}>
+                            {badge.criteria ?? "Criteria not available."}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-xs font-bold text-center truncate w-full" style={{ color: "var(--foreground)" }}>{badge.name}</p>
-                    {!badge.unlocked && <p className="text-[9px] mt-1 uppercase font-semibold" style={{ color: "var(--muted-foreground)" }}>Locked</p>}
-                    {badge.unlocked && <p className="text-[9px] mt-1 uppercase font-semibold" style={{ color: "var(--accent)" }}>Unlocked</p>}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
+
           </CardContent>
         </Card>
 

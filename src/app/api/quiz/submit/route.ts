@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { syncBadges } from "@/lib/badges";
 
 export const runtime = "nodejs";
 
@@ -118,7 +119,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Fire-and-forget badge sync — non-blocking
+    syncBadges(studentId).catch((e) => console.warn("[quiz/submit] badge sync error:", e));
+
     return NextResponse.json({ success: true, submission, obtainedMarks, totalMarks });
+
   } catch (err) {
     console.error("[POST /api/quiz/submit]", err);
     return NextResponse.json({ error: "Submission failed." }, { status: 500 });

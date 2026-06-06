@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
 import { StudentProfileClient } from "@/components/StudentProfileClient";
+import { syncBadges } from "@/lib/badges";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET || "default_secret");
 
@@ -97,22 +98,15 @@ export default async function StudentProfilePage() {
   const enrollmentCount = enrollments.length;
   const learningHours = Math.round(enrollments.reduce((sum, e) => sum + e.progress * 5, 0));
   const gradedSubmissions = submissions.filter((s) => s.grade !== null) as { grade: number; submittedAt: Date; assignment: { title: string } }[];
-  const maxGrade = gradedSubmissions.length > 0 ? Math.max(...gradedSubmissions.map((s) => s.grade)) : null;
   const xp = computeXP(completedCourses, submissions.length, gradedSubmissions);
   const level = computeLevel(xp);
   const rank = computeRank(xp);
   const activityDates = loginHistory.map((n) => new Date(n.createdAt));
   const streak = computeStreak(activityDates);
-  const hasEarlyEnrollment = enrollmentCount > 0;
 
-  const achievements = [
-    { name: "Fast Learner", icon: "🚀", color: "from-blue-400 to-indigo-500", unlocked: completedCourses >= 1 },
-    { name: "Quiz Master", icon: "🧠", color: "from-purple-400 to-pink-500", unlocked: maxGrade !== null && maxGrade >= 90 },
-    { name: "Early Bird", icon: "🌅", color: "from-orange-400 to-amber-500", unlocked: hasEarlyEnrollment },
-    { name: "Helper", icon: "🤝", color: "from-emerald-400 to-teal-500", unlocked: enrollmentCount >= 3 },
-    { name: "Dedicated", icon: "💪", color: "from-red-400 to-rose-500", unlocked: streak >= 7 },
-    { name: "Scholar", icon: "📚", color: "from-cyan-400 to-sky-500", unlocked: completedCourses >= 3 },
-  ];
+  // Sync badges with correct unlock logic — persisted in DB
+  const achievements = await syncBadges(userId);
+
 
   const allNotifications = hasLoginToday ? notifications : [...notifications];
 

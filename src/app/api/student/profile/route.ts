@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
-import { unstable_cache } from "next/cache";
+import { syncBadges } from "@/lib/badges";
 
 export const runtime = "nodejs";
 
@@ -58,53 +58,7 @@ function computeStreak(activityDates: Date[]): number {
   return streak;
 }
 
-function computeAchievements(
-  completedCourses: number,
-  enrollmentCount: number,
-  streak: number,
-  maxGrade: number | null, // highest graded submission score
-  hasEarlyEnrollment: boolean
-) {
-  const badges: { name: string; icon: string; color: string; unlocked: boolean }[] = [
-    {
-      name: "Fast Learner",
-      icon: "🚀",
-      color: "from-blue-400 to-indigo-500",
-      unlocked: completedCourses >= 1,
-    },
-    {
-      name: "Quiz Master",
-      icon: "🧠",
-      color: "from-purple-400 to-pink-500",
-      unlocked: maxGrade !== null && maxGrade >= 90,
-    },
-    {
-      name: "Early Bird",
-      icon: "🌅",
-      color: "from-orange-400 to-amber-500",
-      unlocked: hasEarlyEnrollment,
-    },
-    {
-      name: "Helper",
-      icon: "🤝",
-      color: "from-emerald-400 to-teal-500",
-      unlocked: enrollmentCount >= 3,
-    },
-    {
-      name: "Dedicated",
-      icon: "💪",
-      color: "from-red-400 to-rose-500",
-      unlocked: streak >= 7,
-    },
-    {
-      name: "Scholar",
-      icon: "📚",
-      color: "from-cyan-400 to-sky-500",
-      unlocked: completedCourses >= 3,
-    },
-  ];
-  return badges;
-}
+
 
 /* ─── GET /api/student/profile ─────────────────────────────────────────────── */
 
@@ -188,9 +142,6 @@ export async function GET() {
     );
 
     const gradedSubmissions = submissions.filter((s) => s.grade !== null) as { grade: number; submittedAt: Date; assignment: { title: string } }[];
-    const maxGrade = gradedSubmissions.length > 0
-      ? Math.max(...gradedSubmissions.map((s) => s.grade))
-      : null;
 
     const xp = computeXP(completedCourses, submissions.length, gradedSubmissions);
     const level = computeLevel(xp);
@@ -200,16 +151,8 @@ export async function GET() {
     const activityDates = loginHistory.map((n) => new Date(n.createdAt));
     const streak = computeStreak(activityDates);
 
-    // Early bird: enrolled in any course (simple proxy)
-    const hasEarlyEnrollment = enrollmentCount > 0;
-
-    const achievements = computeAchievements(
-      completedCourses,
-      enrollmentCount,
-      streak,
-      maxGrade,
-      hasEarlyEnrollment
-    );
+    // Sync badges using correct unlock logic, persisted in DB
+    const achievements = await syncBadges(userId);
 
     // 4. Recent Activity — build from notifications
     const recentActivity = notifications.slice(0, 10).map((n) => {
