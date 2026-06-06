@@ -91,6 +91,8 @@ model Course {
   title            String
   description      String?
   published        Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   organizationId   String
   creatorId        String
   adminComments    AdminComment[]
@@ -109,6 +111,7 @@ model Course {
   certificates     Certificate[]
   reviews          Review[]
   courseComments   CourseComment[]
+  courseActivities CourseActivity[]
 
   @@index([organizationId])
   @@index([creatorId])
@@ -632,4 +635,14 @@ model UserBadge {
 
   @@unique([userId, badgeName])
   @@index([userId])
+}
+
+model CourseActivity {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  action    String
+  timestamp DateTime @default(now())
+
+  @@index([courseId])
 }

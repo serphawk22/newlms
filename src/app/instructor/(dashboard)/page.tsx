@@ -34,12 +34,14 @@ async function createCourse(formData: FormData) {
   try {
     const [orgExists, userExists] = await Promise.all([
       prisma.organization.findUnique({ where: { id: orgId },     select: { id: true } }),
-      prisma.user.findUnique({         where: { id: creatorId }, select: { id: true } }),
+      prisma.user.findUnique({         where: { id: creatorId }, select: { id: true, name: true, email: true } }),
     ]);
     if (!orgExists || !userExists) return;
     const course = await prisma.course.create({
       data: { title, organizationId: orgId, creatorId, published: true },
     });
+    const { logCourseActivity } = await import("@/lib/activity");
+    await logCourseActivity(course.id, `Course created by ${userExists.name || userExists.email}`);
     revalidatePath("/instructor");
     redirect(`/instructor/courses/${course.id}`);
   } catch (err: unknown) {
