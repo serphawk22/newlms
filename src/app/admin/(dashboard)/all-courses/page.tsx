@@ -21,7 +21,7 @@ export default async function AdminAllCoursesPage({
       creator: { select: { name: true } },
       _count: { select: { enrollments: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { id: "desc" },
   });
 
   return (

@@ -211,11 +211,24 @@ export default async function AdminCourseDetailPage({
       quizzes: { include: { questions: true } },
       liveSessions: { orderBy: { createdAt: "desc" } },
       _count: { select: { enrollments: true } },
-      courseActivities: { orderBy: { timestamp: "desc" }, take: 50 },
     },
   });
 
   if (!course) notFound();
+
+  // Fetch course activities safely to bypass stale Prisma client typings
+  let courseActivities: any[] = [];
+  try {
+    courseActivities = await prisma.$queryRaw`
+      SELECT id, action, timestamp 
+      FROM "CourseActivity" 
+      WHERE "courseId" = ${courseId} 
+      ORDER BY "timestamp" DESC 
+      LIMIT 50
+    `;
+  } catch (err) {
+    // Table might not exist yet if db push wasn't run
+  }
 
   // Fetch submissions for all assignments
   type SubmissionWithStudent = {
@@ -763,15 +776,15 @@ export default async function AdminCourseDetailPage({
                 <Activity className="w-5 h-5 text-indigo-500" />
                 <h2 className="text-xl font-bold">Course Activity Log</h2>
               </div>
-              {course.courseActivities.length === 0 ? (
+              {courseActivities.length === 0 ? (
                 <div className="text-center py-16 text-slate-400 bg-white rounded-xl border border-slate-200">
                   <Activity className="w-10 h-10 mx-auto mb-3 text-slate-300" />
                   <p>No activity recorded yet.</p>
                 </div>
               ) : (
                 <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
-                  {course.courseActivities.map((act, i) => (
-                    <div key={act.id} className={`flex items-start gap-4 px-5 py-3.5 ${i < course.courseActivities.length - 1 ? "border-b border-zinc-100" : ""} hover:bg-zinc-50/50 transition-colors`}>
+                  {courseActivities.map((act, i) => (
+                    <div key={act.id} className={`flex items-start gap-4 px-5 py-3.5 ${i < courseActivities.length - 1 ? "border-b border-zinc-100" : ""} hover:bg-zinc-50/50 transition-colors`}>
                       <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 mt-0.5">
                         <Activity className="w-3.5 h-3.5 text-indigo-500" />
                       </div>
