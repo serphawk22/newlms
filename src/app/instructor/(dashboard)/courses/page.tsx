@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { BookOpen, PlusCircle } from "lucide-react";
 import { getDashboardContext } from "../_lib";
 import { CourseCardWithDelete } from "@/components/CourseCardWithDelete";
+import { triggerCourseCreatedNotifications } from "@/lib/email-notifications-helper";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,10 @@ async function createCourse(formData: FormData) {
     const course = await prisma.course.create({
       data: { title, organizationId: orgId, creatorId, published: true },
     });
+    // Trigger course creation email notifications in background
+    triggerCourseCreatedNotifications(course.id).catch((err) =>
+      console.error("[createCourse notification error]", err)
+    );
     revalidatePath("/instructor/courses");
     redirect(`/instructor/courses/${course.id}`);
   } catch (err: unknown) {

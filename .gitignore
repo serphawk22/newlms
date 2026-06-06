@@ -52,3 +52,4 @@ clear-cache.js
 migrate-db.js
 query-sessions.js
 roadmap.html
+scratch/

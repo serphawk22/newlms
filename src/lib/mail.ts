@@ -57,9 +57,11 @@ export async function sendEmail({
     if (!process.env.SMTP_EMAIL) {
       console.log(`[mail] Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
     }
+    return true;
   } catch (error) {
     console.error("[sendEmail] Failed to send email:", error);
     // Intentionally NOT re-throwing — email failure must never break the caller
+    return false;
   }
 }
 

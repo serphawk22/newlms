@@ -134,6 +134,7 @@ export function SidebarNav({
           <div className="relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
+              suppressHydrationWarning
               className={cn(
                 "flex items-center gap-3 w-full rounded-lg transition-colors",
                 collapsed ? "justify-center p-2" : "px-2 py-2"
@@ -201,6 +202,7 @@ export function SidebarNav({
       {/* Collapse toggle button (desktop only) */}
       <button
         onClick={() => setCollapsed(!collapsed)}
+        suppressHydrationWarning
         className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center shadow-sm transition-colors z-50"
         style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -216,6 +218,7 @@ export function SidebarNav({
       <button
         type="button"
         onClick={() => setMobileOpen(!mobileOpen)}
+        suppressHydrationWarning
         className="fixed top-3 left-3 z-50 lg:hidden rounded-xl p-2 transition-colors" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
         aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
       >

@@ -12,6 +12,7 @@ import { AdminStudentSection } from "@/components/admin/AdminStudentSection";
 import { AdminCommentsPanel } from "@/components/admin/AdminCommentsPanel";
 import { InstructorDashboardClient } from "@/components/InstructorDashboardClient";
 import { getDashboardContext } from "./_lib";
+import { triggerCourseCreatedNotifications } from "@/lib/email-notifications-helper";
 
 async function removeMember(formData: FormData) {
   "use server";
@@ -42,6 +43,10 @@ async function createCourse(formData: FormData) {
     });
     const { logCourseActivity } = await import("@/lib/activity");
     await logCourseActivity(course.id, `Course created by ${userExists.name || userExists.email}`);
+    // Trigger course creation email notifications in background
+    triggerCourseCreatedNotifications(course.id).catch((err) =>
+      console.error("[createCourse dashboard notification error]", err)
+    );
     revalidatePath("/instructor");
     redirect(`/instructor/courses/${course.id}`);
   } catch (err: unknown) {

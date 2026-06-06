@@ -32,6 +32,10 @@ async function adminCreateModule(formData: FormData) {
   const courseId = formData.get("courseId") as string;
   if (title && courseId) {
     await prisma.module.create({ data: { title, courseId } });
+    const { triggerCourseUpdateNotifications } = await import("@/lib/email-notifications-helper");
+    triggerCourseUpdateNotifications(courseId, "MODULE", title).catch((err) =>
+      console.error("[adminCreateModule notification error]", err)
+    );
     await logCourseActivity(courseId, `Module "${title}" added by Admin`);
     revalidatePath(`/admin/all-courses/${courseId}`);
   }
@@ -58,6 +62,10 @@ async function adminCreateLesson(formData: FormData) {
   const videoUrl = formData.get("videoUrl") as string;
   if (title && moduleId) {
     await prisma.lesson.create({ data: { title, moduleId, videoUrl: videoUrl || null } });
+    const { triggerCourseUpdateNotifications } = await import("@/lib/email-notifications-helper");
+    triggerCourseUpdateNotifications(courseId, "LESSON", title).catch((err) =>
+      console.error("[adminCreateLesson notification error]", err)
+    );
     await logCourseActivity(courseId, `Lesson "${title}" added by Admin`);
     revalidatePath(`/admin/all-courses/${courseId}`);
   }
@@ -72,7 +80,11 @@ async function adminCreateAssignment(formData: FormData) {
   const deadlineRaw = formData.get("deadline") as string;
 
   if (title && courseId) {
-    await prisma.assignment.create({ data: { title, description, driveLink, courseId } });
+    const assignment = await prisma.assignment.create({ data: { title, description, driveLink, courseId } });
+    const { triggerAssignmentCreatedNotifications } = await import("@/lib/email-notifications-helper");
+    triggerAssignmentCreatedNotifications(assignment.id).catch((err) =>
+      console.error("[adminCreateAssignment notification error]", err)
+    );
     const deadlineDate = deadlineRaw ? new Date(deadlineRaw) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await createEvent({ title: `Assignment Due: ${title}`, date: deadlineDate, type: "ASSIGNMENT_DEADLINE", courseId });
     await logCourseActivity(courseId, `Assignment "${title}" created by Admin`);
@@ -120,7 +132,11 @@ async function adminCreateQuiz(formData: FormData) {
   const title = formData.get("title") as string;
   const courseId = formData.get("courseId") as string;
   if (title && courseId) {
-    await prisma.quiz.create({ data: { title, courseId } });
+    const quiz = await prisma.quiz.create({ data: { title, courseId } });
+    const { triggerQuizCreatedNotifications } = await import("@/lib/email-notifications-helper");
+    triggerQuizCreatedNotifications(quiz.id).catch((err) =>
+      console.error("[adminCreateQuiz notification error]", err)
+    );
     await logCourseActivity(courseId, `Quiz "${title}" created by Admin`);
     revalidatePath(`/admin/all-courses/${courseId}`);
   }

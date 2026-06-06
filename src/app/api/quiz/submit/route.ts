@@ -119,6 +119,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const { triggerFeedbackNotifications } = await import("@/lib/email-notifications-helper");
+    triggerFeedbackNotifications(submission.id, true).catch((err) =>
+      console.error("[quiz/submit notification error]", err)
+    );
+
     // Fire-and-forget badge sync — non-blocking
     syncBadges(studentId).catch((e) => console.warn("[quiz/submit] badge sync error:", e));
 

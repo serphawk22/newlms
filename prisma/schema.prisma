@@ -53,6 +53,8 @@ model User {
   sessionToken             String?
   expertise                String[]                 @default([])
   bio                      String?
+  lastLoginAt              DateTime?
+  lastReminderSentAt       DateTime?
   adminCommentsAuthored    AdminComment[]           @relation("AdminCommentAuthor")
   adminCommentsReceived    AdminComment[]           @relation("AdminCommentStudent")
   submissions              AssignmentSubmission[]
@@ -71,6 +73,27 @@ model User {
   studyFriendSessions      StudyFriendSession[]
   courseComments           CourseComment[]          @relation("CourseCommentAuthor")
   userBadges               UserBadge[]
+  adminReviewVideos        AdminReviewVideo[]
+  emailNotifications       EmailNotification[]
+}
+
+model EmailNotification {
+  id           String    @id @default(cuid())
+  userId       String?
+  toEmail      String
+  subject      String
+  type         String    // "LOGIN" | "COURSE_CREATE" | "ASSIGNMENT" | "QUIZ" | "FEEDBACK" | "COURSE_UPDATE" | "INACTIVITY"
+  html         String?   @db.Text
+  status       String    @default("PENDING") // PENDING | SENT | FAILED
+  retryCount   Int       @default(0)
+  errorMessage String?   @db.Text
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  user         User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
 }
 
 model OrganizationMember {
@@ -112,6 +135,7 @@ model Course {
   reviews          Review[]
   courseComments   CourseComment[]
   courseActivities CourseActivity[]
+  adminReviewVideos AdminReviewVideo[]
 
   @@index([organizationId])
   @@index([creatorId])
@@ -123,9 +147,15 @@ model Module {
   title           String
   courseId        String
   lessons         Lesson[]
+<<<<<<< HEAD
   liveSessions    LiveSession[]
   course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
   recordedClasses RecordedClass[]
+=======
+  liveSessions    LiveSession[] // module-specific live classes (optional)
+  recordedClasses RecordedClass[] // module-specific recordings (optional)
+  adminReviewVideos AdminReviewVideo[]
+>>>>>>> e9b3122 (feat: implement admin-only review, email notification system, and vercel deployment readiness configurations)
 
   @@index([courseId])
 }
@@ -137,8 +167,30 @@ model Lesson {
   driveLink String?
   moduleId  String
   module    Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  adminReviewVideos AdminReviewVideo[]
 
   @@index([moduleId])
+}
+
+model AdminReviewVideo {
+  id           String   @id @default(cuid())
+  courseId     String
+  moduleId     String
+  lessonId     String
+  instructorId String
+  videoUrl     String
+  status       String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  uploadedAt   DateTime @default(now())
+
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module       Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  instructor   User     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([moduleId])
+  @@index([lessonId])
+  @@index([instructorId])
 }
 
 model Enrollment {
