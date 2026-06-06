@@ -118,7 +118,7 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-[#D9252A]">Import Questions from PDF</p>
-          <p className="text-xs text-[#D9252A]">Upload a PDF — AI will extract MCQ questions automatically</p>
+          <p className="text-xs text-[#D9252A]">Upload a PDF and get questions extracted.</p>
         </div>
         {collapsed
           ? <ChevronDown className="w-4 h-4 text-[#D9252A] shrink-0" />
@@ -130,9 +130,7 @@ export function QuizPdfImporter({ quizId, courseId }: QuizPdfImporterProps) {
           {/* IDLE */}
           {stage === "idle" && (
             <div className="flex flex-col items-center gap-3 py-4">
-              <p className="text-xs text-slate-500 text-center max-w-xs">
-                Upload a PDF to extract questions.
-              </p>
+              
               <label
                 htmlFor={`pdf-upload-${quizId}`}
                 className="flex items-center gap-2 cursor-pointer bg-[#D9252A] hover:bg-[#C21F24] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
