@@ -67,8 +67,12 @@ export default async function StudentDashboardPage() {
       update: {},
       create: { userId, dateStr: todayStr },
     });
+    // Fire-and-forget badge sync — checks Early Bird & Dedicated on login
+    const { syncBadges } = await import("@/lib/badges");
+    syncBadges(userId).catch((e: unknown) => console.warn("[dashboard] badge sync error:", e));
   } catch (err) {
     // ignore constraint errors if concurrent
+    void err;
   }
 
   const dailyLogins = await prisma.dailyLogin.findMany({
