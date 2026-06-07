@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { 
-  Search, 
   Trash2, 
   Play, 
   X, 
@@ -10,11 +9,11 @@ import {
   Mail, 
   User, 
   BookOpen, 
-  FileText 
+  FileText,
 } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 interface VideoItem {
   id: string;
@@ -83,17 +82,7 @@ export function LearningVideosClient({ initialVideos }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Search Input */}
-      <div className="flex items-center gap-2 max-w-md bg-white border border-zinc-200 rounded-xl px-3 py-1.5 shadow-sm">
-        <Search className="w-4 h-4 text-zinc-400 shrink-0" />
-        <Input
-          type="text"
-          placeholder="Search by student, course, or notes..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 py-0 h-auto text-sm"
-        />
-      </div>
+      <SearchBar value={search} onChange={setSearch} placeholder="Search by student, course, or notes..." className="max-w-md" />
 
       {filteredVideos.length === 0 ? (
         <div className="text-center py-16 bg-white border border-zinc-200 rounded-2xl shadow-sm text-zinc-400">

@@ -50,9 +50,7 @@ export function SidebarLayoutWrapper({
       >
         <Logo size="sm" />
         <div className="flex items-center gap-2">
-          {(role === "STUDENT" || role === "INSTRUCTOR") && (
-            role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />
-          )}
+          {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -83,11 +81,9 @@ export function SidebarLayoutWrapper({
         )}
       >
         {/* Floating Notification Dropdown on Desktop */}
-        {(role === "STUDENT" || role === "INSTRUCTOR") && (
-          <div className="absolute top-6 right-8 z-30 hidden lg:block">
-            {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
-          </div>
-        )}
+        <div className="absolute top-6 right-8 z-30 hidden lg:block">
+          {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
+        </div>
         {children}
       </main>
     </div>

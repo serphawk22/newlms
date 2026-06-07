@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Users, Search, Plus, X } from "lucide-react";
+import { Users, Plus, X } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import type { UsersData, StudentUser, InstructorUser } from "./page";
 
 interface Props {
@@ -32,16 +32,7 @@ function StudentTable({ students }: { students: StudentUser[] }) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-          <Input
-            placeholder="Search students..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-            className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-          />
-        </div>
+        <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Search students..." className="max-w-sm flex-1" />
         <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{filtered.length} students</span>
       </div>
 
@@ -135,16 +126,7 @@ function InstructorTable({ instructors, orgId }: { instructors: InstructorUser[]
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-          <Input
-            placeholder="Search instructors..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-            className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-          />
-        </div>
+        <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Search instructors..." className="max-w-sm flex-1" />
         <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{filtered.length} instructors</span>
         <Button
           onClick={() => setShowAdd(!showAdd)}

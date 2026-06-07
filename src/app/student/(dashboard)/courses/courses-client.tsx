@@ -5,8 +5,8 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { BookOpen, BookMarked, CheckCircle2, Clock, XCircle, Search } from "lucide-react";
+import { BookOpen, BookMarked, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import { Loader } from "@/components/ui/loader";
 
 type CourseWithStatus = {
@@ -50,7 +50,6 @@ export default function StudentCoursesClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [enrollingCourseId, setEnrollingCourseId] = useState<string | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<string>("all");
-  const [searchFocused, setSearchFocused] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -251,26 +250,7 @@ export default function StudentCoursesClient({
         <div className="space-y-4">
           {/* Search and Filter */}
           <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors"
-                style={{ color: searchFocused ? "#D9252A" : "var(--muted-foreground)" }}
-              />
-              <Input
-                placeholder="Search courses..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                className="pl-9 transition-all focus-visible:ring-0 focus-visible:border-transparent outline-none"
-                style={{
-                  borderColor: searchFocused ? "#D9252A" : "#5C6670",
-                  boxShadow: searchFocused ? "0 0 0 3px rgba(217, 37, 42, 0.2)" : "none",
-                  background: "var(--input)",
-                  color: "var(--foreground)",
-                }}
-              />
-            </div>
+            <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search courses..." className="flex-1" />
 
             <div className="relative" ref={dropdownRef}>
               <button

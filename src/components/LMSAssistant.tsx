@@ -320,7 +320,7 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                         msg.role === "user"
-                          ? "bg-gradient-to-br from-blue-500 to-cyan-500"
+                          ? "bg-gradient-to-br from-[#D9252A] to-[#C21F24]"
                           : "bg-[rgba(217,37,42,0.12)]"
                       }`}
                     >
@@ -335,7 +335,7 @@ export function LMSAssistant({ userRole, userName }: LMSAssistantProps) {
                     <div
                       className={`max-w-[82%] rounded-2xl text-sm leading-relaxed px-3 py-2 ${
                         msg.role === "user"
-                          ? "bg-gradient-to-br from-blue-600/80 to-blue-500/80 text-white rounded-tr-sm border border-white/10"
+                          ? "bg-gradient-to-br from-[#D9252A]/80 to-[#C21F24]/80 text-white rounded-tr-sm border border-white/10"
                           : "bg-white/10 text-white/90 border border-white/10 rounded-tl-sm"
                       }`}
                     >

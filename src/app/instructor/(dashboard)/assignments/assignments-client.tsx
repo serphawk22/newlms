@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ClipboardList, Search } from "lucide-react";
+import { ClipboardList } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import Link from "next/link";
 import type { AssignmentRow } from "./page";
 
@@ -43,20 +43,7 @@ export function AssignmentsPageClient({ assignments }: Props) {
         </span>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-        <Input
-          placeholder="Search assignments..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            background: "var(--secondary-background)",
-            border: "1px solid var(--border)",
-            color: "var(--foreground)",
-          }}
-          className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-        />
-      </div>
+      <SearchBar value={search} onChange={setSearch} placeholder="Search assignments..." className="max-w-sm" />
 
       <Card
         className="overflow-hidden"

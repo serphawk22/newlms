@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, AlertCircle } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
+import { SearchBar } from "@/components/ui/search-bar";
 
 interface CourseRow {
   id: string;
@@ -69,12 +70,20 @@ export function CoursesClient({ courses, defaultPublished }: Props) {
   const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "draft">(
     defaultPublished === true ? "published" : "all"
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const visibleCourses = publishedFilter === "published"
-    ? courses.filter(c => c.published)
-    : publishedFilter === "draft"
-    ? courses.filter(c => !c.published)
-    : courses;
+  const visibleCourses = useMemo(() => {
+    let filtered = publishedFilter === "published"
+      ? courses.filter(c => c.published)
+      : publishedFilter === "draft"
+      ? courses.filter(c => !c.published)
+      : courses;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(c => c.title.toLowerCase().includes(q));
+    }
+    return filtered;
+  }, [courses, publishedFilter, searchQuery]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -106,8 +115,13 @@ export function CoursesClient({ courses, defaultPublished }: Props) {
         loading={deleting}
       />
 
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 m-4">
+        <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search courses by name..." className="flex-1" />
+      </div>
+
       {/* Filter tabs */}
-      <div className="flex gap-1.5 rounded-xl p-1 border m-4" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
+      <div className="flex gap-1.5 rounded-xl p-1 border mx-4 mb-4" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
         {(["all", "published", "draft"] as const).map((f) => (
           <button
             key={f}
