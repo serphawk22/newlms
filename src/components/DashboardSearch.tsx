@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Command } from "lucide-react";
+import { Search } from "lucide-react";
 
 type SearchEntry = {
   label: string;
@@ -158,17 +158,6 @@ export function DashboardSearch({ role }: DashboardSearchProps) {
           aria-label="Search dashboard"
           autoComplete="off"
         />
-        <kbd
-          className="items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 hidden xl:inline-flex"
-          style={{
-            background: "var(--secondary-background)",
-            color: "var(--muted-foreground)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          <Command className="w-2.5 h-2.5" />
-          K
-        </kbd>
       </div>
 
       {/* Mobile search icon */}
