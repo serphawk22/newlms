@@ -1,14 +1,14 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Send, Trash2, BookOpen, GraduationCap } from "lucide-react";
+import { Send, Trash2, BookOpen, GraduationCap, ChevronDown } from "lucide-react";
 import { RingLoader } from "@/components/ui/ring-loader";
 import { Button } from "@/components/ui/button";
 
-interface Course   { id: string; title: string }
-interface Student  { memberId: string; userId: string; name: string; email: string }
-interface Comment  {
+interface Course { id: string; title: string }
+interface Student { memberId: string; userId: string; name: string; email: string }
+interface Comment {
   id: string; content: string; createdAt: string;
-  author:  { id: string; name: string };
+  author: { id: string; name: string };
   student: { id: string; name: string } | null;
 }
 
@@ -16,18 +16,38 @@ interface Props { orgId: string; courses: Course[] }
 type Tab = "COURSE" | "STUDENT";
 
 export function AdminCommentsPanel({ orgId, courses }: Props) {
-  // Start with "" so user explicitly picks a course
-  const [tab, setTab]             = useState<Tab>("COURSE");
-  const [courseId, setCourseId]   = useState<string>("");
-  const [students, setStudents]   = useState<Student[]>([]);
+  const [tab, setTab] = useState<Tab>("COURSE");
+  const [courseId, setCourseId] = useState<string>("");
+  const [students, setStudents] = useState<Student[]>([]);
   const [studentId, setStudentId] = useState<string>("");
-  const [comments, setComments]   = useState<Comment[]>([]);
-  const [text, setText]           = useState("");
-  const [loadingS, setLoadingS]   = useState(false);
-  const [loadingC, setLoadingC]   = useState(false);
-  const [posting, setPosting]     = useState(false);
-  const [deleting, setDeleting]   = useState<string | null>(null);
-  const bottomRef                 = useRef<HTMLDivElement>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [text, setText] = useState("");
+  const [loadingS, setLoadingS] = useState(false);
+  const [loadingC, setLoadingC] = useState(false);
+  const [posting, setPosting] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Dropdown UI Open States
+  const [courseDropdownOpen, setCourseDropdownOpen] = useState(false);
+  const [studentDropdownOpen, setStudentDropdownOpen] = useState(false);
+
+  const courseRef = useRef<HTMLDivElement>(null);
+  const studentRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (courseRef.current && !courseRef.current.contains(event.target as Node)) {
+        setCourseDropdownOpen(false);
+      }
+      if (studentRef.current && !studentRef.current.contains(event.target as Node)) {
+        setStudentDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Load students for the student-comment tab whenever course changes
   useEffect(() => {
@@ -66,7 +86,7 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
     const body: Record<string, string> = { courseId, content: text.trim(), targetType: tab };
     if (tab === "STUDENT") body.studentId = studentId;
     try {
-      const res  = await fetch("/api/admin/comments", {
+      const res = await fetch("/api/admin/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -100,6 +120,8 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
     } catch { return iso; }
   }
 
+  const selectedCourse = courses.find(c => c.id === courseId);
+  const selectedStudent = students.find(s => s.userId === studentId);
   const canPost = !!text.trim() && !!courseId && (tab === "COURSE" || !!studentId) && !posting;
 
   return (
@@ -133,33 +155,76 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
       </div>
 
       {/* Selectors */}
-      <div className="px-5 py-4 flex flex-wrap gap-3" style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--border)" }}>
+      <div className="px-5 py-4 flex flex-wrap gap-3" style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--border)", zIndex: 10 }}>
+
         {/* Course selector */}
-        <div className="flex-1 min-w-[200px]">
+        <div className="flex-1 min-w-[200px] relative" ref={courseRef}>
           <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
             Select Course
           </label>
           {courses.length === 0 ? (
-            <p className="text-xs italic py-2" style={{ color: "var(--muted-foreground)" }}>No courses in this organization yet.</p>
+            <p style={{ color: "var(--muted-foreground)" }}>No courses in this organization yet.</p>
           ) : (
-            <select
-              value={courseId}
-              onChange={(e) => { setCourseId(e.target.value); setStudentId(""); setComments([]); }}
-              suppressHydrationWarning
-              className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none"
-              style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-            >
-              <option value="">— Choose a course —</option>
-              {courses.map((c) => (
-                <option key={c.id} value={c.id}>{c.title}</option>
-              ))}
-            </select>
+            <>
+              <button
+                type="button"
+                onClick={() => setCourseDropdownOpen(!courseDropdownOpen)}
+                className="w-full text-sm px-3 py-2 rounded-lg flex items-center justify-between focus:outline-none transition-all"
+                style={{
+                  background: "var(--card)",
+                  border: courseDropdownOpen ? "1px solid #D9252A" : "1px solid var(--border)",
+                  color: courseId ? "var(--foreground)" : "var(--muted-foreground)",
+                  boxShadow: courseDropdownOpen ? "0 0 0 2px rgba(217,37,42,0.2)" : "none"
+                }}
+              >
+                <span className="truncate">{selectedCourse ? selectedCourse.title : "— Choose a course —"}</span>
+                <ChevronDown className={`w-4 h-4 transition-transform text-muted-foreground ${courseDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {courseDropdownOpen && (
+                <div
+                  className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-lg shadow-xl border text-sm z-50 animate-in fade-in slide-in-from-top-1 duration-100"
+                  style={{ background: "var(--card)", borderColor: "var(--border)" }}
+                >
+                  <div
+                    onClick={() => { setCourseId(""); setStudentId(""); setComments([]); setCourseDropdownOpen(false); }}
+                    className="px-3 py-2 cursor-pointer transition-colors"
+                    style={{
+                      color: !courseId ? "#D9252A" : "var(--foreground)",
+                      background: !courseId ? "#FFF1F2" : "transparent"
+                    }}
+                    onMouseEnter={e => { if (courseId) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
+                    onMouseLeave={e => { if (courseId) e.currentTarget.style.backgroundColor = "transparent"; }}
+                  >
+                    — Choose a course —
+                  </div>
+                  {courses.map((c) => {
+                    const isSelected = courseId === c.id;
+                    return (
+                      <div
+                        key={c.id}
+                        onClick={() => { setCourseId(c.id); setStudentId(""); setComments([]); setCourseDropdownOpen(false); }}
+                        className="px-3 py-2 cursor-pointer transition-colors truncate"
+                        style={{
+                          color: isSelected ? "#D9252A" : "var(--foreground)",
+                          background: isSelected ? "#FFF1F2" : "transparent"
+                        }}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
+                        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+                      >
+                        {c.title}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {/* Student selector (only for Student Comments tab) */}
         {tab === "STUDENT" && courseId && (
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-[200px] relative" ref={studentRef}>
             <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>
               Select Student
             </label>
@@ -170,18 +235,62 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
             ) : students.length === 0 ? (
               <p className="text-xs italic py-2" style={{ color: "var(--muted-foreground)" }}>No students in this workspace yet.</p>
             ) : (
-              <select
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-                suppressHydrationWarning
-              className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
-                style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-              >
-                <option value="">— Choose a student —</option>
-                {students.map((s) => (
-                  <option key={s.userId} value={s.userId}>{s.name} ({s.email})</option>
-                ))}
-              </select>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setStudentDropdownOpen(!studentDropdownOpen)}
+                  className="w-full text-sm px-3 py-2 rounded-lg flex items-center justify-between focus:outline-none transition-all"
+                  style={{
+                    background: "var(--card)",
+                    border: studentDropdownOpen ? "1px solid #D9252A" : "1px solid var(--border)",
+                    color: studentId ? "var(--foreground)" : "var(--muted-foreground)",
+                    boxShadow: studentDropdownOpen ? "0 0 0 2px rgba(217,37,42,0.2)" : "none"
+                  }}
+                >
+                  <span className="truncate">
+                    {selectedStudent ? `${selectedStudent.name} (${selectedStudent.email})` : "— Choose a student —"}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 transition-transform text-muted-foreground ${studentDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {studentDropdownOpen && (
+                  <div
+                    className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-lg shadow-xl border text-sm z-50 animate-in fade-in slide-in-from-top-1 duration-100"
+                    style={{ background: "var(--card)", borderColor: "var(--border)" }}
+                  >
+                    <div
+                      onClick={() => { setStudentId(""); setStudentDropdownOpen(false); }}
+                      className="px-3 py-2 cursor-pointer transition-colors"
+                      style={{
+                        color: !studentId ? "#D9252A" : "var(--foreground)",
+                        background: !studentId ? "#FFF1F2" : "transparent"
+                      }}
+                      onMouseEnter={e => { if (studentId) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
+                      onMouseLeave={e => { if (studentId) e.currentTarget.style.backgroundColor = "transparent"; }}
+                    >
+                      — Choose a student —
+                    </div>
+                    {students.map((s) => {
+                      const isSelected = studentId === s.userId;
+                      return (
+                        <div
+                          key={s.userId}
+                          onClick={() => { setStudentId(s.userId); setStudentDropdownOpen(false); }}
+                          className="px-3 py-2 cursor-pointer transition-colors truncate"
+                          style={{
+                            color: isSelected ? "#D9252A" : "var(--foreground)",
+                            background: isSelected ? "#FFF1F2" : "transparent"
+                          }}
+                          onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
+                          onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+                        >
+                          {s.name} ({s.email})
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -257,8 +366,8 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handlePost(); } }}
             placeholder={
               !courseId ? "Select a course first…"
-              : tab === "STUDENT" && !studentId ? "Select a student first…"
-              : "Write a comment and press Enter…"
+                : tab === "STUDENT" && !studentId ? "Select a student first…"
+                  : "Write a comment and press Enter…"
             }
             disabled={!courseId || (tab === "STUDENT" && !studentId) || posting}
             suppressHydrationWarning
