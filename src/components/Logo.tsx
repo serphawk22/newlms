@@ -1,39 +1,50 @@
 "use client";
 
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  href?: string;
-  /** Height of the logo image (default h-9) */
-  size?: "sm" | "md" | "lg";
+  /** Collapsed state for sidebar - scales logo to fill available width */
+  collapsed?: boolean;
 }
 
-const sizeClasses = {
-  sm: "h-7",
-  md: "h-9",
-  lg: "h-11",
-};
-
-export function Logo({ className = "", href, size = "md" }: LogoProps) {
-  const img = (
-    <img
-      src="/logo.png"
-      alt=""
-      className={cn(sizeClasses[size], "w-auto object-contain")}
-    />
-  );
-
-  const content = <span className="lms-logo-mark">{img}</span>;
-
-  if (href) {
+export function Logo({ className = "", collapsed = false }: LogoProps) {
+  if (collapsed) {
     return (
-      <Link href={href} className={cn("inline-flex shrink-0", className)}>
-        {content}
-      </Link>
+      <span
+        className={cn(
+          "inline-flex items-center justify-center w-full h-full",
+          className
+        )}
+        style={{ userSelect: "none", pointerEvents: "none", cursor: "default" }}
+      >
+        <span className="lms-logo-mark lms-logo-mark-collapsed">
+          <img
+            src="/ally-tech-logo.png"
+            alt="Ally Tech Services"
+            className="w-full h-auto max-h-[44px] object-contain"
+            style={{ userSelect: "none", pointerEvents: "none" }}
+            draggable={false}
+          />
+        </span>
+      </span>
     );
   }
 
-  return <span className={cn("inline-flex shrink-0", className)}>{content}</span>;
+  return (
+    <span
+      className={cn("inline-flex shrink-0", className)}
+      style={{ userSelect: "none", pointerEvents: "none", cursor: "default" }}
+    >
+      <span className="lms-logo-mark">
+        <img
+          src="/ally-tech-logo.png"
+          alt="Ally Tech Services"
+          className="h-7 w-auto object-contain"
+          style={{ userSelect: "none", pointerEvents: "none" }}
+          draggable={false}
+        />
+      </span>
+    </span>
+  );
 }

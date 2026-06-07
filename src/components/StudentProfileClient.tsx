@@ -378,9 +378,7 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                           }`}
                           style={{ borderColor: "var(--border)" }}
                         >
-                          <p className={`text-[10px] leading-snug font-medium ${
-                            badge.unlocked ? "text-[#D9252A] font-semibold" : "text-zinc-600"
-                          }`}>
+                          <p className="text-[10px] leading-snug font-semibold" style={{ color: "var(--foreground)" }}>
                             {badge.criteria ?? "Criteria not available."}
                           </p>
                         </div>

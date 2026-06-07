@@ -9,10 +9,11 @@ export const dynamic = "force-dynamic";
 export default async function AdminAllCoursesPage({
   searchParams,
 }: {
-  searchParams?: { published?: string };
+  searchParams?: Promise<{ published?: string }>;
 }) {
   const ctx = await getAdminContext();
-  const filterPublished = searchParams?.published === "true";
+  const params = await searchParams;
+  const filterPublished = params?.published === "true";
 
   const courses = await prisma.course.findMany({
     where: { organizationId: ctx.orgId },

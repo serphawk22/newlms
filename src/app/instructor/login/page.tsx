@@ -77,7 +77,7 @@ export default function InstructorLoginPage() {
   };
 
   return (
-    <AuthPageShell variant="instructor" logoHref="/">
+    <AuthPageShell variant="instructor">
       <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.08 } } }}>
         <motion.div variants={itemVariants}>
           <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--accent)" }}>

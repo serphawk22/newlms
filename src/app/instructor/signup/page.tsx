@@ -100,7 +100,7 @@ export default function InstructorSignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--background)' }}>
         <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 py-4 sm:px-6">
-          <Logo className="h-8" href="/instructor" />
+          <Logo className="h-8" />
         </header>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -187,7 +187,7 @@ export default function InstructorSignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--background)' }}>
       <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-4 py-4 sm:px-6">
-        <Logo className="h-8" href="/instructor" />
+        <Logo className="h-8" />
       </header>
       <motion.div
         initial={{ opacity: 0, y: 20 }}

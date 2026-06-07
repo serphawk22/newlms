@@ -12,12 +12,18 @@
       "maxDuration": 60
     },
     "src/app/api/plagiarism/**": {
-      "maxDuration": 120
+      "maxDuration": 60
     },
     "src/app/api/recommendations/**": {
       "maxDuration": 30
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/inactivity-reminder",
+      "schedule": "0 0 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",

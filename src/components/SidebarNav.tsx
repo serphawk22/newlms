@@ -66,7 +66,7 @@ export function SidebarNav({
     <div className="flex flex-col h-full">
       {/* ── Logo + Org ── */}
       <div className={cn("px-4 pt-5 pb-4", collapsed && "px-3") } style={{ borderBottom: '1px solid var(--sidebar-border)', background: 'var(--sidebar)' }}>
-        <Logo href={role === "STUDENT" ? "/student" : "/instructor"} />
+        <Logo />
         {!collapsed && (
           <div className="mt-3 space-y-1.5">
             <p className="text-[10px] font-bold uppercase tracking-widest truncate" style={{ color: "var(--muted-foreground)" }}>
@@ -134,6 +134,7 @@ export function SidebarNav({
           <div className="relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
+              suppressHydrationWarning
               className={cn(
                 "flex items-center gap-3 w-full rounded-lg transition-colors",
                 collapsed ? "justify-center p-2" : "px-2 py-2"
@@ -201,6 +202,7 @@ export function SidebarNav({
       {/* Collapse toggle button (desktop only) */}
       <button
         onClick={() => setCollapsed(!collapsed)}
+        suppressHydrationWarning
         className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full items-center justify-center shadow-sm transition-colors z-50"
         style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -216,6 +218,7 @@ export function SidebarNav({
       <button
         type="button"
         onClick={() => setMobileOpen(!mobileOpen)}
+        suppressHydrationWarning
         className="fixed top-3 left-3 z-50 lg:hidden rounded-xl p-2 transition-colors" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
         aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
       >

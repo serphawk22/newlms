@@ -16,15 +16,11 @@ interface SidebarLayoutWrapperProps {
   children: React.ReactNode;
 }
 
-function dashboardHome(role: string) {
-  if (role === "STUDENT") return "/student";
-  if (role === "ADMIN") return "/admin";
-  return "/instructor";
-}
-
 export function SidebarLayoutWrapper({
   items,
   role,
+  userName,
+  userEmail,
   children,
 }: SidebarLayoutWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +50,7 @@ export function SidebarLayoutWrapper({
           boxShadow: "var(--shadow-sm)",
         }}
       >
-        <Logo href={dashboardHome(role)} size="sm" />
+        <Logo size="sm" />
         <div className="flex items-center gap-2">
           {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
           <button
@@ -63,6 +59,7 @@ export function SidebarLayoutWrapper({
             className="p-2 -mr-2 rounded-lg"
             style={{ color: "var(--foreground)" }}
             aria-label="Open navigation"
+            suppressHydrationWarning
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -72,9 +69,9 @@ export function SidebarLayoutWrapper({
       <CompactSidebar
         items={items}
         role={role}
-        userName=""
-        userEmail=""
-        isOpen={isOpen}
+        userName={userName}
+        userEmail={userEmail}
+        isOpen={mounted ? isOpen : false}
         isMobileOpen={isMobileOpen}
         onToggleDesktop={toggleDesktop}
         onCloseMobile={() => setIsMobileOpen(false)}

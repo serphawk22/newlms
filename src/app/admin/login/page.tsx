@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <AuthPageShell variant="admin" logoHref="/">
+    <AuthPageShell variant="admin">
       <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.08 } } }}>
         <motion.div variants={itemVariants}>
           <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--accent)" }}>

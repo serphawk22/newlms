@@ -25,12 +25,6 @@ interface CompactSidebarProps {
   onCloseMobile: () => void;
 }
 
-function dashboardHome(role: string) {
-  if (role === "STUDENT") return "/student";
-  if (role === "ADMIN") return "/admin";
-  return "/instructor";
-}
-
 export function CompactSidebar({
   items,
   role,
@@ -40,7 +34,6 @@ export function CompactSidebar({
   onCloseMobile,
 }: CompactSidebarProps) {
   const pathname = usePathname();
-  const home = dashboardHome(role);
 
   useEffect(() => {
     onCloseMobile();
@@ -107,9 +100,9 @@ export function CompactSidebar({
               background: active
                 ? "var(--sidebar-accent)"
                 : isHovered
-                ? "rgba(255,255,255,0.04)"
+                ? "var(--sidebar-hover)"
                 : "transparent",
-              color: active || isHovered ? "#D9252A" : "var(--foreground)",
+              color: active || isHovered ? "#D9252A" : "var(--sidebar-foreground)",
               borderLeft: active
                 ? "3px solid #D9252A"
                 : "3px solid transparent",
@@ -150,10 +143,10 @@ export function CompactSidebar({
   const sidebarShell = (expanded: boolean) => (
     <>
       <div
-        className="h-14 flex items-center px-3 shrink-0"
+        className={cn("h-14 flex items-center shrink-0", expanded ? "px-3" : "px-1")}
         style={{ borderBottom: "1px solid var(--sidebar-border)" }}
       >
-        <Logo href={home} size="sm" />
+        <Logo size="sm" collapsed={!expanded} />
       </div>
 
       <nav className="flex-1 flex flex-col items-center gap-1 py-4 px-2 overflow-y-auto overflow-x-hidden">
@@ -170,6 +163,7 @@ export function CompactSidebar({
           className="w-full relative group"
           onMouseEnter={() => setLogoutHovered(true)}
           onMouseLeave={() => setLogoutHovered(false)}
+          suppressHydrationWarning
         >
           <motion.div
             variants={navItemVariants}
@@ -181,8 +175,8 @@ export function CompactSidebar({
               expanded ? "px-3" : ""
             )}
             style={{
-              background: logoutHovered ? "rgba(255,255,255,0.04)" : "transparent",
-              color: logoutHovered ? "#D9252A" : "var(--foreground)",
+              background: logoutHovered ? "var(--sidebar-hover)" : "transparent",
+              color: logoutHovered ? "#D9252A" : "var(--sidebar-foreground)",
             }}
           >
             <span className="shrink-0 flex items-center justify-center">
@@ -224,6 +218,7 @@ export function CompactSidebar({
         <button
           type="button"
           onClick={onToggleDesktop}
+          suppressHydrationWarning
           className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-50 items-center justify-center p-1.5 rounded-full transition-colors shadow-md"
           style={{
             background: "var(--card)",

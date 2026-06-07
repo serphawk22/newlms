@@ -16,9 +16,16 @@ async function updateLesson(formData: FormData) {
   const lessonId = formData.get("lessonId") as string;
   const courseId = formData.get("courseId") as string;
   const title = formData.get("title") as string;
-  const videoUrl = formData.get("videoUrl") as string; // We use this field for the Drive Link
+  const videoUrl = formData.get("videoUrl") as string;
 
   if (lessonId && title) {
+    const existingLesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: { module: { include: { course: true } } }
+    });
+
+    if (!existingLesson) return;
+
     await prisma.lesson.update({
       where: { id: lessonId },
       data: { 
@@ -26,6 +33,23 @@ async function updateLesson(formData: FormData) {
         videoUrl: videoUrl || null 
       }
     });
+
+    if (videoUrl) {
+      await prisma.adminReviewVideo.deleteMany({ where: { lessonId } });
+      await prisma.adminReviewVideo.create({
+        data: {
+          courseId,
+          moduleId: existingLesson.moduleId,
+          lessonId,
+          instructorId: existingLesson.module.course.creatorId,
+          videoUrl,
+          status: "PENDING"
+        }
+      });
+    } else {
+      await prisma.adminReviewVideo.deleteMany({ where: { lessonId } });
+    }
+
     revalidatePath(`/instructor/courses/${courseId}`);
     revalidatePath(`/instructor/courses/${courseId}/lessons/${lessonId}`);
   }
@@ -40,10 +64,15 @@ export default async function LessonEditorPage({
   
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
-    include: { module: true }
+    include: { 
+      module: true,
+      adminReviewVideos: true 
+    }
   });
 
   if (!lesson) redirect(`/instructor/courses/${courseId}`);
+
+  const reviewVideo = lesson.adminReviewVideos?.[0];
 
   const menuItems = [
     { label: 'Workspace', ariaLabel: 'Go back to workspace', link: '/instructor' },
@@ -89,12 +118,12 @@ export default async function LessonEditorPage({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="videoUrl">Google Drive Link</Label>
+                    <Label htmlFor="videoUrl">Google Drive Link / Video URL</Label>
                     <div className="relative">
                       <Cloud className="absolute left-3 top-2.5 h-4 w-4 text-slate-400"/>
                       <Input id="videoUrl" name="videoUrl" placeholder="https://drive.google.com/file/d/..." defaultValue={lesson.videoUrl || ""} className="pl-9 bg-white"/>
                     </div>
-                    <p className="text-xs text-slate-500">Students will be redirected to this secure link to access the material.</p>
+                    <p className="text-xs text-slate-500">Video uploaded here will be sent to Admins for review and will remain hidden from students.</p>
                   </div>
 
                   <Button type="submit" className="w-full bg-slate-900 text-white hover:bg-slate-800">
@@ -119,13 +148,28 @@ export default async function LessonEditorPage({
                 <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Visibility</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-slate-700">
-                    <Globe className="text-[#D9252A] w-4 h-4"/> Published
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
+                      <Globe className="text-[#D9252A] w-4 h-4"/> Published
+                    </div>
+                    <div className="w-8 h-4 bg-[#D9252A] rounded-full relative">
+                      <div className="absolute right-1 top-1 w-2 h-2 bg-white rounded-full"></div>
+                    </div>
                   </div>
-                  <div className="w-8 h-4 bg-[#D9252A] rounded-full relative">
-                    <div className="absolute right-1 top-1 w-2 h-2 bg-white rounded-full"></div>
-                  </div>
+
+                  {reviewVideo && (
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-sm text-slate-600 font-medium">Video Review Status</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                        reviewVideo.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                        reviewVideo.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                        'bg-amber-100 text-amber-700'
+                      }`}>
+                        {reviewVideo.status}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

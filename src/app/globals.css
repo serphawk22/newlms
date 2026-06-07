@@ -95,15 +95,16 @@
   --chart-5: #E5E7EB;
   --radius: 0.5rem;
 
-  --sidebar: #151821;
-  --sidebar-foreground: #FFFFFF;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111827;
   --sidebar-primary: #D9252A;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-accent: rgba(217, 37, 42, 0.08);
+  --sidebar-accent-foreground: #D9252A;
+  --sidebar-border: #E5E7EB;
   --sidebar-ring: #D9252A;
   --sidebar-active: #D9252A;
+  --sidebar-hover: #F8FAFC;
 
   --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.08);
   --shadow-md: 0 10px 22px rgba(17, 24, 39, 0.10);
@@ -158,6 +159,7 @@
   --sidebar-border: #5C6670;
   --sidebar-ring: #D9252A;
   --sidebar-active: #D9252A;
+  --sidebar-hover: rgba(255, 255, 255, 0.04);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
@@ -217,18 +219,32 @@
   background: var(--secondary-hover);
 }
 
-/* Logo: same asset in both themes; dark mode only adds a subtle light holder for legibility. */
+/* Logo container: theme-aware. Light mode transparent, dark mode subtle light bg. */
 .lms-logo-mark {
   display: inline-flex;
   align-items: center;
-}
-
-.lms-logo-mark {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(222, 226, 230, 0.85);
   border-radius: 0.5rem;
   padding: 0.25rem 0.375rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+[data-theme="dark"] .lms-logo-mark {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(222, 226, 230, 0.85);
   box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .lms-logo-mark {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Collapsed sidebar logo variant - minimal padding, maximize space */
+.lms-logo-mark-collapsed {
+  padding: 2px;
+  border-radius: 0.375rem;
+  width: 100%;
 }
 
 /* Course content compatibility layer: scoped to course detail/roadmap experiences only. */
@@ -336,6 +352,11 @@
 }
 
 /* ── Utility classes ──────────────────────────────────────────────── */
+
+/* Roadmap serif font — Playfair Display fallback for build environments without Google Fonts access */
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+}
 
 /* Page shell for dashboard layouts */
 .page-shell {
