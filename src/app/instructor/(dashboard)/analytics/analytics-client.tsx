@@ -29,8 +29,8 @@ export function AnalyticsPageClient({ data }: Props) {
       className="container-page space-y-6"
     >
       {/* Page Header */}
-      <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <BarChart2 className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Analytics</h1>
       </div>
 

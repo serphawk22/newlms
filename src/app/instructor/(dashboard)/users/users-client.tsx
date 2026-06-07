@@ -226,8 +226,8 @@ export function UsersPageClient({ data, orgId }: Props) {
 
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center gap-2">
-        <Users className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Users className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Users</h1>
       </div>
 

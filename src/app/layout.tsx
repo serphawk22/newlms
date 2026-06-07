@@ -3,7 +3,6 @@ import "./globals.css";
 import { LoadingBar } from "@/components/ui/loading-bar";
 import { ToastProvider } from "@/components/ui/toast";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import ThemeToggle from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "Learning Management System",
@@ -24,13 +23,9 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col antialiased">
-        <ThemeProvider>
+          <ThemeProvider>
           <LoadingBar />
           <ToastProvider>{children}</ToastProvider>
-          {/* Authenticated routes only (public pages return null) */}
-          <div className="fixed top-5 right-5 z-[9999]">
-            <ThemeToggle />
-          </div>
         </ThemeProvider>
       </body>
     </html>

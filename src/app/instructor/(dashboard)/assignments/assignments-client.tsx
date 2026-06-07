@@ -28,11 +28,11 @@ export function AssignmentsPageClient({ assignments }: Props) {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="container-page space-y-6"
     >
-      <div className="flex items-center gap-2">
-        <ClipboardList className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <ClipboardList className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Assignments</h1>
         <span
-          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border"
+          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0"
           style={{
             background: "rgba(255,255,255,0.06)",
             borderColor: "var(--border)",

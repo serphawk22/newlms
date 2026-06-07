@@ -49,18 +49,18 @@ export function LiveClassesPageClient({ sessions }: Props) {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="container-page space-y-6"
     >
-      <div className="flex items-center gap-2">
-        <Video className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Video className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Live Classes</h1>
         <span
-          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border"
+          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0"
           style={{
             background: "rgba(255,255,255,0.06)",
             borderColor: "var(--border)",
             color: "var(--muted-foreground)",
           }}
         >
-          {sessions.length} sessions
+          {classes.length} classes
         </span>
       </div>
 
