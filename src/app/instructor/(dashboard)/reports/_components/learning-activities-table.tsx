@@ -61,7 +61,8 @@ export function LearningActivitiesTable({ rows, filters, summary }: LearningActi
             setLessonId("all");
             setPage(0);
           }}
-          className="h-10 px-3 border border-zinc-200 rounded-lg text-sm bg-white"
+          className="h-10 px-3 rounded-lg text-sm"
+          style={{ border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}
         >
           <option value="all">All Courses</option>
           {filters.courses.map((course) => (
@@ -75,7 +76,8 @@ export function LearningActivitiesTable({ rows, filters, summary }: LearningActi
             setLessonId("all");
             setPage(0);
           }}
-          className="h-10 px-3 border border-zinc-200 rounded-lg text-sm bg-white"
+          className="h-10 px-3 rounded-lg text-sm"
+          style={{ border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}
         >
           <option value="all">All Modules</option>
           {filteredModules.map((module) => (
@@ -88,7 +90,8 @@ export function LearningActivitiesTable({ rows, filters, summary }: LearningActi
             setLessonId(e.target.value);
             setPage(0);
           }}
-          className="h-10 px-3 border border-zinc-200 rounded-lg text-sm bg-white"
+          className="h-10 px-3 rounded-lg text-sm"
+          style={{ border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}
         >
           <option value="all">All Lessons</option>
           {filteredLessons.map((lesson) => (

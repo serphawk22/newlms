@@ -174,7 +174,7 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
                 suppressHydrationWarning
-                className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none"
+              className="w-full text-sm px-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
                 style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
               >
                 <option value="">— Choose a student —</option>

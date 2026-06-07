@@ -182,7 +182,7 @@ function ActivityCard({
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value as Period)}
-          className="text-xs rounded-lg px-2.5 py-1.5 cursor-pointer"
+          className="text-xs rounded-lg px-2.5 py-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
           style={{ border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}
         >
           {(["Week", "Month", "Year"] as Period[]).map((p) => (

@@ -508,7 +508,8 @@ export function CertificateTemplateMapper({ templateId, templateUrl, existingMap
                           <label className="text-[10px] text-zinc-500 uppercase tracking-wide">Align</label>
                           <select value={fm.align}
                             onChange={(e) => updateFieldProp(field, "align", e.target.value as "left" | "center" | "right")}
-                            className="w-full border border-zinc-200 rounded px-1 py-1 text-xs">
+                            className="w-full rounded px-1 py-1 text-xs"
+                            style={{ border: "1px solid var(--border)", background: "var(--card)", color: "var(--foreground)" }}>
                             <option value="left">Left</option>
                             <option value="center">Center</option>
                             <option value="right">Right</option>

@@ -351,7 +351,34 @@
   color: var(--foreground) !important;
 }
 
-/* ── Utility classes ──────────────────────────────────────────────── */
+/* ── Theme-aware select/option inputs ────────────────────────────── */
+select {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+select:focus {
+  border-color: #D9252A;
+  outline: 2px solid rgba(217, 37, 42, 0.2);
+  outline-offset: 0;
+}
+
+select option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+select option:checked {
+  background: #FFF1F2;
+  color: #D9252A;
+}
+@media (hover: hover) {
+  select option:hover {
+    background: #FFE4E6;
+  }
+}
 
 /* Roadmap serif font — Playfair Display fallback for build environments without Google Fonts access */
 .font-playfair {

@@ -688,7 +688,7 @@ export default async function AdminCourseDetailPage({
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label>Question Type</Label>
-                            <select name="type" defaultValue="MCQ" className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm">
+                            <select name="type" defaultValue="MCQ" className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#D9252A]">
                               <option value="MCQ">Single Choice</option>
                               <option value="ESSAY">Essay (Manual)</option>
                             </select>

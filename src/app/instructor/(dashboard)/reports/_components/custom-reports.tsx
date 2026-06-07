@@ -56,27 +56,28 @@ export function CustomReports({ courses, rows }: CustomReportsProps) {
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-xl border border-zinc-200 bg-white p-4">
+      <Card className="rounded-xl p-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <select
             value={reportType}
             onChange={(e) => setReportType(e.target.value as "users" | "courses" | "enrollments" | "quiz_results")}
-            className="h-10 px-3 text-sm border border-zinc-200 rounded-lg bg-white"
+            className="h-10 px-3 text-sm rounded-lg"
+            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
           >
             <option value="users">Users</option>
             <option value="courses">Courses</option>
             <option value="enrollments">Enrollments</option>
             <option value="quiz_results">Quiz Results</option>
           </select>
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-10 px-3 text-sm border border-zinc-200 rounded-lg" />
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-10 px-3 text-sm border border-zinc-200 rounded-lg" />
-          <select value={role} onChange={(e) => setRole(e.target.value)} className="h-10 px-3 text-sm border border-zinc-200 rounded-lg bg-white">
+          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-10 px-3 text-sm rounded-lg" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }} />
+          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-10 px-3 text-sm rounded-lg" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }} />
+          <select value={role} onChange={(e) => setRole(e.target.value)} className="h-10 px-3 text-sm rounded-lg" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}>
             <option value="all">All Roles</option>
             <option value="STUDENT">Student</option>
             <option value="INSTRUCTOR">Instructor</option>
             <option value="ADMIN">Admin</option>
           </select>
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-10 px-3 text-sm border border-zinc-200 rounded-lg bg-white">
+          <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-10 px-3 text-sm rounded-lg" style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}>
             <option value="all">All Completion Status</option>
             <option value="completed">Completed</option>
             <option value="in_progress">In Progress</option>
@@ -88,7 +89,8 @@ export function CustomReports({ courses, rows }: CustomReportsProps) {
               if (!e.target.value) return;
               setSelectedCourses((prev) => (prev.includes(e.target.value) ? prev : [...prev, e.target.value]));
             }}
-            className="h-10 px-3 text-sm border border-zinc-200 rounded-lg bg-white"
+            className="h-10 px-3 text-sm rounded-lg"
+            style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
           >
             <option value="">Add Course Filter</option>
             {courses.map((course) => (

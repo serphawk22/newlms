@@ -127,7 +127,7 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "newest" | "oldest")}
-            className="rounded-xl text-xs font-bold px-3 py-2 h-10 focus:outline-none focus:ring-1 cursor-pointer"
+            className="rounded-xl text-xs font-bold px-3 py-2 h-10 focus:outline-none focus:ring-1 focus:ring-[#D9252A] cursor-pointer"
             style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
           >
             <option value="newest">Newest First</option>
