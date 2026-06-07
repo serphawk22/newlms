@@ -193,8 +193,14 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                       color: !courseId ? "#D9252A" : "var(--foreground)",
                       background: !courseId ? "#FFF1F2" : "transparent"
                     }}
-                    onMouseEnter={e => { if (courseId) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
-                    onMouseLeave={e => { if (courseId) e.currentTarget.style.backgroundColor = "transparent"; }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.backgroundColor = "#FFE4E6";
+                      e.currentTarget.style.color = "#D9252A";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = !courseId ? "#FFF1F2" : "transparent";
+                      e.currentTarget.style.color = !courseId ? "#D9252A" : "var(--foreground)";
+                    }}
                   >
                     — Choose a course —
                   </div>
@@ -209,8 +215,14 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                           color: isSelected ? "#D9252A" : "var(--foreground)",
                           background: isSelected ? "#FFF1F2" : "transparent"
                         }}
-                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
-                        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.backgroundColor = "#FFE4E6";
+                          e.currentTarget.style.color = "#D9252A";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.backgroundColor = isSelected ? "#FFF1F2" : "transparent";
+                          e.currentTarget.style.color = isSelected ? "#D9252A" : "var(--foreground)";
+                        }}
                       >
                         {c.title}
                       </div>
@@ -265,8 +277,14 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                         color: !studentId ? "#D9252A" : "var(--foreground)",
                         background: !studentId ? "#FFF1F2" : "transparent"
                       }}
-                      onMouseEnter={e => { if (studentId) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
-                      onMouseLeave={e => { if (studentId) e.currentTarget.style.backgroundColor = "transparent"; }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.backgroundColor = "#FFE4E6";
+                        e.currentTarget.style.color = "#D9252A";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.backgroundColor = !studentId ? "#FFF1F2" : "transparent";
+                        e.currentTarget.style.color = !studentId ? "#D9252A" : "var(--foreground)";
+                      }}
                     >
                       — Choose a student —
                     </div>
@@ -281,8 +299,14 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                             color: isSelected ? "#D9252A" : "var(--foreground)",
                             background: isSelected ? "#FFF1F2" : "transparent"
                           }}
-                          onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "#FFE4E6"; }}
-                          onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.backgroundColor = "#FFE4E6";
+                            e.currentTarget.style.color = "#D9252A";
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.backgroundColor = isSelected ? "#FFF1F2" : "transparent";
+                            e.currentTarget.style.color = isSelected ? "#D9252A" : "var(--foreground)";
+                          }}
                         >
                           {s.name} ({s.email})
                         </div>
