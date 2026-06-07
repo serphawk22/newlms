@@ -879,7 +879,7 @@ export default async function CourseBuilderPage({
                                 style={{ color: "var(--foreground)" }}
                               >
                                 Lessons
-                                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                                <span className="text-[var(--muted-foreground)] group-open:rotate-180 transition-transform">▼</span>
                               </summary>
                             <div className="p-3 pt-0 space-y-2" style={{ background: "var(--card)" }}>
                               {mod.lessons.map(l => (
@@ -940,7 +940,7 @@ export default async function CourseBuilderPage({
                                 style={{ color: "var(--foreground)" }}
                               >
                                 Live Classes
-                                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                                <span className="text-[var(--muted-foreground)] group-open:rotate-180 transition-transform">▼</span>
                               </summary>
                             <div className="p-3 pt-0 space-y-2" style={{ background: "var(--card)" }}>
                               {mod.liveSessions.map(l => {
@@ -998,7 +998,7 @@ export default async function CourseBuilderPage({
                                 style={{ color: "var(--foreground)" }}
                               >
                                 Recorded Videos
-                                <span className="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                                <span className="text-[var(--muted-foreground)] group-open:rotate-180 transition-transform">▼</span>
                               </summary>
                             <div className="p-3 pt-0 space-y-2" style={{ background: "var(--card)" }}>
                               {mod.recordedClasses.map(l => (
@@ -1290,7 +1290,7 @@ export default async function CourseBuilderPage({
                                 <form action={deleteQuestion}>
                                   <input type="hidden" name="id" value={q.id} />
                                   <input type="hidden" name="courseId" value={courseId} />
-                                  <Button type="submit" variant="ghost" size="sm" className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Button type="submit" variant="ghost" size="sm" className="text-[#D9252A] hover:text-[#C21F24] opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
                                 </form>
@@ -1325,7 +1325,7 @@ export default async function CourseBuilderPage({
                       </div>
 
                       {/* PDF Import */}
-                      <div className="pt-6 border-t border-slate-100">
+                      <div className="pt-6 border-t border-[var(--border)]">
                         <QuizPdfImporter
                           quizId={quiz.id}
                           courseId={courseId}
@@ -1705,7 +1705,7 @@ export default async function CourseBuilderPage({
                                   const effectiveStatus = explicitStatus ?? (pct === 100 ? "ELIGIBLE" : "NOT_ELIGIBLE");
                                   
                                   if (effectiveStatus === "NOT_ELIGIBLE") {
-                                    return <span className="text-xs text-slate-400 font-semibold bg-slate-100 px-2 py-1 rounded-full">Not Eligible</span>;
+                                    return <span className="text-xs text-[var(--muted-foreground)] font-semibold bg-[var(--secondary-background)] px-2 py-1 rounded-full">Not Eligible</span>;
                                   } else if (effectiveStatus === "ELIGIBLE") {
                                     return (
                                       <div className="flex flex-col gap-1 items-center">

@@ -91,19 +91,19 @@ export default async function LessonEditorPage({
       {/* Lesson Header */}
       <div className="flex items-center justify-between">
         <Link href={`/instructor/courses/${courseId}`}>
-          <Button variant="ghost" className="text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 px-0">
+          <Button variant="ghost" className="text-[var(--muted-foreground)] hover:bg-[var(--secondary-background)] hover:text-[var(--foreground)] px-0">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Curriculum
           </Button>
         </Link>
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-zinc-800">Lesson Settings</h2>
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">Lesson Settings</h2>
         </div>
       </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           <div className="md:col-span-2 space-y-6">
-            <Card className="border-slate-200 shadow-sm bg-white">
+            <Card className="border-[var(--border)] shadow-sm bg-[var(--card)]">
               <CardHeader>
                 <CardTitle className="text-lg">Resource Information</CardTitle>
               </CardHeader>
@@ -114,19 +114,19 @@ export default async function LessonEditorPage({
                   
                   <div className="space-y-2">
                     <Label htmlFor="title">Lesson Title</Label>
-                    <Input id="title" name="title" defaultValue={lesson.title} required className="bg-white"/>
+                    <Input id="title" name="title" defaultValue={lesson.title} required className="bg-[var(--card)]"/>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="videoUrl">Google Drive Link / Video URL</Label>
                     <div className="relative">
                       <Cloud className="absolute left-3 top-2.5 h-4 w-4 text-slate-400"/>
-                      <Input id="videoUrl" name="videoUrl" placeholder="https://drive.google.com/file/d/..." defaultValue={lesson.videoUrl || ""} className="pl-9 bg-white"/>
+                      <Input id="videoUrl" name="videoUrl" placeholder="https://drive.google.com/file/d/..." defaultValue={lesson.videoUrl || ""} className="pl-9 bg-[var(--card)]"/>
                     </div>
-                    <p className="text-xs text-slate-500">Video uploaded here will be sent to Admins for review and will remain hidden from students.</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">Video uploaded here will be sent to Admins for review and will remain hidden from students.</p>
                   </div>
 
-                  <Button type="submit" className="w-full bg-slate-900 text-white hover:bg-slate-800">
+                  <Button type="submit" className="w-full bg-[#D9252A] text-white hover:bg-[#C21F24]">
                     <Save className="w-4 h-4 mr-2"/> Save Changes
                   </Button>
                 </form>
@@ -134,33 +134,33 @@ export default async function LessonEditorPage({
             </Card>
 
             
-            <Card className="border-slate-200 shadow-sm bg-[rgba(217,37,42,0.04)] flex flex-col items-center justify-center text-slate-500 p-8 text-center min-h-[200px]">
+            <Card className="border-[var(--border)] shadow-sm bg-[rgba(217,37,42,0.04)] flex flex-col items-center justify-center text-[var(--muted-foreground)] p-8 text-center min-h-[200px]">
                <ExternalLink className="w-12 h-12 mb-4 text-[#D9252A] opacity-80"/>
-               <p className="text-sm font-semibold text-slate-800">External Resource Configuration</p>
-               <p className="text-xs mt-2 max-w-[250px] text-slate-600">This lesson is configured to save bandwidth. Students clicking this lesson will be safely routed to the attached Drive document.</p>
+               <p className="text-sm font-semibold text-[var(--foreground)]">External Resource Configuration</p>
+               <p className="text-xs mt-2 max-w-[250px] text-[var(--muted-foreground)]">This lesson is configured to save bandwidth. Students clicking this lesson will be safely routed to the attached Drive document.</p>
             </Card>
           </div>
 
           
           <div className="space-y-6">
-            <Card className="border-slate-200 shadow-none bg-white">
+            <Card className="border-[var(--border)] shadow-none bg-[var(--card)]">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Visibility</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Visibility</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-slate-700">
+                    <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                       <Globe className="text-[#D9252A] w-4 h-4"/> Published
                     </div>
                     <div className="w-8 h-4 bg-[#D9252A] rounded-full relative">
-                      <div className="absolute right-1 top-1 w-2 h-2 bg-white rounded-full"></div>
+                      <div className="absolute right-1 top-1 w-2 h-2 bg-[var(--card)] rounded-full"></div>
                     </div>
                   </div>
 
                   {reviewVideo && (
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-sm text-slate-600 font-medium">Video Review Status</span>
+                    <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between">
+                      <span className="text-sm text-[var(--muted-foreground)] font-medium">Video Review Status</span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                         reviewVideo.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
                         reviewVideo.status === 'REJECTED' ? 'bg-red-100 text-red-700' :

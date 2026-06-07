@@ -60,10 +60,10 @@ function parseCaption(caption: string | null) {
 function StatusBadge({ status }: { status: string }) {
   const colors =
     status === "APPROVED"
-      ? "bg-green-100 text-green-700"
+      ? "bg-[rgba(217,37,42,0.08)] text-[#D9252A]"
       : status === "REJECTED"
-      ? "bg-red-100 text-red-700"
-      : "bg-amber-100 text-amber-700";
+      ? "bg-[rgba(217,37,42,0.12)] text-[#C21F24]"
+      : "bg-[var(--secondary-background)] text-[var(--muted-foreground)]";
   return (
     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${colors}`}>
       {status}
@@ -188,10 +188,10 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
       {/* Tab: Student Shares */}
       {activeTab === "STUDENT_SHARES" && (
         filteredVideos.length === 0 ? (
-          <div className="text-center py-16 bg-white border border-zinc-200 rounded-2xl shadow-sm text-zinc-400">
-            <BookOpen className="w-12 h-12 mx-auto mb-3 text-zinc-300" />
+          <div className="text-center py-16 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm text-[var(--muted-foreground)]">
+            <BookOpen className="w-12 h-12 mx-auto mb-3 text-[var(--muted-foreground)]" />
             <p className="font-semibold text-sm">No videos found</p>
-            <p className="text-xs text-zinc-400 mt-1">Students have not uploaded any video shares matching your search.</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">Students have not uploaded any video shares matching your search.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -199,7 +199,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
               const { comment, courseTitle } = parseCaption(video.caption);
               const dateStr = new Date(video.createdAt).toLocaleDateString("en-IN", { dateStyle: "medium" });
               return (
-                <Card key={video.id} className="border border-zinc-200 shadow-sm overflow-hidden bg-white hover:border-zinc-300 transition-all group flex flex-col justify-between">
+                <Card key={video.id} className="border border-[var(--border)] shadow-sm overflow-hidden bg-[var(--card)] hover:border-[#D9252A] transition-all group flex flex-col justify-between">
                   <div>
                     <div className="bg-zinc-950 aspect-video relative flex items-center justify-center group-hover:opacity-90 transition-opacity">
                       <video
@@ -212,37 +212,37 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                         className="absolute inset-0 flex items-center justify-center text-white bg-black/35 hover:bg-black/45 transition-colors"
                         aria-label="Play video"
                       >
-                        <div className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md flex items-center justify-center border border-white/30 scale-100 hover:scale-105 transition-all">
+                        <div className="w-12 h-12 rounded-full bg-[var(--card)]/20 hover:bg-[var(--card)]/30 backdrop-blur-md flex items-center justify-center border border-white/30 scale-100 hover:scale-105 transition-all">
                           <Play className="w-5 h-5 fill-white ml-0.5" />
                         </div>
                       </button>
                     </div>
                     <div className="p-5 space-y-4">
-                      <div className="flex items-center gap-1.5 text-xs text-blue-600 font-bold tracking-tight bg-blue-50/50 border border-blue-100/50 w-fit px-2.5 py-1 rounded-full">
+                      <div className="flex items-center gap-1.5 text-xs text-[#D9252A] font-bold tracking-tight bg-[rgba(217,37,42,0.08)] border border-[rgba(217,37,42,0.15)] w-fit px-2.5 py-1 rounded-full">
                         <BookOpen className="w-3.5 h-3.5" />
                         <span>{courseTitle}</span>
                       </div>
                       <div className="space-y-1.5">
-                        <h3 className="font-bold text-zinc-900 text-sm leading-tight flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <h3 className="font-bold text-[var(--foreground)] text-sm leading-tight flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0" />
                           {video.studentName}
                         </h3>
-                        <p className="text-xs text-zinc-500 flex items-center gap-1.5">
-                          <Mail className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <p className="text-xs text-[var(--muted-foreground)] flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0" />
                           {video.email}
                         </p>
                       </div>
                       {comment && (
-                        <div className="bg-zinc-50 border border-zinc-100 p-3 rounded-xl flex items-start gap-2">
-                          <FileText className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
-                          <p className="text-xs text-zinc-600 italic leading-normal">{comment}</p>
+                        <div className="bg-[var(--secondary-background)] border border-[var(--border)] p-3 rounded-xl flex items-start gap-2">
+                          <FileText className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0 mt-0.5" />
+                          <p className="text-xs text-[var(--muted-foreground)] italic leading-normal">{comment}</p>
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="px-5 py-4 border-t border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-                    <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">
-                      <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <div className="px-5 py-4 border-t border-[var(--border)] flex items-center justify-between bg-[var(--secondary-background)]/50">
+                    <div className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] font-semibold uppercase tracking-wider">
+                      <Calendar className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0" />
                       <span>{dateStr}</span>
                     </div>
                     <Button
@@ -250,7 +250,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                       disabled={deletingId === video.id}
                       variant="ghost"
                       size="sm"
-                      className="text-red-500 hover:text-red-600 hover:bg-red-50/50 h-8 rounded-lg text-xs font-semibold px-2"
+                      className="text-[#D9252A] hover:text-[#C21F24] hover:bg-[rgba(217,37,42,0.08)] h-8 rounded-lg text-xs font-semibold px-2"
                     >
                       <Trash2 className="w-3.5 h-3.5 mr-1" />
                       Delete
@@ -266,21 +266,21 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
       {/* Tab: Instructor Lesson Videos */}
       {activeTab === "INSTRUCTOR_LESSONS" && (
         filteredAdminVideos.length === 0 ? (
-          <div className="text-center py-16 bg-white border border-zinc-200 rounded-2xl shadow-sm text-zinc-400">
-            <BookOpen className="w-12 h-12 mx-auto mb-3 text-zinc-300" />
+          <div className="text-center py-16 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm text-[var(--muted-foreground)]">
+            <BookOpen className="w-12 h-12 mx-auto mb-3 text-[var(--muted-foreground)]" />
             <p className="font-semibold text-sm">No videos found</p>
-            <p className="text-xs text-zinc-400 mt-1">No instructor lesson videos matching your search.</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">No instructor lesson videos matching your search.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAdminVideos.map((video) => {
               const dateStr = new Date(video.uploadedAt).toLocaleDateString("en-IN", { dateStyle: "medium" });
               return (
-                <Card key={video.id} className="border border-zinc-200 shadow-sm overflow-hidden bg-white hover:border-zinc-300 transition-all group flex flex-col justify-between">
+                <Card key={video.id} className="border border-[var(--border)] shadow-sm overflow-hidden bg-[var(--card)] hover:border-[#D9252A] transition-all group flex flex-col justify-between">
                   <div>
                     <div className="bg-zinc-950 aspect-video relative flex items-center justify-center group-hover:opacity-90 transition-opacity">
                       {video.videoUrl.includes("drive.google.com") ? (
-                        <div className="text-zinc-500 flex flex-col items-center">
+                        <div className="text-[var(--muted-foreground)] flex flex-col items-center">
                           <Play className="w-10 h-10 mb-2 opacity-50" />
                           <span className="text-xs font-semibold">Google Drive Link</span>
                         </div>
@@ -296,30 +296,30 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                         className="absolute inset-0 flex items-center justify-center text-white bg-black/35 hover:bg-black/45 transition-colors"
                         aria-label="Preview video"
                       >
-                        <div className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md flex items-center justify-center border border-white/30 scale-100 hover:scale-105 transition-all">
+                        <div className="w-12 h-12 rounded-full bg-[var(--card)]/20 hover:bg-[var(--card)]/30 backdrop-blur-md flex items-center justify-center border border-white/30 scale-100 hover:scale-105 transition-all">
                           <Play className="w-5 h-5 fill-white ml-0.5" />
                         </div>
                       </button>
                     </div>
                     <div className="p-5 space-y-4">
-                      <div className="flex items-center gap-1.5 text-xs text-purple-600 font-bold tracking-tight bg-purple-50/50 border border-purple-100/50 w-fit px-2.5 py-1 rounded-full">
+                      <div className="flex items-center gap-1.5 text-xs text-[#D9252A] font-bold tracking-tight bg-[rgba(217,37,42,0.08)] border border-[rgba(217,37,42,0.15)] w-fit px-2.5 py-1 rounded-full">
                         <BookOpen className="w-3.5 h-3.5" />
                         <span>{video.courseName}</span>
                       </div>
                       <div className="space-y-1.5">
-                        <h3 className="font-bold text-zinc-900 text-sm leading-tight">{video.lessonName}</h3>
-                        <p className="text-xs text-zinc-500 font-medium">Module: {video.moduleName}</p>
-                        <p className="text-xs text-zinc-500 flex items-center gap-1.5 mt-2 pt-2 border-t border-zinc-100">
-                          <User className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <h3 className="font-bold text-[var(--foreground)] text-sm leading-tight">{video.lessonName}</h3>
+                        <p className="text-xs text-[var(--muted-foreground)] font-medium">Module: {video.moduleName}</p>
+                        <p className="text-xs text-[var(--muted-foreground)] flex items-center gap-1.5 mt-2 pt-2 border-t border-[var(--border)]">
+                          <User className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0" />
                           Instructor: {video.instructorName}
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className="px-5 py-4 border-t border-zinc-100 bg-zinc-50/50">
+                  <div className="px-5 py-4 border-t border-[var(--border)] bg-[var(--secondary-background)]/50">
                     <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-semibold uppercase tracking-wider">
-                        <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                      <div className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] font-semibold uppercase tracking-wider">
+                        <Calendar className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0" />
                         <span>{dateStr}</span>
                       </div>
                       <StatusBadge status={video.status} />
@@ -330,7 +330,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                         disabled={video.status === "APPROVED" || updatingId === video.id}
                         variant="outline"
                         size="sm"
-                        className="flex-1 text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 disabled:opacity-40 h-8 rounded-lg text-xs font-semibold"
+                        className="flex-1 text-[#D9252A] border-[rgba(217,37,42,0.3)] hover:bg-[rgba(217,37,42,0.08)] hover:text-[#C21F24] disabled:opacity-40 h-8 rounded-lg text-xs font-semibold"
                       >
                         <CheckCircle className="w-3.5 h-3.5 mr-1" />
                         Approve
@@ -340,7 +340,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                         disabled={video.status === "REJECTED" || updatingId === video.id}
                         variant="outline"
                         size="sm"
-                        className="flex-1 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-40 h-8 rounded-lg text-xs font-semibold"
+                        className="flex-1 text-[#C21F24] border-[rgba(217,37,42,0.3)] hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] disabled:opacity-40 h-8 rounded-lg text-xs font-semibold"
                       >
                         <XCircle className="w-3.5 h-3.5 mr-1" />
                         Reject
@@ -357,19 +357,19 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
       {/* Modal: Student Video */}
       {selectedStudentVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden border border-zinc-200 relative">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+          <div className="bg-[var(--card)] rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden border border-[var(--border)] relative">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--secondary-background)]/50">
               <div>
-                <h3 className="font-bold text-zinc-900 text-sm leading-tight">
+                <h3 className="font-bold text-[var(--foreground)] text-sm leading-tight">
                   {selectedStudentVideo.studentName}&apos;s learning share
                 </h3>
-                <p className="text-[10px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">
+                <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5 uppercase tracking-wider font-semibold">
                   {parseCaption(selectedStudentVideo.caption).courseTitle}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedStudentVideo(null)}
-                className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-100 transition-colors"
+                className="text-[var(--muted-foreground)] hover:text-[var(--muted-foreground)] p-1.5 rounded-full hover:bg-[var(--secondary-background)] transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -384,9 +384,9 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
               />
             </div>
             {parseCaption(selectedStudentVideo.caption).comment && (
-              <div className="p-6 border-t border-zinc-100 bg-zinc-50/30">
-                <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-1">Student notes</p>
-                <p className="text-sm text-zinc-700 leading-relaxed italic">
+              <div className="p-6 border-t border-[var(--border)] bg-[var(--secondary-background)]/30">
+                <p className="text-xs text-[var(--muted-foreground)] font-bold uppercase tracking-wider mb-1">Student notes</p>
+                <p className="text-sm text-[var(--foreground)] leading-relaxed italic">
                   &ldquo;{parseCaption(selectedStudentVideo.caption).comment}&rdquo;
                 </p>
               </div>
@@ -398,13 +398,13 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
       {/* Modal: Admin Review Video */}
       {selectedAdminVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden border border-zinc-200 relative">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
+          <div className="bg-[var(--card)] rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden border border-[var(--border)] relative">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--secondary-background)]/50">
               <div>
-                <h3 className="font-bold text-zinc-900 text-sm leading-tight">
+                <h3 className="font-bold text-[var(--foreground)] text-sm leading-tight">
                   {selectedAdminVideo.lessonName}
                 </h3>
-                <p className="text-[10px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">
+                <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5 uppercase tracking-wider font-semibold">
                   {selectedAdminVideo.courseName} · {selectedAdminVideo.moduleName}
                 </p>
               </div>
@@ -412,7 +412,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                 <StatusBadge status={selectedAdminVideo.status} />
                 <button
                   onClick={() => setSelectedAdminVideo(null)}
-                  className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-100 transition-colors"
+                  className="text-[var(--muted-foreground)] hover:text-[var(--muted-foreground)] p-1.5 rounded-full hover:bg-[var(--secondary-background)] transition-colors"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
@@ -421,14 +421,14 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
             </div>
             <div className="bg-zinc-950 aspect-video flex items-center justify-center shadow-inner">
               {selectedAdminVideo.videoUrl.includes("drive.google.com") ? (
-                <div className="text-center text-zinc-400 p-8">
+                <div className="text-center text-[var(--muted-foreground)] p-8">
                   <Play className="w-16 h-16 mx-auto mb-4 opacity-30" />
                   <p className="text-sm font-semibold mb-2">Google Drive Video</p>
                   <a
                     href={selectedAdminVideo.videoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-400 underline hover:text-blue-300"
+                    className="text-xs text-[#D9252A] underline hover:text-[#C21F24]"
                   >
                     Open in Google Drive →
                   </a>
@@ -442,8 +442,8 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                 />
               )}
             </div>
-            <div className="px-6 py-4 border-t border-zinc-100 bg-zinc-50/30 flex items-center justify-between">
-              <p className="text-xs text-zinc-500">
+            <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--secondary-background)]/30 flex items-center justify-between">
+              <p className="text-xs text-[var(--muted-foreground)]">
                 <span className="font-semibold">Instructor:</span> {selectedAdminVideo.instructorName}
               </p>
               <div className="flex items-center gap-2">
@@ -451,7 +451,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                   onClick={() => handleUpdateStatus(selectedAdminVideo.id, "APPROVED")}
                   disabled={selectedAdminVideo.status === "APPROVED" || updatingId === selectedAdminVideo.id}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-40 h-8 rounded-lg text-xs font-semibold px-4"
+                  className="bg-[#D9252A] hover:bg-[#C21F24] text-white disabled:opacity-40 h-8 rounded-lg text-xs font-semibold px-4"
                 >
                   <CheckCircle className="w-3.5 h-3.5 mr-1" />
                   Approve
@@ -461,7 +461,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                   disabled={selectedAdminVideo.status === "REJECTED" || updatingId === selectedAdminVideo.id}
                   size="sm"
                   variant="outline"
-                  className="text-red-600 border-red-200 hover:bg-red-50 disabled:opacity-40 h-8 rounded-lg text-xs font-semibold px-4"
+                  className="text-[#C21F24] border-[rgba(217,37,42,0.3)] hover:bg-[rgba(217,37,42,0.08)] disabled:opacity-40 h-8 rounded-lg text-xs font-semibold px-4"
                 >
                   <XCircle className="w-3.5 h-3.5 mr-1" />
                   Reject
