@@ -124,8 +124,41 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
   const selectedStudent = students.find(s => s.userId === studentId);
   const canPost = !!text.trim() && !!courseId && (tab === "COURSE" || !!studentId) && !posting;
 
+  // Helper styles to inject theme-aware variables dynamically based on custom classes/selectors
+  const getSelectedStyles = (isSelected: boolean) => {
+    if (!isSelected) {
+      return {
+        color: "var(--foreground)",
+        background: "transparent",
+      };
+    }
+    // Using a CSS fallback rule approach: checks if parent is dark via custom property presence
+    // Alternatively, you can use tailored Tailwind logic, but inline style maps are safer here:
+    return {
+      color: "var(--tw-select-text, #D9252A)",
+      background: "var(--tw-select-bg, #FFF1F2)",
+    };
+  };
+
   return (
     <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--card)" }}>
+      {/* Dynamic Theme Injection Bridge for custom inline properties */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .dark-theme-dropdown-container {
+          --tw-select-bg: #FFF1F2;
+          --tw-select-text: #D9252A;
+          --tw-hover-bg: #FFE4E6;
+          --tw-hover-text: #D9252A;
+        }
+        :is(.dark, [data-theme="dark"]) .dark-theme-dropdown-container {
+          --tw-select-bg: rgba(217,37,42,0.18);
+          --tw-select-text: #F9FAFB;
+          --tw-hover-bg: rgba(217,37,42,0.28);
+          --tw-hover-text: #FFFFFF;
+        }
+      `}} />
+
       {/* Header */}
       <div className="flex items-center gap-2 px-6 py-4" style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border)" }}>
         <span className="text-base font-bold" style={{ color: "var(--foreground)" }}>Admin Comments</span>
@@ -155,7 +188,7 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
       </div>
 
       {/* Selectors */}
-      <div className="px-5 py-4 flex flex-wrap gap-3" style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--border)", zIndex: 10 }}>
+      <div className="px-5 py-4 flex flex-wrap gap-3 dark-theme-dropdown-container" style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--border)", zIndex: 10 }}>
 
         {/* Course selector */}
         <div className="flex-1 min-w-[200px] relative" ref={courseRef}>
@@ -189,17 +222,15 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                   <div
                     onClick={() => { setCourseId(""); setStudentId(""); setComments([]); setCourseDropdownOpen(false); }}
                     className="px-3 py-2 cursor-pointer transition-colors"
-                    style={{
-                      color: !courseId ? "#D9252A" : "var(--foreground)",
-                      background: !courseId ? "#FFF1F2" : "transparent"
-                    }}
+                    style={getSelectedStyles(!courseId)}
                     onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = "#FFE4E6";
-                      e.currentTarget.style.color = "#D9252A";
+                      e.currentTarget.style.backgroundColor = "var(--tw-hover-bg)";
+                      e.currentTarget.style.color = "var(--tw-hover-text)";
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = !courseId ? "#FFF1F2" : "transparent";
-                      e.currentTarget.style.color = !courseId ? "#D9252A" : "var(--foreground)";
+                      const currentStyles = getSelectedStyles(!courseId);
+                      e.currentTarget.style.backgroundColor = currentStyles.background;
+                      e.currentTarget.style.color = currentStyles.color;
                     }}
                   >
                     — Choose a course —
@@ -211,17 +242,15 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                         key={c.id}
                         onClick={() => { setCourseId(c.id); setStudentId(""); setComments([]); setCourseDropdownOpen(false); }}
                         className="px-3 py-2 cursor-pointer transition-colors truncate"
-                        style={{
-                          color: isSelected ? "#D9252A" : "var(--foreground)",
-                          background: isSelected ? "#FFF1F2" : "transparent"
-                        }}
+                        style={getSelectedStyles(isSelected)}
                         onMouseEnter={e => {
-                          e.currentTarget.style.backgroundColor = "#FFE4E6";
-                          e.currentTarget.style.color = "#D9252A";
+                          e.currentTarget.style.backgroundColor = "var(--tw-hover-bg)";
+                          e.currentTarget.style.color = "var(--tw-hover-text)";
                         }}
                         onMouseLeave={e => {
-                          e.currentTarget.style.backgroundColor = isSelected ? "#FFF1F2" : "transparent";
-                          e.currentTarget.style.color = isSelected ? "#D9252A" : "var(--foreground)";
+                          const currentStyles = getSelectedStyles(isSelected);
+                          e.currentTarget.style.backgroundColor = currentStyles.background;
+                          e.currentTarget.style.color = currentStyles.color;
                         }}
                       >
                         {c.title}
@@ -273,17 +302,15 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                     <div
                       onClick={() => { setStudentId(""); setStudentDropdownOpen(false); }}
                       className="px-3 py-2 cursor-pointer transition-colors"
-                      style={{
-                        color: !studentId ? "#D9252A" : "var(--foreground)",
-                        background: !studentId ? "#FFF1F2" : "transparent"
-                      }}
+                      style={getSelectedStyles(!studentId)}
                       onMouseEnter={e => {
-                        e.currentTarget.style.backgroundColor = "#FFE4E6";
-                        e.currentTarget.style.color = "#D9252A";
+                        e.currentTarget.style.backgroundColor = "var(--tw-hover-bg)";
+                        e.currentTarget.style.color = "var(--tw-hover-text)";
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.backgroundColor = !studentId ? "#FFF1F2" : "transparent";
-                        e.currentTarget.style.color = !studentId ? "#D9252A" : "var(--foreground)";
+                        const currentStyles = getSelectedStyles(!studentId);
+                        e.currentTarget.style.backgroundColor = currentStyles.background;
+                        e.currentTarget.style.color = currentStyles.color;
                       }}
                     >
                       — Choose a student —
@@ -295,17 +322,15 @@ export function AdminCommentsPanel({ orgId, courses }: Props) {
                           key={s.userId}
                           onClick={() => { setStudentId(s.userId); setStudentDropdownOpen(false); }}
                           className="px-3 py-2 cursor-pointer transition-colors truncate"
-                          style={{
-                            color: isSelected ? "#D9252A" : "var(--foreground)",
-                            background: isSelected ? "#FFF1F2" : "transparent"
-                          }}
+                          style={getSelectedStyles(isSelected)}
                           onMouseEnter={e => {
-                            e.currentTarget.style.backgroundColor = "#FFE4E6";
-                            e.currentTarget.style.color = "#D9252A";
+                            e.currentTarget.style.backgroundColor = "var(--tw-hover-bg)";
+                            e.currentTarget.style.color = "var(--tw-hover-text)";
                           }}
                           onMouseLeave={e => {
-                            e.currentTarget.style.backgroundColor = isSelected ? "#FFF1F2" : "transparent";
-                            e.currentTarget.style.color = isSelected ? "#D9252A" : "var(--foreground)";
+                            const currentStyles = getSelectedStyles(isSelected);
+                            e.currentTarget.style.backgroundColor = currentStyles.background;
+                            e.currentTarget.style.color = currentStyles.color;
                           }}
                         >
                           {s.name} ({s.email})
