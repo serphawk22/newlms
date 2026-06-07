@@ -84,7 +84,7 @@ export function SidebarLayoutWrapper({
         )}
       >
         {/* Floating Notification Dropdown on Desktop */}
-        <div className="absolute top-6 right-8 z-50 hidden lg:block">
+        <div className="fixed top-4 right-4 z-[9999] hidden lg:block">
           {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
         </div>
         {children}
