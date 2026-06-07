@@ -350,11 +350,12 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                         onClick={() => toggleBadge(badge.name)}
                         aria-expanded={isExpanded}
                         aria-label={`${isExpanded ? "Hide" : "Show"} criteria for ${badge.name}`}
-                        className={`w-full flex items-center justify-center py-2.5 transition-all text-xs border-t border-zinc-100 ${
+                        className={`w-full flex items-center justify-center py-2.5 transition-all text-xs border-t ${
                           badge.unlocked
-                            ? "text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50/60 bg-indigo-50/10"
+                            ? "text-[#D9252A] hover:text-[#C21F24] hover:bg-[rgba(217,37,42,0.08)] bg-[rgba(217,37,42,0.04)]"
                             : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/60 bg-zinc-100/10"
                         }`}
+                        style={{ borderColor: "var(--border)" }}
                       >
                         <ChevronDown
                           className={`w-4.5 h-4.5 transition-transform duration-300 shrink-0 ${
@@ -373,11 +374,12 @@ export function StudentProfileClient({ profileData, initialOrgName }: {
                       >
                         <div
                           className={`px-3 pb-3 pt-2 text-center border-t ${
-                            badge.unlocked ? "border-indigo-100 bg-indigo-50/40" : "border-zinc-200 bg-zinc-100/40"
+                            badge.unlocked ? "bg-[rgba(217,37,42,0.04)]" : "bg-zinc-100/40"
                           }`}
+                          style={{ borderColor: "var(--border)" }}
                         >
                           <p className={`text-[10px] leading-snug font-medium ${
-                            badge.unlocked ? "text-indigo-700 font-semibold" : "text-zinc-600"
+                            badge.unlocked ? "text-[#D9252A] font-semibold" : "text-zinc-600"
                           }`}>
                             {badge.criteria ?? "Criteria not available."}
                           </p>

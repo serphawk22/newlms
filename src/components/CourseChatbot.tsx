@@ -543,7 +543,7 @@ export function CourseChatbot({ courseId, courseTitle }: CourseChatbotProps) {
                   {/* Bubble */}
                   <div className={`relative max-w-[80%] rounded-2xl text-sm leading-relaxed space-y-2 group/bubble ${
                     msg.role === "user"
-                      ? "bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-tr-sm px-3 py-2"
+                      ? "bg-gradient-to-br from-[#D9252A] to-[#C21F24] text-white rounded-tr-sm px-3 py-2"
                       : "bg-[#2B3035] text-[#E9ECEF] border border-[#D9252A] rounded-tl-sm px-3 py-2"
                   }`}>
                     {/* File preview if exists */}

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, AlertCircle } from "lucide-react";
+import { Trash2, AlertCircle, Search } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
+import { Input } from "@/components/ui/input";
 
 interface CourseRow {
   id: string;
@@ -69,12 +70,20 @@ export function CoursesClient({ courses, defaultPublished }: Props) {
   const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "draft">(
     defaultPublished === true ? "published" : "all"
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const visibleCourses = publishedFilter === "published"
-    ? courses.filter(c => c.published)
-    : publishedFilter === "draft"
-    ? courses.filter(c => !c.published)
-    : courses;
+  const visibleCourses = useMemo(() => {
+    let filtered = publishedFilter === "published"
+      ? courses.filter(c => c.published)
+      : publishedFilter === "draft"
+      ? courses.filter(c => !c.published)
+      : courses;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(c => c.title.toLowerCase().includes(q));
+    }
+    return filtered;
+  }, [courses, publishedFilter, searchQuery]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -106,8 +115,22 @@ export function CoursesClient({ courses, defaultPublished }: Props) {
         loading={deleting}
       />
 
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 m-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+          <Input
+            placeholder="Search courses by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)", paddingLeft: "2.25rem" }}
+            className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
+          />
+        </div>
+      </div>
+
       {/* Filter tabs */}
-      <div className="flex gap-1.5 rounded-xl p-1 border m-4" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
+      <div className="flex gap-1.5 rounded-xl p-1 border mx-4 mb-4" style={{ background: "var(--secondary-background)", borderColor: "var(--border)" }}>
         {(["all", "published", "draft"] as const).map((f) => (
           <button
             key={f}

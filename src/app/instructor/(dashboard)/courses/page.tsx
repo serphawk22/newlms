@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { BookOpen, PlusCircle } from "lucide-react";
 import { getDashboardContext } from "../_lib";
 import { CourseCardWithDelete } from "@/components/CourseCardWithDelete";
+import { InstructorCoursesClient } from "./instructor-courses-client";
 
 export const dynamic = "force-dynamic";
 
@@ -67,9 +68,9 @@ export default async function InstructorCoursesPage() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <InstructorCoursesClient courseTitles={courses.map(c => c.title)}>
         {/* Create new course card */}
-        <Card
+        <Card data-course-title=""
           style={{
             border: "2px dashed var(--border)",
             background: "rgba(255,255,255,0.02)",
@@ -113,9 +114,11 @@ export default async function InstructorCoursesPage() {
         </Card>
 
         {courses.map((course) => (
-          <CourseCardWithDelete key={course.id} course={course} />
+          <div key={course.id} data-course-title={course.title}>
+            <CourseCardWithDelete course={course} />
+          </div>
         ))}
-      </div>
+      </InstructorCoursesClient>
     </div>
   );
 }
