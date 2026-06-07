@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, ReactNode } from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { SearchBar } from "@/components/ui/search-bar";
 
 interface Props {
   children: ReactNode;
@@ -33,16 +32,7 @@ export function InstructorCoursesClient({ children, courseTitles }: Props) {
 
   return (
     <>
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-        <Input
-          placeholder="Search courses by name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)", paddingLeft: "2.25rem" }}
-          className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-        />
-      </div>
+      <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search courses by name..." className="mb-6" />
       {searchQuery.trim() && !hasMatch ? (
         <div className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>
           No courses match your search.

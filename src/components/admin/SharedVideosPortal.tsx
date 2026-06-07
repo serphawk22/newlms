@@ -3,19 +3,18 @@
 import { useState } from "react";
 import {
   Video, 
-  Search, 
   Trash2, 
   Calendar, 
   User, 
   Mail, 
   MessageSquare, 
-  Play, 
+  Play,
   X, 
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
 
 interface SharedVideo {
@@ -121,16 +120,7 @@ export function SharedVideosPortal({ initialVideos }: SharedVideosPortalProps) {
 
       {/* Controls: Search, Sort */}
       <div className="rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3" style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}>
-        <div className="relative w-full sm:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-          <Input
-            placeholder="Search by student, email, or caption..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-10 rounded-xl text-xs"
-            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-          />
-        </div>
+        <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search by student, email, or caption..." className="w-full sm:flex-1" />
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <span className="text-xs font-medium whitespace-nowrap" style={{ color: "var(--muted-foreground)" }}>Sort by:</span>

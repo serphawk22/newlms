@@ -5,11 +5,11 @@ import { useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { 
-  Users, Search, Download, Plus, Trash2, X, AlertCircle, 
+  Users, Download, Plus, Trash2, X, AlertCircle, 
   CheckCircle2, Eye, Check, Ban
 } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import { Loader } from "@/components/ui/loader";
 import type { UsersData, StudentRow, InstructorRow, PendingUserRow } from "./page";
 
@@ -532,16 +532,7 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
 
       {/* Control Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <div className="relative flex-1 max-w-sm w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-          <Input
-            placeholder="Search by name or email..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="pl-9 rounded-xl focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-          />
-        </div>
+        <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Search by name or email..." className="max-w-sm w-full" />
         
         <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:ml-auto">
           <Button

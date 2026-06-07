@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { FolderKanban, Search } from "lucide-react";
+import { FolderKanban } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import type { AllCoursesData, CourseRow } from "./page";
 
 interface Props {
@@ -66,16 +66,7 @@ export function AllCoursesPageClient({ data }: Props) {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-          <Input
-            placeholder="Search by course name..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-            className="pl-9 focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-          />
-        </div>
+        <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Search by course name..." className="flex-1" />
         <select
           value={instructorFilter}
           onChange={(e) => { setInstructorFilter(e.target.value); setPage(1); }}

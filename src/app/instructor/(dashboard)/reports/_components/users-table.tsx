@@ -3,7 +3,8 @@
 import { Fragment, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, ChevronUp, Download, Plus, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Plus, X } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 import { RingLoader } from "@/components/ui/ring-loader";
 
 interface UserRow {
@@ -141,21 +142,7 @@ export function UsersTable({ users, orgId }: UsersTableProps) {
   return (
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-4">
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-            style={{
-              background: "var(--secondary-background)",
-              border: "1px solid var(--border)",
-              color: "var(--foreground)",
-            }}
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
-          />
-        </div>
+        <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(0); }} placeholder="Search users..." className="min-w-[200px] max-w-xs flex-1" />
         <select
           value={filter}
           onChange={(e) => {

@@ -3,7 +3,8 @@
 import { Fragment, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Download, Search } from "lucide-react";
+import { Download } from "lucide-react";
+import { SearchBar } from "@/components/ui/search-bar";
 
 export interface CourseRow {
   id: string;
@@ -62,19 +63,7 @@ export function CoursesTable({ courses }: CoursesTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 max-w-xs min-w-[220px]">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--muted-foreground)" }} />
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
-            placeholder="Search courses..."
-            className="w-full h-10 pl-9 pr-3 text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#D9252A]"
-            style={{ border: "1px solid var(--border)", background: "var(--secondary-background)", color: "var(--foreground)" }}
-          />
-        </div>
+        <SearchBar value={search} onChange={(v) => { setSearch(v); setPage(0); }} placeholder="Search courses..." className="max-w-xs min-w-[220px]" />
         <select
           value={status}
           onChange={(e) => {

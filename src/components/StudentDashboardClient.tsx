@@ -7,11 +7,10 @@ import { motion } from "framer-motion";
 import {
   CheckCircle2, HelpCircle, Clock, ChevronRight,
   Video, LayoutGrid, Users, BookOpen,
-  PlayCircle, ArrowRight, Flame, Search,
+  PlayCircle, ArrowRight, Flame,
 } from "lucide-react";
 import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -339,12 +338,7 @@ export function StudentDashboardClient({
   activeDayNumbers, currentMonth, currentYear,
 }: Props) {
   const [trendingTab, setTrendingTab] = useState<"recent" | "popular" | "featured">("recent");
-  const [courseSearch, setCourseSearch] = useState("");
   const router = useRouter();
-
-  const filteredEnrolledCourses = courseSearch.trim()
-    ? enrolledCourses.filter(c => c.title.toLowerCase().includes(courseSearch.toLowerCase()))
-    : enrolledCourses;
 
   // Find first active course for reading materials and quizzes fallback
   const firstActiveCourseId = enrolledCourses.length > 0 ? enrolledCourses[0].id : "";
@@ -489,27 +483,13 @@ export function StudentDashboardClient({
 
         {/* My Courses */}
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-            <span className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>My Courses</span>
-            <div className="relative sm:ml-auto sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
-              <Input
-                placeholder="Search your courses..."
-                value={courseSearch}
-                onChange={(e) => setCourseSearch(e.target.value)}
-                style={{ background: "var(--secondary-background)", border: "1px solid var(--border)", color: "var(--foreground)", paddingLeft: "2rem", fontSize: "0.8rem", height: "2.25rem" }}
-                className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A] placeholder:text-[var(--muted-foreground)]"
-              />
-            </div>
-          </div>
-          {filteredEnrolledCourses.length === 0 ? (
+          <span className="text-xs font-medium uppercase tracking-wider mb-3 block" style={{ color: "var(--muted-foreground)" }}>My Courses</span>
+          {enrolledCourses.length === 0 ? (
             <div
               className="rounded-2xl border-dashed border-2 p-8 text-center"
               style={{ background: "transparent", borderColor: "var(--border)" }}
             >
-              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                {courseSearch.trim() ? "No courses match your search." : "No enrolled courses yet."}
-              </p>
+              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>No enrolled courses yet.</p>
               <Link href="/student/courses" className="text-xs hover:underline mt-1 inline-block font-semibold" style={{ color: "#D9252A" }}>
                 Browse available courses →
               </Link>
@@ -520,7 +500,7 @@ export function StudentDashboardClient({
               style={{ background: "var(--card)", border: "1px solid var(--border)", boxShadow: "none" }}
             >
               <div className="divide-y" style={{ borderColor: "var(--border)" }}>
-                {filteredEnrolledCourses.map((course) => (
+                {enrolledCourses.map((course) => (
                   <Link key={course.id} href={`/student/courses/${course.id}`}>
                     <div
                       className="flex items-center gap-4 px-5 py-4 transition-colors group cursor-pointer"
