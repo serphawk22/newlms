@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { CompactSidebar, CompactNavItem } from "./CompactSidebar";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { InstructorNotificationsDropdown } from "./InstructorNotificationsDropdown";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 
 interface SidebarLayoutWrapperProps {
@@ -26,6 +28,12 @@ export function SidebarLayoutWrapper({
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+
+  const isDashboardPage =
+    role === "STUDENT" ? pathname === "/student" :
+    role === "INSTRUCTOR" ? pathname === "/instructor" :
+    pathname === "/admin";
 
   useEffect(() => {
     setMounted(true);
@@ -51,8 +59,9 @@ export function SidebarLayoutWrapper({
         }}
       >
         <Logo size="sm" />
-        <div className="flex items-center gap-2">
-          {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
+        <div className="flex items-center gap-2 shrink-0">
+          <ThemeToggle />
+          {isDashboardPage && (role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />)}
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -83,9 +92,13 @@ export function SidebarLayoutWrapper({
           mounted ? (isOpen ? "lg:ml-[240px]" : "lg:ml-[64px]") : "lg:ml-[64px]"
         )}
       >
-        {/* Floating Notification Dropdown on Desktop */}
-        <div className="fixed top-4 right-4 z-[9999] hidden lg:block">
-          {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
+        {/* Desktop actions bar */}
+        <div className="hidden lg:flex items-center justify-end gap-3 px-4 lg:px-8 py-2 h-12 sticky top-0 z-20 shrink-0"
+             style={{ background: "var(--background)", borderBottom: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-2 shrink-0">
+            {isDashboardPage && (role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />)}
+            <ThemeToggle />
+          </div>
         </div>
         {children}
       </main>

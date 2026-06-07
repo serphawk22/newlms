@@ -192,7 +192,7 @@ export default function StudentCoursesClient({
   return (
     <div className="container-page space-y-6">
       {/* Header with Tabs */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-6">
           <button
             onClick={() => setActiveTab("all")}

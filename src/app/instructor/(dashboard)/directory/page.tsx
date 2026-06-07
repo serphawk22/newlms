@@ -60,10 +60,10 @@ export default async function InstructorDirectoryPage() {
 
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center gap-2">
-        <Users className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Users className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Workspace Directory</h1>
-        <span className="ml-auto text-xs" style={{ color: "var(--muted-foreground)" }}>{allMembers.length} members</span>
+        <span className="ml-auto text-xs shrink-0" style={{ color: "var(--muted-foreground)" }}>{allMembers.length} members</span>
       </div>
 
       <Card

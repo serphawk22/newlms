@@ -51,8 +51,8 @@ export default async function SettingsPage() {
 
   return (
     <div className="container-page max-w-2xl space-y-6">
-      <div className="flex items-center gap-2">
-        <Settings className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Settings className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Organization Settings</h1>
       </div>
 

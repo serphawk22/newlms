@@ -504,8 +504,8 @@ export function UsersPageClient({ data, defaultFilter = "all" }: Props) {
         <AddUserForm role="INSTRUCTOR" onClose={() => { setShowAddInstructor(false); handleRefresh(); }} onSuccess={() => {}} />
       </Modal>
 
-      <div className="flex items-center gap-2">
-        <Users className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <Users className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>User Directory</h1>
       </div>
 

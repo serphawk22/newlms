@@ -664,12 +664,12 @@ export default async function CourseBuilderPage({
   return (
     <div className="course-theme-scope container-page space-y-8">
       {/* Course Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flex-wrap">
         <Link href="/instructor">
           <Button
             variant="ghost"
             style={{ color: "var(--muted-foreground)" }}
-            className="hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] px-0 transition-colors"
+            className="hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] px-0 transition-colors shrink-0"
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Workspace
           </Button>

@@ -26,10 +26,10 @@ export default async function AdminAllCoursesPage({
 
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center gap-2">
-        <FolderKanban className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <FolderKanban className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>All Courses</h1>
-        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: "var(--secondary-background)", color: "var(--muted-foreground)" }}>
+        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full shrink-0" style={{ background: "var(--secondary-background)", color: "var(--muted-foreground)" }}>
           {courses.length} courses
         </span>
       </div>

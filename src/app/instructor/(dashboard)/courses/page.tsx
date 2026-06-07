@@ -58,11 +58,11 @@ export default async function InstructorCoursesPage() {
 
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center gap-2">
-        <BookOpen className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <BookOpen className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Course Library</h1>
         <span
-          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border"
+          className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0"
           style={{
             background: "rgba(255,255,255,0.06)",
             borderColor: "var(--border)",

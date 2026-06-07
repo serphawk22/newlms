@@ -24,10 +24,10 @@ export default async function AdminLearningVideosPage() {
 
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center gap-2">
-        <Video className="w-5 h-5 text-zinc-500" />
-        <h1 className="text-xl font-bold text-zinc-900">Learning Videos</h1>
-        <span className="ml-auto text-xs font-semibold bg-zinc-100 text-zinc-600 px-2.5 py-1 rounded-full">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Video className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
+        <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Learning Videos</h1>
+        <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full shrink-0" style={{ background: "var(--secondary-background)", color: "var(--muted-foreground)", border: "1px solid var(--border)" }}>
           {videos.length} shared videos
         </span>
       </div>

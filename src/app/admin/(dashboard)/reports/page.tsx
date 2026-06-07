@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 function ReportsSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <BarChart2 className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Reports</h1>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -57,8 +57,8 @@ async function AdminReportsContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <BarChart2 className="w-5 h-5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
         <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Reports</h1>
       </div>
 
