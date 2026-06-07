@@ -82,12 +82,12 @@ export function SidebarLayoutWrapper({
 
       <main
         className={cn(
-          "flex-1 min-h-screen transition-[margin] duration-300 ease-in-out",
+          "relative flex-1 min-h-screen transition-[margin] duration-300 ease-in-out",
           mounted ? (isOpen ? "lg:ml-[240px]" : "lg:ml-[64px]") : "lg:ml-[64px]"
         )}
       >
         {/* Floating Notification Dropdown on Desktop */}
-        <div className="absolute top-6 right-8 z-30 hidden lg:block">
+        <div className="absolute top-6 right-8 z-50 hidden lg:block">
           {role === "STUDENT" ? <NotificationsDropdown /> : <InstructorNotificationsDropdown />}
         </div>
         {children}
