@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { getCourseBannerUrl, DEFAULT_COURSE_BANNER } from "@/lib/course-images";
 import { Card } from "@/components/ui/card";
-import { NotificationsDropdown } from "./NotificationsDropdown";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -379,28 +378,25 @@ export function StudentDashboardClient({
               Keep pushing your limits!
             </p>
           </motion.div>
-          <div className="flex items-center gap-3 shrink-0">
-            {currentStreak > 0 && (
-              <Link href="/student/progress">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2, duration: 0.35 }}
-                  style={{
-                    background: "rgba(217,37,42,0.12)",
-                    color: "#D9252A",
-                    borderColor: "rgba(217,37,42,0.25)",
-                  }}
-                  className="flex items-center gap-1.5 border px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer hover:bg-[rgba(217,37,42,0.2)] transition-colors"
-                >
-                  <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
-                </motion.div>
-              </Link>
-            )}
-            <div className="rounded-full border p-0.5 flex items-center justify-center" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
-              <NotificationsDropdown />
+            <div className="flex items-center gap-3 shrink-0">
+              {currentStreak > 0 && (
+                <Link href="/student/progress">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2, duration: 0.35 }}
+                    style={{
+                      background: "rgba(217,37,42,0.12)",
+                      color: "#D9252A",
+                      borderColor: "rgba(217,37,42,0.25)",
+                    }}
+                    className="flex items-center gap-1.5 border px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer hover:bg-[rgba(217,37,42,0.2)] transition-colors"
+                  >
+                    <Flame className="w-3.5 h-3.5" /> {currentStreak} day streak
+                  </motion.div>
+                </Link>
+              )}
             </div>
-          </div>
         </div>
 
         {/* Stats Row */}
