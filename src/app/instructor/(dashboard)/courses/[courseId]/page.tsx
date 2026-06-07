@@ -35,6 +35,10 @@ async function createModule(formData: FormData) {
   const courseId = formData.get("courseId") as string;
   if (title && courseId) {
     await prisma.module.create({ data: { title, courseId } });
+    const { triggerCourseUpdateNotifications } = await import("@/lib/email-notifications-helper");
+    triggerCourseUpdateNotifications(courseId, "MODULE", title).catch((err) =>
+      console.error("[createModule notification error]", err)
+    );
     // Calendar event: module published now
     await createEvent({
       title: `New Module: ${title}`,
@@ -77,13 +81,35 @@ async function createLesson(formData: FormData) {
   const courseId = formData.get("courseId") as string;
   const videoUrl = formData.get("videoUrl") as string;
   if (title && moduleId) {
-    await prisma.lesson.create({ 
+    const lesson = await prisma.lesson.create({ 
       data: { 
         title, 
         moduleId,
         videoUrl: videoUrl || null
       } 
     });
+
+    const { triggerCourseUpdateNotifications } = await import("@/lib/email-notifications-helper");
+    triggerCourseUpdateNotifications(courseId, "LESSON", title).catch((err) =>
+      console.error("[createLesson notification error]", err)
+    );
+
+    if (videoUrl) {
+      const course = await prisma.course.findUnique({ where: { id: courseId } });
+      if (course) {
+        await prisma.adminReviewVideo.create({
+          data: {
+            courseId,
+            moduleId,
+            lessonId: lesson.id,
+            instructorId: course.creatorId,
+            videoUrl,
+            status: "PENDING"
+          }
+        });
+      }
+    }
+
     revalidatePath(`/instructor/courses/${courseId}`);
   }
 }
@@ -98,7 +124,12 @@ async function createAssignment(formData: FormData) {
   const deadlineRaw = formData.get("deadline") as string;
 
   if (title && courseId) {
-    await prisma.assignment.create({ data: { title, description, driveLink, courseId } });
+    const assignment = await prisma.assignment.create({ data: { title, description, driveLink, courseId } });
+
+    const { triggerAssignmentCreatedNotifications } = await import("@/lib/email-notifications-helper");
+    triggerAssignmentCreatedNotifications(assignment.id).catch((err) =>
+      console.error("[createAssignment notification error]", err)
+    );
 
     // Calendar event: assignment deadline (default 7 days from now if not provided)
     const deadlineDate = deadlineRaw ? new Date(deadlineRaw) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -172,7 +203,11 @@ async function createQuiz(formData: FormData) {
   const title = formData.get("title") as string;
   const courseId = formData.get("courseId") as string;
   if (title && courseId) {
-    await prisma.quiz.create({ data: { title, courseId } });
+    const quiz = await prisma.quiz.create({ data: { title, courseId } });
+    const { triggerQuizCreatedNotifications } = await import("@/lib/email-notifications-helper");
+    triggerQuizCreatedNotifications(quiz.id).catch((err) =>
+      console.error("[createQuiz notification error]", err)
+    );
     revalidatePath(`/instructor/courses/${courseId}`);
   }
 }

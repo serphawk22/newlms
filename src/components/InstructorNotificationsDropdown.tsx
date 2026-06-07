@@ -155,6 +155,7 @@ export function InstructorNotificationsDropdown() {
         onClick={() => setOpen((v) => !v)}
         className="relative p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#D9252A]" style={{ color: "#D9252A" }}
         aria-label="Notifications"
+        suppressHydrationWarning
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -182,6 +183,7 @@ export function InstructorNotificationsDropdown() {
               <button
                 onClick={markAllRead}
                 className="flex items-center gap-1 text-xs text-[#D9252A] hover:text-[#C21F24] font-semibold transition-colors"
+                suppressHydrationWarning
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 Mark all read
@@ -209,6 +211,7 @@ export function InstructorNotificationsDropdown() {
                 <button
                   key={n.id}
                   onClick={() => handleNotificationClick(n)}
+                  suppressHydrationWarning
                   className={`w-full text-left flex gap-3 px-4 py-3 transition-colors group`}
                   style={n.isRead ? { background: "var(--card)" } : { background: "rgba(217,37,42,0.04)" }}
                 >

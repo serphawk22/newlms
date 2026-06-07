@@ -12,6 +12,16 @@ export default async function AdminLearningVideosPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const adminReviewVideos = await prisma.adminReviewVideo.findMany({
+    orderBy: { uploadedAt: "desc" },
+    include: {
+      course: true,
+      module: true,
+      lesson: true,
+      instructor: true
+    }
+  });
+
   return (
     <div className="container-page space-y-6">
       <div className="flex items-center gap-2">
@@ -22,14 +32,26 @@ export default async function AdminLearningVideosPage() {
         </span>
       </div>
 
-      <LearningVideosClient initialVideos={videos.map(v => ({
-        id: v.id,
-        studentName: v.studentName,
-        email: v.email,
-        videoUrl: v.videoUrl,
-        caption: v.caption,
-        createdAt: v.createdAt.toISOString()
-      }))} />
+      <LearningVideosClient 
+        initialVideos={videos.map(v => ({
+          id: v.id,
+          studentName: v.studentName,
+          email: v.email,
+          videoUrl: v.videoUrl,
+          caption: v.caption,
+          createdAt: v.createdAt.toISOString()
+        }))} 
+        initialAdminVideos={adminReviewVideos.map(v => ({
+          id: v.id,
+          courseName: v.course.title,
+          moduleName: v.module.title,
+          lessonName: v.lesson.title,
+          instructorName: v.instructor.name || "Unknown",
+          videoUrl: v.videoUrl,
+          status: v.status,
+          uploadedAt: v.uploadedAt.toISOString()
+        }))}
+      />
     </div>
   );
 }

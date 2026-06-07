@@ -353,6 +353,11 @@
 
 /* ── Utility classes ──────────────────────────────────────────────── */
 
+/* Roadmap serif font — Playfair Display fallback for build environments without Google Fonts access */
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+}
+
 /* Page shell for dashboard layouts */
 .page-shell {
   display: flex;

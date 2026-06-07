@@ -132,6 +132,11 @@ export async function POST(req: NextRequest) {
       });
     });
 
+    const { triggerCourseUpdateNotifications } = await import("@/lib/email-notifications-helper");
+    triggerCourseUpdateNotifications(courseId, "READING_MATERIAL", title.trim()).catch((err) =>
+      console.error("[reading-materials/upload notification error]", err)
+    );
+
     console.log(
       `[POST /api/reading-materials/upload] Created material id=${material.id} course=${courseId}`,
     );

@@ -78,6 +78,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const { triggerFeedbackNotifications } = await import("@/lib/email-notifications-helper");
+    triggerFeedbackNotifications(updated.id, false).catch((err) =>
+      console.error("[assignments/grade notification error]", err)
+    );
+
     return NextResponse.json({ success: true, submission: updated });
   } catch (err) {
     console.error("[POST /api/assignments/grade]", err);

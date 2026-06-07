@@ -14,7 +14,7 @@ export function LogoutButton() {
   };
 
   return (
-    <Button onClick={handleLogout} variant="outline" className="w-full justify-start text-zinc-700 border-zinc-200 hover:bg-zinc-50 h-8 text-sm">
+    <Button onClick={handleLogout} suppressHydrationWarning variant="outline" className="w-full justify-start text-zinc-700 border-zinc-200 hover:bg-zinc-50 h-8 text-sm">
       <LogOut className="w-4 h-4 mr-2"/>
       Sign Out
     </Button>

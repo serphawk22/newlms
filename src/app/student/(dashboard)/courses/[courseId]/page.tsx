@@ -337,46 +337,7 @@ export default async function StudentCourseView({
                         </CardHeader>
                         <CardContent className="p-0">
 
-                          {/* ── Lessons ── */}
-                          <div className="divide-y divide-[var(--border)]">
-                            {(module as any).lessons.length === 0 ? (
-                              <div className="p-6 text-sm text-[var(--muted-foreground)] text-center bg-[var(--secondary-background)]/30">No lessons posted yet.</div>
-                            ) : (
-                              (module as any).lessons.map((lesson: any, lessonIndex: number) => (
-                                <div key={lesson.id} className="flex items-center justify-between p-4 hover:bg-[var(--secondary-background)]/60 transition-colors">
-                                  <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-[var(--secondary-background)] border border-[var(--border)] flex items-center justify-center shrink-0">
-                                      <PlayCircle className="w-4 h-4 text-[var(--muted-foreground)]" />
-                                    </div>
-                                    <span className="font-semibold text-[var(--foreground)]">
-                                      {lessonIndex + 1}. {lesson.title}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    {lesson.videoUrl && (
-                                      <ActivityLink href={lesson.videoUrl} type="VIDEO" message={`Watched video: ${lesson.title}`}>
-                                        <Button size="sm" className="bg-[var(--card)] hover:bg-[var(--secondary-background)] text-[var(--foreground)] ">
-                                                          
-                                                                   
-                                          <PlayCircle className="w-4 h-4 mr-2" /> Watch
-                                        </Button>
-                                      </ActivityLink>
-                                    )}
-                                    {lesson.driveLink && (
-                                      <ActivityLink href={lesson.driveLink} type="MATERIAL" message={`Opened notes: ${lesson.title}`}>
-                                        <Button size="sm" variant="outline" className="border-[var(--border)] text-[var(--foreground)]">
-                                          <FileText className="w-4 h-4 mr-2" /> Notes
-                                        </Button>
-                                      </ActivityLink>
-                                    )}
-                                    {!lesson.videoUrl && !lesson.driveLink && (
-                                      <span className="text-xs text-[var(--muted-foreground)] font-medium px-3 py-1 bg-[var(--secondary-background)] border border-[var(--border)] rounded-full">No Content</span>
-                                    )}
-                                  </div>
-                                </div>
-                              ))
-                            )}
-                          </div>
+                          {/* Lessons display removed so students do not see lesson videos or notes here */}
 
                           {/* ── Live Classes ── */}
                           {(module as any).liveSessions.length > 0 && (

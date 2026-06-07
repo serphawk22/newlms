@@ -6,6 +6,8 @@ import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import type { Role } from "@prisma/client";
 import { ROLE_COOKIE, ROLE_REDIRECT } from "@/lib/auth";
+import { queueEmail } from "@/lib/mail-queue";
+import { getLoginEmailHtml } from "@/lib/mail-templates";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules.
 export const runtime = "nodejs";
@@ -93,6 +95,8 @@ export async function POST(req: Request) {
     today.setHours(0, 0, 0, 0);
 
     const sessionToken = user.sessionToken ?? crypto.randomUUID();
+    const userAgent = req.headers.get("user-agent") || "Unknown Browser/Device";
+    const loginDateTime = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
 
     await Promise.all([
       // Check/create daily login streak
@@ -105,11 +109,27 @@ export async function POST(req: Request) {
           });
         }
       }),
-      // Update session token if it was missing
-      !user.sessionToken ? prisma.user.update({
+      // Update session token and lastLoginAt
+      prisma.user.update({
         where: { id: user.id },
-        data: { sessionToken },
-      }) : Promise.resolve(),
+        data: {
+          sessionToken,
+          lastLoginAt: new Date(),
+        },
+      }),
+      // Queue successful login email notification immediately
+      queueEmail({
+        userId: user.id,
+        toEmail: user.email,
+        subject: "Successful Login to LMS",
+        type: "LOGIN",
+        html: getLoginEmailHtml(
+          user.name || user.email,
+          primaryMembership.role,
+          loginDateTime,
+          userAgent
+        ),
+      }),
     ]);
 
     // ── 8. Issue JWT (with sessionToken embedded in payload) ───────────────

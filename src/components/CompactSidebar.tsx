@@ -163,6 +163,7 @@ export function CompactSidebar({
           className="w-full relative group"
           onMouseEnter={() => setLogoutHovered(true)}
           onMouseLeave={() => setLogoutHovered(false)}
+          suppressHydrationWarning
         >
           <motion.div
             variants={navItemVariants}
@@ -217,6 +218,7 @@ export function CompactSidebar({
         <button
           type="button"
           onClick={onToggleDesktop}
+          suppressHydrationWarning
           className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-50 items-center justify-center p-1.5 rounded-full transition-colors shadow-md"
           style={{
             background: "var(--card)",
