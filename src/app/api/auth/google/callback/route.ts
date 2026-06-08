@@ -121,7 +121,16 @@ export async function GET(request: Request) {
     });
 
     if (user) {
-      // Check account status first — pending/rejected users cannot log in
+      // Auto-activate PENDING students on Google OAuth login
+      if (user.status === "PENDING" && role === "STUDENT") {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { status: "ACTIVE" },
+        });
+        user.status = "ACTIVE";
+      }
+
+      // Check account status — blocked for non-students
       if (user.status === "PENDING") {
         return NextResponse.redirect(
           new URL(getLoginUrl("Your account is awaiting administrator approval."), request.url)
@@ -134,19 +143,30 @@ export async function GET(request: Request) {
       }
 
       // User exists — check membership status
-      const primaryMembership = user.memberships.find((m) => m.role === role);
+      let primaryMembership = user.memberships.find((m) => m.role === role);
 
       if (!primaryMembership) {
         if (user.memberships.length === 0) {
-          // Signed up via Google but not yet approved
+          if (role === "STUDENT") {
+            const org = await prisma.organization.findFirst();
+            if (!org) {
+              return NextResponse.redirect(
+                new URL(getLoginUrl("No organization configured"), request.url)
+              );
+            }
+            primaryMembership = await prisma.organizationMember.create({
+              data: { userId: user.id, organizationId: org.id, role: "STUDENT" },
+            });
+          } else {
+            return NextResponse.redirect(
+              new URL(getLoginUrl("Your account is awaiting administrator approval."), request.url)
+            );
+          }
+        } else {
           return NextResponse.redirect(
-            new URL(getLoginUrl("Your account is awaiting administrator approval."), request.url)
+            new URL(getLoginUrl(`This account is not authorized for ${role.toLowerCase()} access`), request.url)
           );
         }
-        // Has memberships but not for this role
-        return NextResponse.redirect(
-          new URL(getLoginUrl(`This account is not authorized for ${role.toLowerCase()} access`), request.url)
-        );
       }
 
       // Membership exists — issue session and log in
@@ -209,14 +229,61 @@ export async function GET(request: Request) {
       );
     }
 
-    // Generate a secure random password hash
     const randomPassword = crypto.randomBytes(32).toString("hex");
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
-    // Generate a unique login code — prefix reveals intended role
     const loginCode = await generateUniqueLoginCode(role, prisma);
 
-    // Create user WITHOUT membership — pending admin approval
+    if (role === "STUDENT" || role === "ADMIN") {
+      const newUser = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name: name || email.split("@")[0],
+          loginCode,
+          status: "ACTIVE",
+          memberships: {
+            create: {
+              organizationId: targetOrg.id,
+              role,
+            },
+          },
+        },
+      });
+
+      const membership = await prisma.organizationMember.findFirst({
+        where: { userId: newUser.id, organizationId: targetOrg.id },
+      });
+
+      if (!membership) {
+        return NextResponse.redirect(
+          new URL(getLoginUrl("Failed to set up account membership"), request.url)
+        );
+      }
+
+      const { token } = await generateSessionJwt(newUser, membership);
+
+      const cookieStore = await cookies();
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict" as const,
+        maxAge: 60 * 60 * 24,
+        path: "/" as const,
+      };
+
+      cookieStore.set(ROLE_COOKIE[membership.role], token, cookieOptions);
+      cookieStore.set("token", token, cookieOptions);
+
+      const redirectPath = ROLE_REDIRECT[membership.role];
+
+      const html = `<!DOCTYPE html><html><body><script>window.location.href='${redirectPath}'</script></body></html>`;
+      return new Response(html, {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    }
+
     await prisma.user.create({
       data: {
         email,

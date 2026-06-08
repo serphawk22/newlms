@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    if (user.status === "PENDING") {
+    if (user.status === "PENDING" && expectedRole !== "STUDENT") {
       return NextResponse.json({ error: "Your account is awaiting administrator approval." }, { status: 403 });
     }
 
@@ -56,17 +56,45 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Your account has been rejected." }, { status: 403 });
     }
 
+    // Auto-activate PENDING students on first login
+    if (user.status === "PENDING" && expectedRole === "STUDENT") {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { status: "ACTIVE" },
+      });
+      user.status = "ACTIVE";
+    }
 
     // ── 4. Check organisation membership ──────────────────────────────────
-    const primaryMembership =
+    let primaryMembership =
       (expectedRole ? user.memberships.find((membership) => membership.role === expectedRole) : null) ??
       user.memberships[0];
 
     if (!primaryMembership) {
       if (user.memberships.length === 0) {
-        return NextResponse.json({ error: "Your account is awaiting administrator approval." }, { status: 403 });
+        if (expectedRole === "STUDENT") {
+          const org = await prisma.organization.findFirst();
+          if (!org) {
+            return NextResponse.json({ error: "No organization found" }, { status: 500 });
+          }
+          const membership = await prisma.organizationMember.create({
+            data: { userId: user.id, organizationId: org.id, role: "STUDENT" },
+          });
+          const refreshed = await prisma.user.findUnique({
+            where: { id: user.id },
+            include: { memberships: { include: { organization: true } } },
+          });
+          if (!refreshed) {
+            return NextResponse.json({ error: "Account setup failed" }, { status: 500 });
+          }
+          user.memberships = refreshed.memberships;
+          primaryMembership = refreshed.memberships.find(m => m.role === "STUDENT") || refreshed.memberships[0];
+        } else {
+          return NextResponse.json({ error: "Your account is awaiting administrator approval." }, { status: 403 });
+        }
+      } else {
+        return NextResponse.json({ error: `This account is not authorized for ${expectedRole!.toLowerCase()} access` }, { status: 403 });
       }
-      return NextResponse.json({ error: `This account is not authorized for ${expectedRole!.toLowerCase()} access` }, { status: 403 });
     }
 
     // ── 4. Validate login code ─────────────────────────────────────────────

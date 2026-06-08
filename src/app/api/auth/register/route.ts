@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { generateUniqueLoginCode } from "@/lib/loginCode";
+import { issueAuthSession } from "@/lib/auth";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules
 export const runtime = "nodejs";
@@ -86,21 +87,7 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate a unique login code for this user
     const loginCode = await generateUniqueLoginCode(assignedRole, prisma);
-
-    // Only admins get immediate access (admin code acts as authorization).
-    // Students and instructors require approval.
-    const membershipData = assignedRole === "ADMIN"
-      ? {
-          memberships: {
-            create: {
-              organizationId: org.id,
-              role: assignedRole,
-            },
-          },
-        }
-      : {};
 
     const newUser = await prisma.user.create({
       data: {
@@ -108,7 +95,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         name,
         loginCode,
-        status: assignedRole === "ADMIN" ? "ACTIVE" : "PENDING",
+        status: assignedRole === "INSTRUCTOR" ? "PENDING" : "ACTIVE",
         memberships: {
           create: {
             organizationId: org.id,
@@ -118,14 +105,29 @@ export async function POST(req: Request) {
       },
     });
 
+    if (assignedRole === "STUDENT" || assignedRole === "ADMIN") {
+      const redirectUrl = await issueAuthSession(
+        { id: newUser.id, email: newUser.email, name: newUser.name, sessionToken: newUser.sessionToken },
+        { role: assignedRole, organizationId: org.id }
+      );
+
+      return NextResponse.json(
+        {
+          message: "Registration successful",
+          loginCode: newUser.loginCode,
+          role: assignedRole,
+          redirect: redirectUrl,
+        },
+        { status: 201 }
+      );
+    }
+
     return NextResponse.json(
       {
-        message: assignedRole === "ADMIN"
-          ? "Registration successful"
-          : "Registration submitted. Awaiting administrator approval.",
+        message: "Registration submitted. Awaiting administrator approval.",
         loginCode: newUser.loginCode,
         role: assignedRole,
-        pendingApproval: assignedRole !== "ADMIN",
+        pendingApproval: true,
       },
       { status: 201 }
     );

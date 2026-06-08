@@ -16,8 +16,8 @@ export default function StudentSignupPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
-  const [pendingApproval, setPendingApproval] = useState(false);
+  const [accountExists, setAccountExists] = useState(false);
+  const [successCode, setSuccessCode] = useState<string | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,13 +25,12 @@ export default function StudentSignupPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const errorParam = params.get("error");
-    const messageParam = params.get("message");
     if (errorParam) {
       setError(errorParam);
     }
+    const messageParam = params.get("message");
     if (messageParam) {
-      // Google OAuth redirect with pending approval message
-      setPendingApproval(true);
+      setSuccessCode("GOOGLE");
     }
     if (window.location.search) {
       window.history.replaceState({}, "", window.location.pathname);
@@ -42,6 +41,7 @@ export default function StudentSignupPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setAccountExists(false);
 
     const formData = new FormData(e.currentTarget);
     const password = formData.get("password") as string;
@@ -68,20 +68,22 @@ export default function StudentSignupPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 400 && data.error === "User already exists") {
+          setAccountExists(true);
+          setLoading(false);
+          return;
+        }
         throw new Error(data.error || "Registration failed");
       }
 
-      if (data.pendingApproval) {
-        // Student accounts require admin approval
-        if (data.loginCode) {
-          setGeneratedCode(data.loginCode);
-        }
-        setPendingApproval(true);
-      } else if (data.loginCode) {
-        setGeneratedCode(data.loginCode);
-      } else {
-        router.push("/student/login");
+      if (data.redirect) {
+        setSuccessCode(data.loginCode || null);
+        setTimeout(() => {
+          window.location.href = data.redirect;
+        }, 2000);
+        return;
       }
+      router.push("/student/login");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -93,15 +95,15 @@ export default function StudentSignupPage() {
   };
 
   const handleCopyCode = async () => {
-    if (!generatedCode) return;
+    if (!successCode || successCode === "GOOGLE") return;
     try {
-      await navigator.clipboard.writeText(generatedCode);
+      await navigator.clipboard.writeText(successCode);
       setCodeCopied(true);
       setTimeout(() => setCodeCopied(false), 2000);
     } catch { /* ignore */ }
   };
 
-  if (pendingApproval || generatedCode) {
+  if (successCode) {
     return (
       <AuthPageShell variant="student">
         <motion.div
@@ -116,68 +118,54 @@ export default function StudentSignupPage() {
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{ background: "rgba(233,236,239,0.06)", border: "1px solid var(--border)" }}
                 >
-                  {pendingApproval
-                    ? <AlertCircle className="w-8 h-8" style={{ color: "var(--foreground)" }} />
-                    : <CheckCircle className="w-8 h-8" style={{ color: "var(--foreground)" }} />}
+                  <CheckCircle className="w-8 h-8" style={{ color: "var(--foreground)" }} />
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-medium" style={{ color: "var(--foreground)" }}>
-                  {pendingApproval ? "Registration Submitted!" : "Account Created!"}
-                </h2>
+                <h2 className="text-2xl font-medium" style={{ color: "var(--foreground)" }}>Account Created!</h2>
                 <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-                  {pendingApproval
-                    ? "Your account is awaiting administrator approval. You will be able to log in once approved."
-                    : "Save your login code — you\u0027ll need it every time you sign in."}
+                  {successCode === "GOOGLE"
+                    ? "Your account is ready. You can now sign in."
+                    : "Redirecting you to your dashboard..."}
                 </p>
               </div>
 
-              {pendingApproval && (
-                <div className="rounded-lg p-3" style={{ background: "rgba(233,236,239,0.06)", border: "1px solid var(--border)" }}>
-                  <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
-                    Awaiting administrator approval
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
-                    An administrator will review your registration. Please check back later.
-                  </p>
-                </div>
-              )}
-
-              {generatedCode && (
-                <div className="rounded-xl p-5 space-y-3" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
-                  <p className="text-xs font-medium uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Your Login Code</p>
-                  <div className="flex items-center justify-center gap-3">
-                    <span className="text-4xl font-medium tracking-widest" style={{ color: "var(--foreground)" }}>{generatedCode}</span>
-                    <button
-                      onClick={handleCopyCode}
-                      className="p-2 rounded-lg transition-colors"
-                      style={{ color: "var(--muted-foreground)" }}
-                      title="Copy code"
-                    >
-                      {codeCopied ? <Check className="w-5 h-5" style={{ color: "var(--accent)" }} /> : <Copy className="w-5 h-5" />}
-                    </button>
+              {successCode && successCode !== "GOOGLE" && (
+                <>
+                  <div className="rounded-xl p-5 space-y-3" style={{ background: "var(--secondary-background)", border: "1px solid var(--border)" }}>
+                    <p className="text-xs font-medium uppercase tracking-widest" style={{ color: "var(--muted-foreground)" }}>Your Login Code</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-4xl font-medium tracking-widest" style={{ color: "var(--foreground)" }}>{successCode}</span>
+                      <button
+                        onClick={handleCopyCode}
+                        className="p-2 rounded-lg transition-colors"
+                        style={{ color: "var(--muted-foreground)" }}
+                        title="Copy code"
+                      >
+                        {codeCopied ? <Check className="w-5 h-5" style={{ color: "var(--accent)" }} /> : <Copy className="w-5 h-5" />}
+                      </button>
+                    </div>
+                    <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>This code is unique to your account. Keep it safe.</p>
                   </div>
-                  <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>This code is unique to your account. Keep it safe.</p>
-                </div>
+                  <div className="rounded-lg p-3" style={{ background: "rgba(217,37,42,0.10)", border: "1px solid rgba(217,37,42,0.25)" }}>
+                    <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>
+                      This code will NOT be shown again. Please save it before continuing.
+                    </p>
+                  </div>
+                </>
               )}
 
-              {generatedCode && (
-                <div className="rounded-lg p-3" style={{ background: "rgba(217,37,42,0.10)", border: "1px solid rgba(217,37,42,0.25)" }}>
-                  <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>
-                    This code will NOT be shown again. Please save it before continuing.
-                  </p>
-                </div>
+              {successCode === "GOOGLE" && (
+                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    onClick={() => router.push("/student/login")}
+                    className="w-full h-11 rounded-lg font-medium"
+                    style={{ background: "var(--primary)", color: "var(--primary-foreground)", border: "1px solid var(--border)" }}
+                  >
+                    Continue to Login
+                  </Button>
+                </motion.div>
               )}
-
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  onClick={() => router.push("/student/login")}
-                  className="w-full h-11 rounded-lg font-medium"
-                  style={{ background: "var(--primary)", color: "var(--primary-foreground)", border: "1px solid var(--border)" }}
-                >
-                  {pendingApproval ? "Back to Login" : "Continue to Login"}
-                </Button>
-              </motion.div>
             </CardContent>
           </Card>
         </motion.div>
@@ -237,6 +225,26 @@ export default function StudentSignupPage() {
                 >
                   <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                   <span>{error}</span>
+                </motion.div>
+              )}
+
+              {accountExists && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 text-sm rounded-lg space-y-3"
+                  style={{ background: "rgba(233,236,239,0.06)", border: "1px solid var(--border)" }}
+                >
+                  <p style={{ color: "var(--foreground)" }}>
+                    An account with this email already exists.
+                  </p>
+                  <Link
+                    href="/student/login"
+                    className="inline-block font-medium hover:underline"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    Go to Login →
+                  </Link>
                 </motion.div>
               )}
 
