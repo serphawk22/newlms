@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, BookOpen, ClipboardList, Layers, Video, LogIn, CheckCheck, MessageSquare, HelpCircle } from "lucide-react";
+import { Bell, BookOpen, ClipboardList, Layers, Video, LogIn, CheckCheck, MessageSquare, HelpCircle, FileText, Award, GraduationCap } from "lucide-react";
 
 type Notification = {
   id: string;
@@ -33,6 +33,12 @@ const TYPE_META: Record<string, { icon: React.ReactNode; bg: string; dot: string
   LOGIN:      { icon: <LogIn className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />,      bg: "bg-[var(--muted)]",   dot: "bg-[var(--muted-foreground)]",   label: "Login" },
   ADMIN_COMMENT:    { icon: <MessageSquare className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />, bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Admin Feedback" },
   STUDENT_QUESTION: { icon: <HelpCircle className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />, bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Student Q&A" },
+  QUIZ:             { icon: <HelpCircle className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />,   bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Quiz" },
+  QUIZ_RESULT:      { icon: <CheckCheck className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />,   bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Quiz Result" },
+  SUBMISSION:       { icon: <FileText className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />,    bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Submission" },
+  MATERIAL:         { icon: <BookOpen className="w-3.5 h-3.5 text-[#D9252A]" />,   bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Material" },
+  ENROLLMENT:       { icon: <GraduationCap className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />, bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Enrollment" },
+  CERTIFICATE:      { icon: <Award className="w-3.5 h-3.5" style={{ color: "#D9252A" }} />,       bg: "bg-[rgba(217,37,42,0.08)]", dot: "bg-[#D9252A]", label: "Certificate" },
 };
 
 const DEFAULT_META = { icon: <Bell className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />, bg: "bg-[var(--muted)]", dot: "bg-[var(--muted-foreground)]", label: "Notice" };

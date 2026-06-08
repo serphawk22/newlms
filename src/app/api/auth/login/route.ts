@@ -8,6 +8,7 @@ import type { Role } from "@prisma/client";
 import { ROLE_COOKIE, ROLE_REDIRECT } from "@/lib/auth";
 import { queueEmail } from "@/lib/mail-queue";
 import { getLoginEmailHtml } from "@/lib/mail-templates";
+import { notifyLogin } from "@/lib/notifications-service";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules.
 export const runtime = "nodejs";
@@ -123,25 +124,15 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 6. Track daily login streak & Update Session ──────────────────────
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
+    // ── 6. Update Session ──────────────────────────────────────────────────
     const sessionToken = user.sessionToken ?? crypto.randomUUID();
     const userAgent = req.headers.get("user-agent") || "Unknown Browser/Device";
     const loginDateTime = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
 
+    // Create login notification (respects daily limit internally)
+    notifyLogin({ userId: user.id, name: user.name });
+
     await Promise.all([
-      // Check/create daily login streak
-      prisma.notification.findFirst({
-        where: { userId: user.id, type: "LOGIN", createdAt: { gte: today } },
-      }).then(existingLogin => {
-        if (!existingLogin) {
-          return prisma.notification.create({
-            data: { userId: user.id, message: "Daily Login", type: "LOGIN" },
-          });
-        }
-      }),
       // Update session token and lastLoginAt
       prisma.user.update({
         where: { id: user.id },

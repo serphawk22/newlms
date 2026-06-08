@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, BookOpen, ClipboardList, Layers, Video, LogIn, CheckCheck } from "lucide-react";
+import { Bell, BookOpen, ClipboardList, Layers, Video, LogIn, CheckCheck, HelpCircle, FileText, Award, GraduationCap } from "lucide-react";
 
 type Notification = {
   id: string;
@@ -33,6 +33,12 @@ const TYPE_META: Record<string, { icon: React.ReactNode; bg: string; dot: string
   LIVE:       { icon: <Video className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,       bg: "bg-[var(--accent)]/10",    dot: "bg-[var(--accent)]",    label: "Live" },
   LIVE_CLASS: { icon: <Video className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,       bg: "bg-[var(--accent)]/10",    dot: "bg-[var(--accent)]",    label: "Live" },
   LOGIN:      { icon: <LogIn className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />,      bg: "var(--muted)",   dot: "var(--muted-foreground)",   label: "Login" },
+  QUIZ:       { icon: <HelpCircle className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,  bg: "bg-[var(--accent)]/10", dot: "bg-[var(--accent)]", label: "Quiz" },
+  QUIZ_RESULT:{ icon: <CheckCheck className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,  bg: "bg-[var(--accent)]/10", dot: "bg-[var(--accent)]", label: "Quiz Result" },
+  SUBMISSION: { icon: <FileText className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,   bg: "bg-[var(--accent)]/10", dot: "bg-[var(--accent)]", label: "Submission" },
+  MATERIAL:   { icon: <BookOpen className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,   bg: "bg-[var(--accent)]/10", dot: "bg-[var(--accent)]", label: "Material" },
+  ENROLLMENT: { icon: <GraduationCap className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />, bg: "bg-[var(--accent)]/10", dot: "bg-[var(--accent)]", label: "Enrollment" },
+  CERTIFICATE:{ icon: <Award className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />,      bg: "bg-[var(--accent)]/10", dot: "bg-[var(--accent)]", label: "Certificate" },
 };
 
 const DEFAULT_META = { icon: <Bell className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />, bg: "var(--muted)", dot: "var(--muted-foreground)", label: "Notice" };

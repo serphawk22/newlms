@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { notifyEnrollmentRequest } from "@/lib/notifications-service";
 
 export const runtime = "nodejs";
 
@@ -81,14 +82,11 @@ export async function POST(req: Request) {
       });
     }
 
-    // Create notification for instructor
-    await prisma.notification.create({
-      data: {
-        userId: course.creatorId,
-        message: `${user.name || "A student"} has requested to join ${course.title}`,
-        type: "COURSE",
-        link: `/instructor/courses/${courseId}?tab=students`,
-      }
+    notifyEnrollmentRequest({
+      courseId,
+      courseTitle: course.title,
+      studentName: user.name,
+      creatorId: course.creatorId,
     });
 
     return NextResponse.json({

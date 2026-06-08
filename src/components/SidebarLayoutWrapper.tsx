@@ -32,9 +32,9 @@ export function SidebarLayoutWrapper({
   const pathname = usePathname();
 
   const isDashboardPage =
-    role === "STUDENT" ? pathname === "/student" :
-    role === "INSTRUCTOR" ? pathname === "/instructor" :
-    pathname === "/admin";
+    role === "STUDENT" ? pathname.startsWith("/student") :
+    role === "INSTRUCTOR" ? pathname.startsWith("/instructor") :
+    pathname.startsWith("/admin");
 
   const showSearch = isDashboardPage && (role === "INSTRUCTOR" || role === "ADMIN");
 

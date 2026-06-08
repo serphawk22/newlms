@@ -199,6 +199,24 @@ export async function POST(req: NextRequest) {
       return submission;
     });
 
+    // Notify assignment submission
+    const [assignmentInfo, studentUser] = await Promise.all([
+      prisma.assignment.findUnique({
+        where: { id: assignmentId },
+        include: { course: { select: { title: true, creatorId: true } } },
+      }),
+      prisma.user.findUnique({ where: { id: user.userId }, select: { name: true } }),
+    ]);
+    if (assignmentInfo) {
+      const { notifyAssignmentSubmission } = await import("@/lib/notifications-service");
+      notifyAssignmentSubmission({
+        courseId: assignmentInfo.courseId,
+        courseTitle: assignmentInfo.course.title,
+        studentName: studentUser?.name ?? null,
+        creatorId: assignmentInfo.course.creatorId,
+      });
+    }
+
     return NextResponse.json({
       submission: {
         id:               result.id,

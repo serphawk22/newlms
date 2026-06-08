@@ -209,6 +209,11 @@ async function createQuiz(formData: FormData) {
     triggerQuizCreatedNotifications(quiz.id).catch((err) =>
       console.error("[createQuiz notification error]", err)
     );
+    const course = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
+    if (course) {
+      const { notifyQuizCreated } = await import("@/lib/notifications-service");
+      notifyQuizCreated({ courseId, courseTitle: course.title, quizTitle: title });
+    }
     revalidatePath(`/instructor/courses/${courseId}`);
   }
 }
@@ -484,6 +489,18 @@ async function issueCertificate(formData: FormData) {
       status: "ISSUED"
     }
   });
+
+  // Notify student about certificate
+  const courseInfo = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
+  if (courseInfo) {
+    const { notifyCertificateIssued } = await import("@/lib/notifications-service");
+    notifyCertificateIssued({
+      userId: studentId,
+      courseId,
+      courseTitle: courseInfo.title,
+    });
+  }
+
   revalidatePath(`/instructor/courses/${courseId}`);
 }
 

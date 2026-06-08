@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { notifyEnrollmentAccepted } from "@/lib/notifications-service";
 
 export const runtime = "nodejs";
 
@@ -59,19 +60,22 @@ export async function PATCH(
       data: { status: newStatus }
     });
 
-    // Create notification for student
-    const notificationMessage = action === "accept"
-      ? `Your request to join ${enrollment.course.title} has been accepted!`
-      : `Your request to join ${enrollment.course.title} was not accepted.`;
-
-    await prisma.notification.create({
-      data: {
+    if (action === "accept") {
+      notifyEnrollmentAccepted({
         userId: enrollment.userId,
-        message: notificationMessage,
-        type: "COURSE",
-        link: action === "accept" ? `/student/courses/${enrollment.courseId}` : `/student/courses`,
-      }
-    });
+        courseId: enrollment.courseId,
+        courseTitle: enrollment.course.title,
+      });
+    } else {
+      await prisma.notification.create({
+        data: {
+          userId: enrollment.userId,
+          message: `Your request to join ${enrollment.course.title} was not accepted.`,
+          type: "COURSE",
+          link: `/student/courses`,
+        }
+      });
+    }
 
     return NextResponse.json({
       success: true,

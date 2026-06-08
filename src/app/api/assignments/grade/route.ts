@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       where: { id: submissionId },
       include: {
         assignment: {
-          include: { course: { select: { creatorId: true } } },
+          include: { course: { select: { creatorId: true, title: true } } },
         },
       },
     });
@@ -82,6 +82,16 @@ export async function POST(req: NextRequest) {
     triggerFeedbackNotifications(updated.id, false).catch((err) =>
       console.error("[assignments/grade notification error]", err)
     );
+
+    const { notifyAssignmentGraded } = await import("@/lib/notifications-service");
+    notifyAssignmentGraded({
+      userId: updated.studentId,
+      courseId: submission.assignment.courseId,
+      courseTitle: submission.assignment.course.title ?? submission.assignment.title,
+      assignmentTitle: submission.assignment.title,
+      grade: gradeNum,
+      maxGrade: 100,
+    });
 
     return NextResponse.json({ success: true, submission: updated });
   } catch (err) {

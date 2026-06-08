@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { generateUniqueLoginCode } from "@/lib/loginCode";
 import { issueAuthSession } from "@/lib/auth";
+import { notifyAdminNewRegistration } from "@/lib/notifications-service";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules
 export const runtime = "nodejs";
@@ -103,6 +104,12 @@ export async function POST(req: Request) {
           },
         },
       },
+    });
+
+    notifyAdminNewRegistration({
+      organizationId: org.id,
+      userName: newUser.name,
+      role: assignedRole,
     });
 
     if (assignedRole === "STUDENT" || assignedRole === "ADMIN") {

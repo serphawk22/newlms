@@ -136,6 +136,11 @@ export async function POST(req: NextRequest) {
     triggerCourseUpdateNotifications(courseId, "READING_MATERIAL", title.trim()).catch((err) =>
       console.error("[reading-materials/upload notification error]", err)
     );
+    const courseInfo = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
+    if (courseInfo) {
+      const { notifyReadingMaterialUploaded } = await import("@/lib/notifications-service");
+      notifyReadingMaterialUploaded({ courseId, courseTitle: courseInfo.title, materialTitle: title.trim() });
+    }
 
     console.log(
       `[POST /api/reading-materials/upload] Created material id=${material.id} course=${courseId}`,

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       prisma.quiz.findUnique({
         where: { id: quizId },
         select: {
-          id: true, title: true, retryEnabled: true,
+          id: true, title: true, retryEnabled: true, courseId: true,
           questions: {
             select: {
               id: true, type: true, text: true,
@@ -123,6 +123,16 @@ export async function POST(req: NextRequest) {
     triggerFeedbackNotifications(submission.id, true).catch((err) =>
       console.error("[quiz/submit notification error]", err)
     );
+
+    const [course, studentUser] = await Promise.all([
+      prisma.course.findUnique({ where: { id: quiz.courseId }, select: { title: true, creatorId: true } }),
+      prisma.user.findUnique({ where: { id: studentId }, select: { name: true } }),
+    ]);
+    const { notifyQuizSubmission, notifyQuizResult } = await import("@/lib/notifications-service");
+    if (course) {
+      notifyQuizSubmission({ courseId: quiz.courseId, courseTitle: course.title, studentName: studentUser?.name ?? null, creatorId: course.creatorId });
+      notifyQuizResult({ userId: studentId, courseId: quiz.courseId, courseTitle: course.title, quizTitle: quiz.title, obtainedMarks, totalMarks });
+    }
 
     // Fire-and-forget badge sync — non-blocking
     syncBadges(studentId).catch((e) => console.warn("[quiz/submit] badge sync error:", e));
