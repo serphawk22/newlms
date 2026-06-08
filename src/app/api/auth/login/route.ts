@@ -43,9 +43,14 @@ export async function POST(req: Request) {
       },
     });
 
-    // ── 3. Validate password ───────────────────────────────────────────────
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    // ── 3. Validate account exists ─────────────────────────────────────────
+    if (!user) {
+      return NextResponse.json({ error: "Account not found. Please create an account first." }, { status: 401 });
+    }
+
+    // ── 4. Validate password ───────────────────────────────────────────────
+    if (!(await bcrypt.compare(password, user.password))) {
+      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
     if (user.status === "PENDING" && expectedRole !== "STUDENT") {
