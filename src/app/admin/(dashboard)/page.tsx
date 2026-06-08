@@ -11,95 +11,99 @@ import { PendingRequestsCard } from "@/components/admin/PendingRequestsCard";
 import type { PendingUserItem } from "@/components/admin/PendingRequestsCard";
 import { getAdminContext } from "./_lib";
 
-export const dynamic = "force-dynamic";
+import { unstable_cache } from "next/cache";
 
-async function getAdminAnalytics(orgId: string) {
-  const [
-    studentCount, instructorCount, totalCoursesCount, publishedCount,
-    enrollmentCount, instructorMembers, orgCourses, studentMembers,
-  ] = await Promise.all([
-    prisma.organizationMember.count({ where: { organizationId: orgId, role: "STUDENT" } }),
-    prisma.organizationMember.count({ where: { organizationId: orgId, role: "INSTRUCTOR" } }),
-    prisma.course.count({ where: { organizationId: orgId } }),
-    prisma.course.count({ where: { organizationId: orgId, published: true } }),
-    prisma.enrollment.count({ where: { course: { organizationId: orgId } } }),
-    prisma.organizationMember.findMany({
-      where: { organizationId: orgId, role: "INSTRUCTOR" },
-      include: {
-        user: {
-          include: {
-            coursesCreated: {
-              where: { organizationId: orgId },
-              include: { _count: { select: { enrollments: true } } },
+const getCachedAdminAnalytics = (orgId: string) => unstable_cache(
+  async () => {
+    const [
+      studentCount, instructorCount, totalCoursesCount, publishedCount,
+      enrollmentCount, instructorMembers, orgCourses, studentMembers,
+    ] = await Promise.all([
+      prisma.organizationMember.count({ where: { organizationId: orgId, role: "STUDENT" } }),
+      prisma.organizationMember.count({ where: { organizationId: orgId, role: "INSTRUCTOR" } }),
+      prisma.course.count({ where: { organizationId: orgId } }),
+      prisma.course.count({ where: { organizationId: orgId, published: true } }),
+      prisma.enrollment.count({ where: { course: { organizationId: orgId } } }),
+      prisma.organizationMember.findMany({
+        where: { organizationId: orgId, role: "INSTRUCTOR" },
+        include: {
+          user: {
+            include: {
+              coursesCreated: {
+                where: { organizationId: orgId },
+                include: { _count: { select: { enrollments: true } } },
+              },
             },
           },
         },
-      },
-    }),
-    prisma.course.findMany({
+      }),
+      prisma.course.findMany({
+        where: { organizationId: orgId },
+        include: { creator: { select: { name: true } }, _count: { select: { enrollments: true } } },
+        orderBy: { id: "desc" },
+        take: 20,
+      }),
+      prisma.organizationMember.findMany({
+        where: { organizationId: orgId, role: "STUDENT" },
+        include: { user: { select: { id: true, name: true, email: true } } },
+        orderBy: { id: "desc" },
+        take: 10,
+      }),
+    ]);
+
+    const activeEnrollments = await prisma.enrollment.findMany({
+      where: { course: { organizationId: orgId } },
+      select: { userId: true },
+      distinct: ["userId"],
+    });
+
+    const courses = await prisma.course.findMany({
       where: { organizationId: orgId },
-      include: { creator: { select: { name: true } }, _count: { select: { enrollments: true } } },
+      select: { id: true, title: true },
       orderBy: { id: "desc" },
-      take: 20,
-    }),
-    prisma.organizationMember.findMany({
-      where: { organizationId: orgId, role: "STUDENT" },
-      include: { user: { select: { id: true, name: true, email: true } } },
-      orderBy: { id: "desc" },
-      take: 10,
-    }),
-  ]);
+    });
 
-  const activeEnrollments = await prisma.enrollment.findMany({
-    where: { course: { organizationId: orgId } },
-    select: { userId: true },
-    distinct: ["userId"],
-  });
-
-  const courses = await prisma.course.findMany({
-    where: { organizationId: orgId },
-    select: { id: true, title: true },
-    orderBy: { id: "desc" },
-  });
-
-  return {
-    adminStats: {
-      totalStudents: studentCount,
-      activeInstructors: instructorCount,
-      totalCourses: totalCoursesCount,
-      publishedCourses: publishedCount,
-      totalEnrollments: enrollmentCount,
-    },
-    instructorRows: instructorMembers.map((m) => ({
-      id: m.id,
-      name: m.user?.name || "Unnamed",
-      coursesCreated: m.user?.coursesCreated.length || 0,
-      enrolledStudents: m.user?.coursesCreated.reduce((sum, c) => sum + c._count.enrollments, 0) || 0,
-      role: m.role,
-    })),
-    courseRows: orgCourses.map((c) => ({
-      id: c.id,
-      title: c.title,
-      createdBy: c.creator?.name || "Unknown",
-      published: c.published,
-      enrollmentCount: c._count.enrollments,
-    })),
-    studentData: {
-      total: studentCount,
-      active: activeEnrollments.length,
-      recentlyJoined: studentMembers.map((m) => ({
-        id: m.user?.id || "",
+    return {
+      adminStats: {
+        totalStudents: studentCount,
+        activeInstructors: instructorCount,
+        totalCourses: totalCoursesCount,
+        publishedCourses: publishedCount,
+        totalEnrollments: enrollmentCount,
+      },
+      instructorRows: instructorMembers.map((m) => ({
+        id: m.id,
         name: m.user?.name || "Unnamed",
-        email: m.user?.email || "",
+        coursesCreated: m.user?.coursesCreated.length || 0,
+        enrolledStudents: m.user?.coursesCreated.reduce((sum, c) => sum + c._count.enrollments, 0) || 0,
+        role: m.role,
       })),
-    },
-    courses: courses.map((c: any) => ({ id: c.id, title: c.title })),
-  };
-}
+      courseRows: orgCourses.map((c) => ({
+        id: c.id,
+        title: c.title,
+        createdBy: c.creator?.name || "Unknown",
+        published: c.published,
+        enrollmentCount: c._count.enrollments,
+      })),
+      studentData: {
+        total: studentCount,
+        active: activeEnrollments.length,
+        recentlyJoined: studentMembers.map((m) => ({
+          id: m.user?.id || "",
+          name: m.user?.name || "Unnamed",
+          email: m.user?.email || "",
+        })),
+      },
+      courses: courses.map((c: any) => ({ id: c.id, title: c.title })),
+    };
+  },
+  [`admin-analytics-${orgId}`],
+  { tags: ["admin-analytics"] }
+)();
 
 async function AdminDashboardContent() {
   const ctx = await getAdminContext();
-  const data = await getAdminAnalytics(ctx.orgId);
+  const data = await getCachedAdminAnalytics(ctx.orgId);
 
   const { adminStats, instructorRows, courseRows, studentData, courses } = data;
 

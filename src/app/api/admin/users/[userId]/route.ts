@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { revalidateTag } from "next/cache";
 
 export const runtime = "nodejs";
 
@@ -37,6 +38,7 @@ export async function DELETE(
 
     // Delete the user (cascades to enrollments, memberships, etc.)
     await prisma.user.delete({ where: { id: userId } });
+    revalidateTag("admin-analytics");
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -83,6 +85,7 @@ export async function PATCH(
       where: { id: userId },
       data: { status },
     });
+    revalidateTag("admin-analytics");
 
     return NextResponse.json({ success: true, user: { id: updatedUser.id, status: updatedUser.status } });
   } catch (error) {

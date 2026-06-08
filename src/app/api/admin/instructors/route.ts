@@ -4,6 +4,7 @@ import { jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { generateUniqueLoginCode } from "@/lib/loginCode";
+import { revalidateTag } from "next/cache";
 
 export const runtime = "nodejs";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET || "default_secret");
@@ -123,6 +124,7 @@ export async function POST(req: NextRequest) {
       data: { userId: user.id, organizationId: orgId, role: "INSTRUCTOR" },
       include: { user: { select: { id: true, name: true, email: true, loginCode: true } } },
     });
+    revalidateTag("admin-analytics");
     return NextResponse.json({
       memberId: member.id, userId: member.user.id, name: member.user.name, email: member.user.email,
       password: generatedPassword,
@@ -150,6 +152,7 @@ export async function DELETE(req: NextRequest) {
     });
     if (!member) return NextResponse.json({ error: "Instructor not found" }, { status: 404 });
     await prisma.organizationMember.delete({ where: { id: memberId } });
+    revalidateTag("admin-analytics");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/admin/instructors]", err);
