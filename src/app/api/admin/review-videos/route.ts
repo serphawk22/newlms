@@ -21,3 +21,23 @@ export async function PATCH(req: NextRequest) {
     return Response.json({ error: "Failed to update video status" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return Response.json({ error: "Missing video ID" }, { status: 400 });
+    }
+
+    await prisma.adminReviewVideo.delete({
+      where: { id }
+    });
+
+    return Response.json({ success: true, message: "Video deleted successfully" });
+  } catch (error) {
+    console.error("Failed to delete admin review video:", error);
+    return Response.json({ error: "Failed to delete video" }, { status: 500 });
+  }
+}
