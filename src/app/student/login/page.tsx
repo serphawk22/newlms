@@ -31,6 +31,7 @@ function getSavedStudentEmail() {
 export default function StudentLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [savedEmail] = useState(getSavedStudentEmail);
   const [rememberMe, setRememberMe] = useState(() => Boolean(getSavedStudentEmail()));
@@ -40,6 +41,10 @@ export default function StudentLoginPage() {
     const errorParam = params.get("error");
     if (errorParam) {
       setError(errorParam);
+    }
+    const messageParam = params.get("message");
+    if (messageParam) {
+      setMessage(messageParam);
     }
     if (window.location.search) {
       window.history.replaceState({}, "", window.location.pathname);
@@ -135,6 +140,19 @@ export default function StudentLoginPage() {
         </motion.div>
 
         <form onSubmit={handleLogin} className="mt-7 space-y-4">
+          {message && (
+            <motion.p
+              variants={itemVariants}
+              className="text-sm px-3 py-2 rounded-lg"
+              style={{
+                color: "var(--foreground)",
+                background: "rgba(233,236,239,0.06)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              {message}
+            </motion.p>
+          )}
           {error && (
             <motion.p
               variants={itemVariants}

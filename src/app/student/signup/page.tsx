@@ -76,14 +76,10 @@ export default function StudentSignupPage() {
         throw new Error(data.error || "Registration failed");
       }
 
-      if (data.redirect) {
-        setSuccessCode(data.loginCode || null);
-        setTimeout(() => {
-          window.location.href = data.redirect;
-        }, 2000);
-        return;
-      }
-      router.push("/student/login");
+      // Show success — user must log in manually
+      setSuccessCode(data.loginCode);
+      setLoading(false);
+      return;
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -126,7 +122,7 @@ export default function StudentSignupPage() {
                 <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
                   {successCode === "GOOGLE"
                     ? "Your account is ready. You can now sign in."
-                    : "Redirecting you to your dashboard..."}
+                    : "Account created successfully. Please login to continue."}
                 </p>
               </div>
 
@@ -152,6 +148,15 @@ export default function StudentSignupPage() {
                       This code will NOT be shown again. Please save it before continuing.
                     </p>
                   </div>
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      onClick={() => router.push("/student/login")}
+                      className="w-full h-11 rounded-lg font-medium"
+                      style={{ background: "var(--primary)", color: "var(--primary-foreground)", border: "1px solid var(--border)" }}
+                    >
+                      Continue to Login
+                    </Button>
+                  </motion.div>
                 </>
               )}
 

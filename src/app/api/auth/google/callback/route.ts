@@ -238,7 +238,28 @@ export async function GET(request: Request) {
 
     const loginCode = await generateUniqueLoginCode(role, prisma);
 
-    if (role === "STUDENT" || role === "ADMIN") {
+    if (role === "STUDENT") {
+      await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name: name || email.split("@")[0],
+          loginCode,
+          status: "ACTIVE",
+          memberships: {
+            create: {
+              organizationId: targetOrg.id,
+              role,
+            },
+          },
+        },
+      });
+
+      const loginUrl = `/${role.toLowerCase()}/login?message=${encodeURIComponent("Account created successfully. Please login using Google to continue.")}`;
+      return NextResponse.redirect(new URL(loginUrl, request.url));
+    }
+
+    if (role === "ADMIN") {
       const newUser = await prisma.user.create({
         data: {
           email,
@@ -266,9 +287,6 @@ export async function GET(request: Request) {
       }
 
       const { token } = await generateSessionJwt(newUser, membership);
-
-      // Create login notification (same as email/password auth)
-      notifyLogin({ userId: newUser.id, name: newUser.name });
 
       const cookieStore = await cookies();
       const cookieOptions = {

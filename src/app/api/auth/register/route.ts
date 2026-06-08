@@ -112,7 +112,18 @@ export async function POST(req: Request) {
       role: assignedRole,
     });
 
-    if (assignedRole === "STUDENT" || assignedRole === "ADMIN") {
+    if (assignedRole === "STUDENT") {
+      return NextResponse.json(
+        {
+          message: "Account created successfully. Please login to continue.",
+          loginCode: newUser.loginCode,
+          role: assignedRole,
+        },
+        { status: 201 }
+      );
+    }
+
+    if (assignedRole === "ADMIN") {
       const redirectUrl = await issueAuthSession(
         { id: newUser.id, email: newUser.email, name: newUser.name, sessionToken: newUser.sessionToken },
         { role: assignedRole, organizationId: org.id }
