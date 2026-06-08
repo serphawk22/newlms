@@ -54,7 +54,7 @@ export default function Home() {
           <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm" style={{ background: "var(--foreground)", color: "var(--background)" }}>
             <LogIn className="w-4 h-4 inline mr-1.5" /> Login
           </Link>
-          <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hidden sm:inline-flex items-center" style={{ border: "1px solid var(--border)", color: "var(--foreground)" }}>
+          <Link href="/student/signup" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hidden sm:inline-flex items-center" style={{ border: "1px solid var(--border)", color: "var(--foreground)" }}>
             <UserPlus className="w-4 h-4 inline mr-1.5" /> Sign Up
           </Link>
         </div>
