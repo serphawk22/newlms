@@ -489,7 +489,7 @@ export function InstructorVideoRecorder({
               {cameraOn && (state === "setup" || isRecordingOrPaused) && (
                 <button
                   onClick={toggleFloatCamera}
-                  className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition"
+                  className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] hover:bg-[var(--muted)] transition"
                   title="Float camera window over other programs (e.g. PowerPoint)"
                 >
                   <ExternalLink className="w-3 h-3" />

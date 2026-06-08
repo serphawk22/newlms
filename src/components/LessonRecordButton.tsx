@@ -30,15 +30,15 @@ export function LessonRecordButton({ courseId, moduleId, lessonId, lessonTitle, 
         onClick={() => setOpen(true)}
         id={`record-video-btn-${lessonId}`}
         title="Record a video for this lesson"
-        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all border ${
           isSubmitted
-            ? "bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100"
-            : "hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] text-var(--muted-foreground) border border-var(--border) bg-var(--secondary-background)"
+            ? "bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20"
+            : "hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] text-[var(--muted-foreground)] border-[var(--border)] bg-[var(--secondary-background)]"
         }`}
       >
         {isSubmitted ? (
           <>
-            <Check className="w-3.5 h-3.5 text-emerald-500" />
+            <Check className="w-3.5 h-3.5 text-destructive" />
             Submitted
           </>
         ) : (
