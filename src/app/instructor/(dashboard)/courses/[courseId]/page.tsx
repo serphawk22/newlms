@@ -26,6 +26,7 @@ import { DeleteLiveSessionButton } from "@/components/DeleteLiveSessionButton";
 import { QuizPdfImporter } from "@/components/QuizPdfImporter";
 import { getCourseBannerUrl } from "@/lib/course-images";
 import { CourseCommentsTab } from "@/components/CourseCommentsTab";
+import { LessonRecordButton } from "@/components/LessonRecordButton";
 
 // --- SERVER ACTIONS ---
 
@@ -545,7 +546,10 @@ export default async function CourseBuilderPage({
       modules: {
         orderBy: { id: 'asc' },
         include: {
-          lessons: { orderBy: { id: 'asc' } },
+          lessons: {
+            orderBy: { id: 'asc' },
+            include: { adminReviewVideos: true }
+          },
           liveSessions: { orderBy: { createdAt: 'desc' } },
           recordedClasses: { orderBy: { createdAt: 'desc' } },
         },
@@ -889,6 +893,13 @@ export default async function CourseBuilderPage({
                                   style={{ borderBottom: "1px solid var(--border)" }}
                                 >
                                   <span style={{ color: "var(--foreground)" }}>{l.title}</span>
+                                  <LessonRecordButton
+                                    courseId={courseId}
+                                    moduleId={mod.id}
+                                    lessonId={l.id}
+                                    lessonTitle={l.title}
+                                    isSubmitted={!!l.videoUrl || (l.adminReviewVideos && l.adminReviewVideos.length > 0)}
+                                  />
                                 </div>
                               ))}
                               {mod.lessons.length === 0 && <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>No lessons.</div>}
