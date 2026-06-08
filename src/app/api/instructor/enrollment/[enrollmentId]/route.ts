@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { notifyEnrollmentAccepted } from "@/lib/notifications-service";
+import { triggerEnrollmentAcceptedEmail } from "@/lib/email-notifications-helper";
 
 export const runtime = "nodejs";
 
@@ -66,6 +67,9 @@ export async function PATCH(
         courseId: enrollment.courseId,
         courseTitle: enrollment.course.title,
       });
+      triggerEnrollmentAcceptedEmail(updatedEnrollment.id).catch((err) =>
+        console.error("[enrollment accepted email error]", err)
+      );
     } else {
       await prisma.notification.create({
         data: {

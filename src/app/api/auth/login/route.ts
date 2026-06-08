@@ -9,6 +9,7 @@ import { ROLE_COOKIE, ROLE_REDIRECT } from "@/lib/auth";
 import { queueEmail } from "@/lib/mail-queue";
 import { getLoginEmailHtml } from "@/lib/mail-templates";
 import { notifyLogin } from "@/lib/notifications-service";
+import { triggerStudentLoginEmail } from "@/lib/email-notifications-helper";
 
 // Force Node.js runtime — bcryptjs + Prisma pg adapter need native Node modules.
 export const runtime = "nodejs";
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
           if (!org) {
             return NextResponse.json({ error: "No organization found" }, { status: 500 });
           }
-          const membership = await prisma.organizationMember.create({
+          await prisma.organizationMember.create({
             data: { userId: user.id, organizationId: org.id, role: "STUDENT" },
           });
           const refreshed = await prisma.user.findUnique({
@@ -141,19 +142,26 @@ export async function POST(req: Request) {
           lastLoginAt: new Date(),
         },
       }),
-      // Queue successful login email notification immediately
-      queueEmail({
-        userId: user.id,
-        toEmail: user.email,
-        subject: "Successful Login to LMS",
-        type: "LOGIN",
-        html: getLoginEmailHtml(
-          user.name || user.email,
-          primaryMembership.role,
-          loginDateTime,
-          userAgent
-        ),
-      }),
+      primaryMembership.role === "STUDENT"
+        ? triggerStudentLoginEmail({
+            userId: user.id,
+            email: user.email,
+            name: user.name,
+            role: primaryMembership.role,
+            loginDateTime,
+          })
+        : queueEmail({
+            userId: user.id,
+            toEmail: user.email,
+            subject: "Successful Login to LMS",
+            type: "LOGIN",
+            html: getLoginEmailHtml(
+              user.name || user.email,
+              primaryMembership.role,
+              loginDateTime,
+              userAgent
+            ),
+          }),
     ]);
 
     // ── 8. Issue JWT (with sessionToken embedded in payload) ───────────────

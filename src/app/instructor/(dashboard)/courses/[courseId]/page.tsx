@@ -438,6 +438,10 @@ async function enrollStudent(formData: FormData) {
   if (studentId && courseId) {
     try {
       await prisma.enrollment.create({ data: { userId: studentId, courseId, progress: 0 } });
+      const { triggerStudentAssignedToCourseEmail } = await import("@/lib/email-notifications-helper");
+      triggerStudentAssignedToCourseEmail({ userId: studentId, courseId }).catch((err) =>
+        console.error("[enrollStudent email error]", err)
+      );
     } catch {
       // already enrolled, ignore
     }
@@ -494,11 +498,17 @@ async function issueCertificate(formData: FormData) {
   const courseInfo = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
   if (courseInfo) {
     const { notifyCertificateIssued } = await import("@/lib/notifications-service");
+    const { triggerCertificateEarnedEmail } = await import("@/lib/email-notifications-helper");
     notifyCertificateIssued({
       userId: studentId,
       courseId,
       courseTitle: courseInfo.title,
     });
+    triggerCertificateEarnedEmail({
+      userId: studentId,
+      courseId,
+      certificateNumber: certNumber,
+    }).catch((err) => console.error("[issueCertificate email error]", err));
   }
 
   revalidatePath(`/instructor/courses/${courseId}`);

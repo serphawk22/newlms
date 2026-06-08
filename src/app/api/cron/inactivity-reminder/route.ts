@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { queueEmail } from "@/lib/mail-queue";
-import { getInactivityEmailHtml } from "@/lib/mail-templates";
+import { getStudentInactivityEmailHtml } from "@/lib/mail-templates";
 
 export const runtime = "nodejs";
 
@@ -16,6 +16,13 @@ export async function GET(req: Request) {
 
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const thresholds = [14, 7, 3, 1] as const;
+    const subjects: Record<(typeof thresholds)[number], string> = {
+      1: "We Miss You",
+      3: "Your Learning Is Waiting",
+      7: "Let's Get Back on Track",
+      14: "A Fresh Start Is One Login Away",
+    };
 
     const inactiveUsers = await prisma.user.findMany({
       where: {
@@ -23,21 +30,34 @@ export async function GET(req: Request) {
           lte: oneDayAgo,
           not: null,
         },
-        OR: [
-          { lastReminderSentAt: null },
-          { lastReminderSentAt: { lte: oneDayAgo } },
-        ],
+        memberships: { some: { role: "STUDENT" } },
       },
     });
 
     console.log(`[cron/inactivity-reminder] Found ${inactiveUsers.length} inactive users.`);
 
     for (const user of inactiveUsers) {
+      if (!user.lastLoginAt) continue;
+      const inactiveDays = Math.floor((now.getTime() - user.lastLoginAt.getTime()) / (24 * 60 * 60 * 1000));
+      const threshold = thresholds.find((days) => inactiveDays >= days);
+      if (!threshold) continue;
+
+      const type = `INACTIVITY_${threshold}D`;
+      const alreadySent = await prisma.emailNotification.findFirst({
+        where: {
+          userId: user.id,
+          type,
+          createdAt: { gte: user.lastLoginAt },
+        },
+        select: { id: true },
+      });
+      if (alreadySent) continue;
+
       const lastLoginStr = user.lastLoginAt
         ? user.lastLoginAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST"
         : "Unknown";
 
-      const html = getInactivityEmailHtml(user.name || user.email, lastLoginStr);
+      const html = getStudentInactivityEmailHtml(user.name || user.email, threshold, lastLoginStr);
 
       await prisma.user.update({
         where: { id: user.id },
@@ -49,8 +69,8 @@ export async function GET(req: Request) {
       await queueEmail({
         userId: user.id,
         toEmail: user.email,
-        subject: "We Miss You at SERP LMS!",
-        type: "INACTIVITY",
+        subject: subjects[threshold],
+        type,
         html,
       });
     }

@@ -72,6 +72,13 @@ export async function POST(req: Request) {
       include: { course: { select: { title: true } } },
     });
 
+    const { triggerCertificateEarnedEmail } = await import("@/lib/email-notifications-helper");
+    triggerCertificateEarnedEmail({
+      userId,
+      courseId,
+      certificateNumber: certificate.certificateNumber,
+    }).catch((emailErr) => console.error("[certificates/generate email error]", emailErr));
+
     return NextResponse.json({ certificate });
   } catch (err) {
     console.error("[POST /api/certificates/generate]", err);

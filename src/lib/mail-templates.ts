@@ -156,6 +156,12 @@ function buildDetailsCard(rows: { label: string; value: string }[]) {
   `;
 }
 
+function formatList(items: string[]) {
+  return `<ul style="margin: 12px 0 0 20px; padding: 0;">${items
+    .map((item) => `<li style="margin-bottom: 6px;">${item}</li>`)
+    .join("")}</ul>`;
+}
+
 export function getLoginEmailHtml(userName: string, role: string, loginDateTime: string, browserInfo: string) {
   const details = buildDetailsCard([
     { label: "User Name", value: userName },
@@ -168,6 +174,142 @@ export function getLoginEmailHtml(userName: string, role: string, loginDateTime:
     "Successful Login to LMS",
     "Security Alert: A new login was detected",
     `Hello ${userName},<br/><br/>We detected a successful login to your SERP LMS account. If this was you, you can safely ignore this email. If this wasn't you, please contact support immediately.<br/><br/>${details}`
+  );
+}
+
+export function getStudentLoginEmailHtml(userName: string, loginDateTime: string) {
+  const details = buildDetailsCard([
+    { label: "Student", value: userName },
+    { label: "Login Time", value: loginDateTime },
+  ]);
+
+  return buildEmailHtml(
+    "Login Successful",
+    "Welcome back to Ally Tech LMS",
+    `Welcome back!<br/><br/>You successfully logged into your Ally Tech LMS account.<br/><br/>${details}<br/>Have a productive learning session.`
+  );
+}
+
+export function getStudentCourseEventEmailHtml({
+  title,
+  subtitle,
+  intro,
+  courseName,
+  contentTitle,
+  eventLabel,
+}: {
+  title: string;
+  subtitle: string;
+  intro: string;
+  courseName: string;
+  contentTitle?: string;
+  eventLabel: string;
+}) {
+  const rows = [
+    { label: "Course", value: courseName },
+    { label: "Event", value: eventLabel },
+  ];
+  if (contentTitle) rows.push({ label: "Title", value: contentTitle });
+
+  return buildEmailHtml(title, subtitle, `${intro}<br/><br/>${buildDetailsCard(rows)}`);
+}
+
+export function getStudentAchievementEmailHtml(achievementName: string, achievementType = "Achievement") {
+  const details = buildDetailsCard([
+    { label: achievementType, value: achievementName },
+  ]);
+
+  return buildEmailHtml(
+    "New Achievement Unlocked",
+    "Keep learning and reaching new milestones",
+    `Congratulations!<br/><br/>You unlocked:<br/><br/>${details}<br/>Keep learning and reaching new milestones.`
+  );
+}
+
+export function getStudentCertificateEmailHtml(courseName: string, certificateNumber?: string) {
+  const rows = [
+    { label: "Course", value: courseName },
+    { label: "Status", value: "Certificate earned" },
+  ];
+  if (certificateNumber) rows.push({ label: "Certificate Number", value: certificateNumber });
+
+  return buildEmailHtml(
+    "Certificate Earned",
+    "Your certificate is ready",
+    `Congratulations!<br/><br/>You earned a certificate for completing your course.<br/><br/>${buildDetailsCard(rows)}`
+  );
+}
+
+export function getStudentLiveClassReminderEmailHtml({
+  courseName,
+  sessionTitle,
+  scheduledAt,
+  reminderLabel,
+  joinLink,
+}: {
+  courseName: string;
+  sessionTitle: string;
+  scheduledAt: Date;
+  reminderLabel: string;
+  joinLink?: string;
+}) {
+  const scheduledTime = scheduledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+  const details = buildDetailsCard([
+    { label: "Course", value: courseName },
+    { label: "Live Class", value: sessionTitle },
+    { label: "Starts", value: scheduledTime },
+    { label: "Reminder", value: reminderLabel },
+  ]);
+
+  return buildEmailHtml(
+    `Live Class Starts ${reminderLabel}`,
+    "Your upcoming live class reminder",
+    `Hi Student,<br/><br/>Your live class is coming up soon.<br/><br/>${details}`,
+    !!joinLink,
+    joinLink,
+    "Join Class"
+  );
+}
+
+export function getStudentInactivityEmailHtml(userName: string, inactiveDays: 1 | 3 | 7 | 14, lastLoginDate: string) {
+  const toneByDay: Record<number, { subject: string; intro: string; closer: string }> = {
+    1: {
+      subject: "We Miss You",
+      intro: `Hi ${userName},<br/><br/>You haven't visited Ally Tech LMS in the last day.`,
+      closer: "Come back and continue your learning journey.",
+    },
+    3: {
+      subject: "Your Learning Is Waiting",
+      intro: `Hi ${userName},<br/><br/>It's been 3 days since your last Ally Tech LMS session.`,
+      closer: "A short session today can get your momentum back.",
+    },
+    7: {
+      subject: "Let's Get Back on Track",
+      intro: `Hi ${userName},<br/><br/>A week has passed since your last visit to Ally Tech LMS.`,
+      closer: "Your courses, materials, and goals are still here when you're ready.",
+    },
+    14: {
+      subject: "A Fresh Start Is One Login Away",
+      intro: `Hi ${userName},<br/><br/>It's been 14 days since your last learning session.`,
+      closer: "Pick one small lesson and restart at your own pace.",
+    },
+  };
+
+  const copy = toneByDay[inactiveDays];
+  const details = buildDetailsCard([
+    { label: "Last Active", value: lastLoginDate },
+    { label: "Reminder", value: `${inactiveDays} day${inactiveDays === 1 ? "" : "s"} inactive` },
+  ]);
+
+  return buildEmailHtml(
+    copy.subject,
+    "Friendly reminder from Ally Tech LMS",
+    `${copy.intro}<br/><br/>A lot can happen while you're away:${formatList([
+      "New learning materials",
+      "New assignments",
+      "New announcements",
+      "New achievements",
+    ])}<br/>${details}<br/>${copy.closer}`
   );
 }
 

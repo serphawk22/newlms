@@ -1,5 +1,7 @@
 ﻿import { prisma } from "@/lib/prisma";
 
+import { triggerAchievementUnlockedEmail } from "@/lib/email-notifications-helper";
+
 /**
  * lib/badges.ts
  *
@@ -195,8 +197,14 @@ export async function syncBadges(
       "Scholar": scholarUnlocked,
     };
 
+    let previouslyPersistedBadges = new Set<string>();
     try {
       await ensureUserBadgeTable();
+      const beforeRows = await prisma.$queryRaw<{ badgeName: string }[]>`
+        SELECT "badgeName" FROM "UserBadge" WHERE "userId" = ${userId}
+      `;
+      previouslyPersistedBadges = new Set(beforeRows.map((r) => r.badgeName));
+
       const toUnlock = BADGE_DEFINITIONS.filter((b) => unlockMap[b.name]).map((b) => b.name);
       for (const badgeName of toUnlock) {
         const id = makeId();
@@ -216,6 +224,15 @@ export async function syncBadges(
         SELECT "badgeName" FROM "UserBadge" WHERE "userId" = ${userId}
       `;
       persistedBadges = new Set(rows.map((r) => r.badgeName));
+      for (const badgeName of persistedBadges) {
+        if (!previouslyPersistedBadges.has(badgeName)) {
+          triggerAchievementUnlockedEmail({
+            userId,
+            achievementName: badgeName,
+            achievementType: "Badge earned",
+          }).catch((emailErr) => console.warn("[syncBadges] badge email error:", emailErr));
+        }
+      }
     } catch {
       persistedBadges = new Set(
         BADGE_DEFINITIONS.filter((b) => unlockMap[b.name]).map((b) => b.name)

@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { generateUniqueLoginCode } from "@/lib/loginCode";
 import { generateSessionJwt, ROLE_COOKIE, ROLE_REDIRECT } from "@/lib/auth";
 import { notifyLogin } from "@/lib/notifications-service";
+import { triggerStudentLoginEmail } from "@/lib/email-notifications-helper";
 import type { Role } from "@prisma/client";
 
 export const runtime = "nodejs";
@@ -116,7 +117,7 @@ export async function GET(request: Request) {
     }
 
     // 4. Check if user already exists
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
       include: { memberships: true },
     });
@@ -175,6 +176,21 @@ export async function GET(request: Request) {
 
       // Create login notification (same as email/password auth)
       notifyLogin({ userId: user.id, name: user.name });
+      const loginDateTime = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+
+      await Promise.all([
+        prisma.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        }),
+        triggerStudentLoginEmail({
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+          role: primaryMembership.role,
+          loginDateTime,
+        }),
+      ]);
 
       console.log("[Callback] JWT generated, length:", token.length);
 

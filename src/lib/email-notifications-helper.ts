@@ -5,8 +5,238 @@ import {
   getAssignmentEmailHtml,
   getQuizEmailHtml,
   getFeedbackEmailHtml,
-  getCourseUpdateEmailHtml,
+  getStudentAchievementEmailHtml,
+  getStudentCertificateEmailHtml,
+  getStudentCourseEventEmailHtml,
+  getStudentLiveClassReminderEmailHtml,
+  getStudentLoginEmailHtml,
 } from "@/lib/mail-templates";
+
+export type StudentEmailPreferenceCategory =
+  | "email"
+  | "achievement"
+  | "course"
+  | "reminder";
+
+async function queueStudentEmail({
+  userId,
+  toEmail,
+  subject,
+  type,
+  html,
+  category,
+}: {
+  userId: string;
+  toEmail: string;
+  subject: string;
+  type: string;
+  html: string;
+  category: StudentEmailPreferenceCategory;
+}) {
+  // Preference hooks are intentionally centralized here. When user-level email
+  // settings are added, gate the category before queueing without touching callers.
+  void category;
+
+  await queueEmail({
+    userId,
+    toEmail,
+    subject,
+    type,
+    html,
+  });
+}
+
+export async function triggerStudentLoginEmail({
+  userId,
+  email,
+  name,
+  role,
+  loginDateTime,
+}: {
+  userId: string;
+  email: string;
+  name: string | null;
+  role: string;
+  loginDateTime: string;
+}) {
+  if (role !== "STUDENT") return;
+
+  await queueStudentEmail({
+    userId,
+    toEmail: email,
+    subject: "Login Successful",
+    type: "STUDENT_LOGIN",
+    category: "email",
+    html: getStudentLoginEmailHtml(name || email, loginDateTime),
+  });
+}
+
+export async function triggerEnrollmentAcceptedEmail(enrollmentId: string) {
+  try {
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+      include: {
+        user: true,
+        course: { select: { title: true } },
+      },
+    });
+
+    if (!enrollment || enrollment.status !== "ACTIVE") return;
+
+    await queueStudentEmail({
+      userId: enrollment.userId,
+      toEmail: enrollment.user.email,
+      subject: "Course Enrolled",
+      type: "COURSE_ENROLLED",
+      category: "course",
+      html: getStudentCourseEventEmailHtml({
+        title: "Course Enrolled",
+        subtitle: "You are ready to start learning",
+        intro: "You have been enrolled in a course on Ally Tech LMS.",
+        courseName: enrollment.course.title,
+        eventLabel: "Course enrolled",
+      }),
+    });
+  } catch (error) {
+    console.error("[triggerEnrollmentAcceptedEmail] Error:", error);
+  }
+}
+
+export async function triggerStudentAssignedToCourseEmail({
+  userId,
+  courseId,
+}: {
+  userId: string;
+  courseId: string;
+}) {
+  try {
+    const [student, course] = await Promise.all([
+      prisma.user.findUnique({ where: { id: userId } }),
+      prisma.course.findUnique({ where: { id: courseId }, select: { title: true } }),
+    ]);
+
+    if (!student || !course) return;
+
+    await queueStudentEmail({
+      userId,
+      toEmail: student.email,
+      subject: "New Course Assigned",
+      type: "COURSE_ASSIGNED",
+      category: "course",
+      html: getStudentCourseEventEmailHtml({
+        title: "New Course Assigned",
+        subtitle: "A new course has been added for you",
+        intro: "A new course has been assigned to your Ally Tech LMS account.",
+        courseName: course.title,
+        eventLabel: "New course assigned",
+      }),
+    });
+  } catch (error) {
+    console.error("[triggerStudentAssignedToCourseEmail] Error:", error);
+  }
+}
+
+export async function triggerCertificateEarnedEmail({
+  userId,
+  courseId,
+  certificateNumber,
+}: {
+  userId: string;
+  courseId: string;
+  certificateNumber?: string;
+}) {
+  try {
+    const [student, course] = await Promise.all([
+      prisma.user.findUnique({ where: { id: userId } }),
+      prisma.course.findUnique({ where: { id: courseId }, select: { title: true } }),
+    ]);
+
+    if (!student || !course) return;
+
+    await queueStudentEmail({
+      userId,
+      toEmail: student.email,
+      subject: "Certificate Earned",
+      type: "CERTIFICATE_EARNED",
+      category: "achievement",
+      html: getStudentCertificateEmailHtml(course.title, certificateNumber),
+    });
+  } catch (error) {
+    console.error("[triggerCertificateEarnedEmail] Error:", error);
+  }
+}
+
+export async function triggerAchievementUnlockedEmail({
+  userId,
+  achievementName,
+  achievementType = "Achievement",
+}: {
+  userId: string;
+  achievementName: string;
+  achievementType?: string;
+}) {
+  try {
+    const student = await prisma.user.findUnique({ where: { id: userId } });
+    if (!student) return;
+
+    await queueStudentEmail({
+      userId,
+      toEmail: student.email,
+      subject: "New Achievement Unlocked",
+      type: "ACHIEVEMENT_UNLOCKED",
+      category: "achievement",
+      html: getStudentAchievementEmailHtml(achievementName, achievementType),
+    });
+  } catch (error) {
+    console.error("[triggerAchievementUnlockedEmail] Error:", error);
+  }
+}
+
+export async function triggerLiveClassReminderEmail({
+  userId,
+  toEmail,
+  courseName,
+  sessionTitle,
+  sessionId,
+  roomId,
+  scheduledAt,
+  reminderLabel,
+  reminderType,
+}: {
+  userId: string;
+  toEmail: string;
+  courseName: string;
+  sessionTitle: string;
+  sessionId: string;
+  roomId: string;
+  scheduledAt: Date;
+  reminderLabel: string;
+  reminderType: "24H" | "1H" | "15M";
+}) {
+  const type = `LIVE_CLASS_REMINDER_${reminderType}_${sessionId}`;
+  const existing = await prisma.emailNotification.findFirst({
+    where: { userId, type },
+    select: { id: true },
+  });
+  if (existing) return;
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  await queueStudentEmail({
+    userId,
+    toEmail,
+    subject: `Live Class Starts ${reminderLabel}`,
+    type,
+    category: "reminder",
+    html: getStudentLiveClassReminderEmailHtml({
+      courseName,
+      sessionTitle,
+      scheduledAt,
+      reminderLabel,
+      joinLink: `${appUrl}/meet/${roomId}`,
+    }),
+  });
+}
 
 export async function triggerCourseCreatedNotifications(courseId: string) {
   try {
@@ -54,18 +284,27 @@ export async function triggerCourseCreatedNotifications(courseId: string) {
       // Avoid sending duplicate to instructor if they are also registered differently, but role check handles it
       if (member.userId === course.creatorId) continue;
 
+      const isStudent = member.role === "STUDENT";
       await queueEmail({
         userId: member.userId,
         toEmail: member.user.email,
-        subject: "New Course Created",
+        subject: isStudent ? "New Course Assigned" : "New Course Created",
         type: "COURSE_CREATE",
-        html: getCourseCreationEmailHtml(
-          course.title,
-          instructorName,
-          creationDate,
-          status,
-          member.role
-        ),
+        html: isStudent
+          ? getStudentCourseEventEmailHtml({
+              title: "New Course Assigned",
+              subtitle: "A new course is available for you",
+              intro: "A course has been added to your Ally Tech LMS learning catalog.",
+              courseName: course.title,
+              eventLabel: "New course assigned",
+            })
+          : getCourseCreationEmailHtml(
+              course.title,
+              instructorName,
+              creationDate,
+              status,
+              member.role
+            ),
       });
     }
   } catch (error) {
@@ -90,8 +329,6 @@ export async function triggerAssignmentCreatedNotifications(assignmentId: string
 
     const course = assignment.course;
     const instructorName = course.creator.name || course.creator.email;
-    const dueDate = assignment.updatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST"; // Or custom formatting if due date is stored, but schema doesn't have dueDate. Wait, does schema have dueDate? Let's check prisma schema.
-
     // Let's check prisma schema: Assignment model has: id, title, description, driveLink, courseId, createdAt, updatedAt.
     // It doesn't have a specific dueDate field. So we can use updatedAt or a generic message. Let's look at the instruction:
     // "Email should contain: Assignment Title, Course Name, Due Date, Instructor Name"
@@ -132,7 +369,7 @@ export async function triggerAssignmentCreatedNotifications(assignmentId: string
       await queueEmail({
         userId: env.userId,
         toEmail: env.user.email,
-        subject: "New Assignment Created",
+        subject: "New Assignment Added",
         type: "ASSIGNMENT",
         html: emailHtml,
       });
@@ -207,7 +444,7 @@ export async function triggerQuizCreatedNotifications(quizId: string) {
       await queueEmail({
         userId: env.userId,
         toEmail: env.user.email,
-        subject: "New Quiz Created",
+        subject: "New Quiz Added",
         type: "QUIZ",
         html: emailHtml,
       });
@@ -327,17 +564,47 @@ export async function triggerCourseUpdateNotifications(
       },
     });
 
-    const emailHtml = getCourseUpdateEmailHtml(
-      course.title,
-      updateType.replace("_", " "),
-      contentTitle
-    );
+    const eventCopy: Record<typeof updateType, { subject: string; title: string; label: string; intro: string }> = {
+      LESSON: {
+        subject: "New Module Released",
+        title: "New Module Released",
+        label: "New module released",
+        intro: "New learning content has been released in your course.",
+      },
+      MODULE: {
+        subject: "New Module Released",
+        title: "New Module Released",
+        label: "New module released",
+        intro: "A new module is available in your course.",
+      },
+      READING_MATERIAL: {
+        subject: "New Reading Material Added",
+        title: "New Reading Material Added",
+        label: "New reading material added",
+        intro: "New reading material has been added to your course.",
+      },
+      VIDEO: {
+        subject: "Course Content Updated",
+        title: "Course Content Updated",
+        label: "New learning content added",
+        intro: "New learning content has been added to your course.",
+      },
+    };
+    const copy = eventCopy[updateType];
+    const emailHtml = getStudentCourseEventEmailHtml({
+      title: copy.title,
+      subtitle: "New resources are available for your study",
+      intro: copy.intro,
+      courseName: course.title,
+      contentTitle,
+      eventLabel: copy.label,
+    });
 
     for (const env of enrollments) {
       await queueEmail({
         userId: env.userId,
         toEmail: env.user.email,
-        subject: "Course Content Updated",
+        subject: copy.subject,
         type: "COURSE_UPDATE",
         html: emailHtml,
       });
