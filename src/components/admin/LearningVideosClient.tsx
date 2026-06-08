@@ -99,6 +99,24 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
     }
   };
 
+  const handleDeleteAdminVideo = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this instructor lesson video?")) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/admin/review-videos?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setAdminVideos((prev) => prev.filter((v) => v.id !== id));
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to delete video");
+      }
+    } catch {
+      alert("Network error. Failed to delete video.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const handleUpdateStatus = async (id: string, status: string) => {
     setUpdatingId(id);
     try {
@@ -322,7 +340,19 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                         <Calendar className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0" />
                         <span>{dateStr}</span>
                       </div>
-                      <StatusBadge status={video.status} />
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={video.status} />
+                        <Button
+                          onClick={() => handleDeleteAdminVideo(video.id)}
+                          disabled={deletingId === video.id}
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50/50 h-7 w-7 rounded-md p-0 flex items-center justify-center"
+                          title="Delete Video"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
