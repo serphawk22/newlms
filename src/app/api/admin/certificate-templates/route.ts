@@ -61,3 +61,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to create template" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  const isAdmin = await checkAdminAuth();
+  if (!isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing template ID" }, { status: 400 });
+    }
+
+    await prisma.certificateTemplate.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({ success: true, message: "Template deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting template:", error);
+    return NextResponse.json({ error: "Failed to delete template" }, { status: 500 });
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Upload, Loader2, X, CheckCircle2, AlertCircle, Settings } from "lucide-react";
+import { Upload, Loader2, X, CheckCircle2, AlertCircle, Settings, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,7 +33,29 @@ export function CertificateTemplateManager() {
   const [progress, setProgress] = useState(0);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [showMapper, setShowMapper] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDeleteTemplate = async () => {
+    if (!activeTemplate) return;
+    if (!confirm(`Are you sure you want to delete the template "${activeTemplate.name}"? This cannot be undone.`)) return;
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/certificate-templates?id=${activeTemplate.id}`, {
+        method: "DELETE"
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      
+      showToast("success", `Template "${activeTemplate.name}" deleted successfully.`);
+      setActiveTemplate(null);
+      setShowMapper(false);
+    } catch (err) {
+      showToast("error", err instanceof Error ? err.message : "Failed to delete template.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const showToast = useCallback((type: Toast["type"], message: string) => {
     const id = Math.random().toString(36).slice(2);
@@ -193,13 +215,23 @@ export function CertificateTemplateManager() {
                   <p className="text-xs text-slate-400 mt-0.5">This template is currently being used for all certificates.</p>
                 </div>
                 {activeTemplate && (
-                  <button
-                    onClick={() => setShowMapper((v) => !v)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${showMapper ? "bg-[#D9252A] text-white border-[#D9252A]" : "bg-white text-[#D9252A] border-[#D9252A] hover:bg-[rgba(217,37,42,0.06)]"}`}
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                    {showMapper ? "Hide Editor" : "Edit Field Positions"}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowMapper((v) => !v)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${showMapper ? "bg-[#D9252A] text-white border-[#D9252A]" : "bg-white text-[#D9252A] border-[#D9252A] hover:bg-[rgba(217,37,42,0.06)]"}`}
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                      {showMapper ? "Hide Editor" : "Edit Field Positions"}
+                    </button>
+                    <button
+                      onClick={handleDeleteTemplate}
+                      disabled={deleting}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete Template
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="p-6">
