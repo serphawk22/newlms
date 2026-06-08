@@ -6,6 +6,7 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { generateUniqueLoginCode } from "@/lib/loginCode";
 import { generateSessionJwt, ROLE_COOKIE, ROLE_REDIRECT } from "@/lib/auth";
+import { notifyLogin } from "@/lib/notifications-service";
 import type { Role } from "@prisma/client";
 
 export const runtime = "nodejs";
@@ -172,6 +173,9 @@ export async function GET(request: Request) {
       // Membership exists — issue session and log in
       const { token } = await generateSessionJwt(user, primaryMembership);
 
+      // Create login notification (same as email/password auth)
+      notifyLogin({ userId: user.id, name: user.name });
+
       console.log("[Callback] JWT generated, length:", token.length);
 
       // Set cookies using cookies() API — same mechanism as email/password login (issueAuthSession)
@@ -262,6 +266,9 @@ export async function GET(request: Request) {
       }
 
       const { token } = await generateSessionJwt(newUser, membership);
+
+      // Create login notification (same as email/password auth)
+      notifyLogin({ userId: newUser.id, name: newUser.name });
 
       const cookieStore = await cookies();
       const cookieOptions = {

@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       const hashedPassword = await bcrypt.hash(generatedPassword, 10);
       generatedLoginCode = await generateUniqueLoginCode("INSTRUCTOR", prisma);
       user = await prisma.user.create({
-        data: { email, name: name || email.split("@")[0], password: hashedPassword, loginCode: generatedLoginCode },
+        data: { email, name: name || email.split("@")[0], password: hashedPassword, loginCode: generatedLoginCode, status: "ACTIVE" },
       });
     } else {
       generatedPassword = "a1b2c3d4";

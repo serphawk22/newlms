@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Users, Plus, X } from "lucide-react";
 import { SearchBar } from "@/components/ui/search-bar";
 import type { UsersData, StudentUser, InstructorUser } from "./page";
