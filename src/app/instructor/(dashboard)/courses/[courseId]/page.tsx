@@ -899,6 +899,7 @@ export default async function CourseBuilderPage({
                                     lessonId={l.id}
                                     lessonTitle={l.title}
                                     isSubmitted={!!l.videoUrl || (l.adminReviewVideos && l.adminReviewVideos.length > 0)}
+                                    videoUrl={l.videoUrl || l.adminReviewVideos[0]?.videoUrl}
                                   />
                                 </div>
                               ))}

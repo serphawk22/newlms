@@ -66,15 +66,15 @@ export function VideoPlayerModal({ videoUrl, title, duration, children }: VideoP
           aria-modal="true"
           aria-label={`Playing: ${title}`}
         >
-          <div className="relative w-full max-w-4xl bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col">
+          <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 bg-slate-800/80 border-b border-white/10 shrink-0">
+            <div className="flex items-center justify-between px-5 py-3 shrink-0" style={{ background: "var(--secondary-background)", borderBottom: "1px solid var(--border)" }}>
               <div className="flex items-center gap-2 min-w-0">
                 <MonitorPlay className="w-4 h-4 text-[#D9252A] shrink-0" />
-                <span className="text-sm font-semibold text-white truncate">{title}</span>
+                <span className="text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>{title}</span>
                 {duration && (
-                  <span className="text-xs text-slate-400 flex items-center gap-1 shrink-0">
+                  <span className="text-xs flex items-center gap-1 shrink-0" style={{ color: "var(--muted-foreground)" }}>
                     <Clock className="w-3 h-3" /> {formatDuration(duration)}
                   </span>
                 )}
@@ -86,7 +86,10 @@ export function VideoPlayerModal({ videoUrl, title, duration, children }: VideoP
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Open in new tab (full screen)"
-                  className="text-slate-400 hover:text-white transition-colors p-1"
+                  className="transition-colors p-1"
+                  style={{ color: "var(--muted-foreground)" }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--foreground)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--muted-foreground)"}
                 >
                   <Maximize2 className="w-4 h-4" />
                 </a>
@@ -94,7 +97,10 @@ export function VideoPlayerModal({ videoUrl, title, duration, children }: VideoP
                   onClick={() => setOpen(false)}
                   id="video-modal-close-btn"
                   aria-label="Close video player"
-                  className="text-slate-400 hover:text-white transition-colors p-1"
+                  className="transition-colors p-1"
+                  style={{ color: "var(--muted-foreground)" }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--foreground)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--muted-foreground)"}
                 >
                   <X className="w-5 h-5" />
                 </button>
