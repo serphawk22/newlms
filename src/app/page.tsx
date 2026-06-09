@@ -93,7 +93,7 @@ export default function Home() {
                     style={{ color: "var(--foreground)" }}
                     onClick={() => setProfileMenuOpen(false)}
                   >
-                    <UserCog className="w-4.5 h-4.5" />
+                    <UserCog className="w-4 h-4" />
                     <span>Instructor</span>
                   </Link>
                   <Link
@@ -102,7 +102,7 @@ export default function Home() {
                     style={{ color: "var(--foreground)" }}
                     onClick={() => setProfileMenuOpen(false)}
                   >
-                    <Shield className="w-4.5 h-4.5" />
+                    <Shield className="w-4 h-4" />
                     <span>Admin</span>
                   </Link>
                 </div>

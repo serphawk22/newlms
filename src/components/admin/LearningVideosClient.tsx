@@ -347,7 +347,7 @@ export function LearningVideosClient({ initialVideos, initialAdminVideos = [] }:
                           disabled={deletingId === video.id}
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50/50 h-7 w-7 rounded-md p-0 flex items-center justify-center"
+                          className="text-[#D9252A] hover:text-[#C21F24] hover:bg-[rgba(217,37,42,0.08)] h-8 w-8 rounded-lg p-0 flex items-center justify-center"
                           title="Delete Video"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

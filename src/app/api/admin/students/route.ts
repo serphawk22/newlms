@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
       data: { userId: user.id, organizationId: orgId, role: "STUDENT" },
       include: { user: { select: { id: true, name: true, email: true, loginCode: true } } },
     });
-    revalidateTag("admin-analytics");
+    revalidateTag("admin-analytics", "max");
     return NextResponse.json({
       memberId: member.id, userId: member.user.id, name: member.user.name, email: member.user.email,
       password: generatedPassword,
@@ -154,7 +154,7 @@ export async function PATCH(req: NextRequest) {
       include: { user: { select: { id: true, name: true, email: true, loginCode: true } } },
     });
 
-    revalidateTag("admin-analytics");
+    revalidateTag("admin-analytics", "max");
     return NextResponse.json({
       success: true,
       memberId: member.id,
@@ -184,7 +184,7 @@ export async function DELETE(req: NextRequest) {
     });
     if (!member) return NextResponse.json({ error: "Student not found" }, { status: 404 });
     await prisma.organizationMember.delete({ where: { id: memberId } });
-    revalidateTag("admin-analytics");
+    revalidateTag("admin-analytics", "max");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/admin/students]", err);

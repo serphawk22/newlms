@@ -226,7 +226,7 @@ export function CertificateTemplateManager() {
                     <button
                       onClick={handleDeleteTemplate}
                       disabled={deleting}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#D9252A] border border-[#D9252A] hover:bg-[rgba(217,37,42,0.08)] transition-colors disabled:opacity-50"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete Template
