@@ -11,8 +11,6 @@ import { PendingRequestsCard } from "@/components/admin/PendingRequestsCard";
 import type { PendingUserItem } from "@/components/admin/PendingRequestsCard";
 import { getAdminContext } from "./_lib";
 
-import { unstable_cache } from "next/cache";
-
 const getCachedAdminAnalytics = (orgId: string) => unstable_cache(
   async () => {
     const [

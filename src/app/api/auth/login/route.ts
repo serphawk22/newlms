@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
-    if (!loginCode?.trim()) {
+    if (expectedRole !== "ADMIN" && !loginCode?.trim()) {
       return NextResponse.json({ error: "Login Code is required" }, { status: 400 });
     }
 
@@ -44,7 +44,11 @@ export async function POST(req: Request) {
     });
 
     // ── 3. Validate password ───────────────────────────────────────────────
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      return NextResponse.json({ error: "Account not found. Please create an account." }, { status: 404 });
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
@@ -73,20 +77,23 @@ export async function POST(req: Request) {
     // Existing users created before this feature have loginCode = null.
     // We allow them in with any code so they are not locked out,
     // but NEW users always have a code enforced.
-    const codeValid =
-      user.loginCode === null ||
-      user.loginCode === loginCode.trim().toUpperCase();
+    if (expectedRole !== "ADMIN") {
+      const codeValid =
+        user.loginCode === null ||
+        (loginCode && user.loginCode === loginCode.trim().toUpperCase());
 
-    // Also allow the organization's role-specific codes as login codes
-    if (!codeValid) {
-      const org = primaryMembership.organization;
-      const orgCodeValid =
-        org &&
-        (loginCode.trim().toUpperCase() === org.joinCode ||
-          loginCode.trim().toUpperCase() === org.instructorCode ||
-          loginCode.trim().toUpperCase() === org.adminCode);
-      if (!orgCodeValid) {
-        return NextResponse.json({ error: "Invalid Login Code" }, { status: 401 });
+      // Also allow the organization's role-specific codes as login codes
+      if (!codeValid) {
+        const org = primaryMembership.organization;
+        const orgCodeValid =
+          org &&
+          loginCode &&
+          (loginCode.trim().toUpperCase() === org.joinCode ||
+            loginCode.trim().toUpperCase() === org.instructorCode ||
+            loginCode.trim().toUpperCase() === org.adminCode);
+        if (!orgCodeValid) {
+          return NextResponse.json({ error: "Invalid Login Code" }, { status: 401 });
+        }
       }
     }
 

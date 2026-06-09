@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { motion, type Variants } from 'framer-motion';
-import { BookOpen, Video, Brain, FileSearch, Route, ClipboardCheck, ArrowRight, Sparkles, CheckCircle, LogIn, UserPlus } from 'lucide-react';
+import { BookOpen, Video, Brain, FileSearch, Route, ClipboardCheck, ArrowRight, Sparkles, CheckCircle, LogIn, UserPlus, User, GraduationCap, UserCog, Shield } from 'lucide-react';
 
 const Ballpit = dynamic(() => import('@/components/Ballpit'), { ssr: false });
 
@@ -45,6 +46,8 @@ const steps = [
 ];
 
 export default function Home() {
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
   return (
     <div className="w-full relative overflow-hidden" style={{ background: "var(--background)" }}>
       {/* ── Fixed Nav ── */}
@@ -57,6 +60,55 @@ export default function Home() {
           <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hidden sm:inline-flex items-center" style={{ border: "1px solid var(--border)", color: "var(--foreground)" }}>
             <UserPlus className="w-4 h-4 inline mr-1.5" /> Sign Up
           </Link>
+          <div className="relative">
+            <button
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm border hover:opacity-80"
+              style={{
+                borderColor: "var(--border)",
+                background: "var(--card)",
+                color: "var(--foreground)"
+              }}
+              aria-label="Profile menu"
+            >
+              <User className="w-5 h-5" />
+            </button>
+            {profileMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-40 cursor-default" onClick={() => setProfileMenuOpen(false)} />
+                <div
+                  className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg border p-1.5 z-50 transition-all duration-200"
+                  style={{
+                    background: "var(--card)",
+                    borderColor: "var(--border)",
+                    boxShadow: "var(--shadow-md)"
+                  }}
+                >
+                  <div className="px-3 py-1.5 text-xs font-semibold border-b mb-1" style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}>
+                    Login / Sign Up As
+                  </div>
+                  <Link
+                    href="/instructor/signup"
+                    className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-[color-mix(in srgb,var(--foreground)_5%,transparent)] transition-colors"
+                    style={{ color: "var(--foreground)" }}
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
+                    <UserCog className="w-4.5 h-4.5" />
+                    <span>Instructor</span>
+                  </Link>
+                  <Link
+                    href="/admin/signup"
+                    className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-[color-mix(in srgb,var(--foreground)_5%,transparent)] transition-colors"
+                    style={{ color: "var(--foreground)" }}
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
+                    <Shield className="w-4.5 h-4.5" />
+                    <span>Admin</span>
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 

@@ -47,7 +47,7 @@ async function main() {
   const adminPassword = await bcrypt.hash("Admin@2026", 10);
   const admin = await prisma.user.create({
     data: {
-      email: "admin@allytech.edu",
+      email: "vkanjali@serphawk.com",
       password: adminPassword,
       name: "System Admin",
       status: "ACTIVE",
@@ -61,7 +61,7 @@ async function main() {
     },
   });
   console.log(`✅ Created admin user:`);
-  console.log(`   Email: admin@allytech.edu`);
+  console.log(`   Email: vkanjali@serphawk.com`);
   console.log(`   Password: Admin@2026`);
   console.log(`   Login Code: ${admin.loginCode}\n`);
 
@@ -75,7 +75,7 @@ async function main() {
   console.log(`   Admin Code: ${org.adminCode}`);
   console.log("\n👤 LOGIN CREDENTIALS");
   console.log("   Admin:");
-  console.log("   • Email: admin@allytech.edu");
+  console.log("   • Email: vkanjali@serphawk.com");
   console.log("   • Password: Admin@2026");
   console.log("   • URL: http://localhost:3000/admin/login");
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
