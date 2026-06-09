@@ -11,14 +11,16 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET || "default_secre
 export default async function StudentDashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  if (!token) redirect("/login");
+  const CLEAR_AND_REDIRECT = "/api/auth/logout?redirect=/student/login";
+
+  if (!token) redirect(CLEAR_AND_REDIRECT);
 
   let payload: { userId?: string; name?: string; email?: string; organizationName?: string; role?: string } = {};
   try {
     const verified = await jwtVerify(token, secret);
     payload = verified.payload as typeof payload;
   } catch {
-    redirect("/login");
+    redirect(CLEAR_AND_REDIRECT);
   }
 
   const userId = (payload.userId ?? "") as string;
@@ -34,7 +36,7 @@ export default async function StudentDashboardPage() {
     },
   });
 
-  if (!user || user.memberships.length === 0) redirect("/login");
+  if (!user || user.memberships.length === 0) redirect(CLEAR_AND_REDIRECT);
   const orgId = user.memberships[0].organizationId;
 
   // ── 1. Fetch initial user data sequentially to prevent Neon connection spike ──

@@ -47,19 +47,12 @@ export default function AdminLoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const loginCode = (formData.get("loginCode") as string)?.trim().toUpperCase();
-
-    if (!loginCode) {
-      setError("Login Code is required.");
-      setLoading(false);
-      return;
-    }
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, loginCode, requestedRole: "ADMIN" }),
+        body: JSON.stringify({ email, password, requestedRole: "ADMIN" }),
       });
 
       const data = await res.json();
@@ -169,24 +162,7 @@ export default function AdminLoginPage() {
             </div>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="space-y-1.5">
-            <Label htmlFor="admin-loginCode">Login code</Label>
-            <div className="relative">
-              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-200" style={{ color: focusedField === "loginCode" ? "var(--foreground)" : "var(--muted-foreground)" }} />
-              <Input
-                id="admin-loginCode"
-                name="loginCode"
-                type="text"
-                required
-                maxLength={10}
-                placeholder="e.g. ADM1234"
-                onFocus={() => setFocusedField("loginCode")}
-                onBlur={() => setFocusedField(null)}
-                className="pl-10 h-11 rounded-lg uppercase tracking-widest"
-                style={{ background: "var(--input)", borderColor: "var(--border)" }}
-              />
-            </div>
-          </motion.div>
+
 
           <motion.div variants={itemVariants} className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2 cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
