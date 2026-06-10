@@ -136,6 +136,7 @@ model Course {
   courseComments   CourseComment[]
   courseActivities CourseActivity[]
   adminReviewVideos AdminReviewVideo[]
+  joinQuestions    Json?
 
   @@index([organizationId])
   @@index([creatorId])
@@ -197,6 +198,9 @@ model Enrollment {
   enrolledAt DateTime         @default(now())
   course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinAnswers        Json?
+  joinScore          Int?
+  joinTotalQuestions Int?
 
   @@unique([userId, courseId])
   @@index([userId])

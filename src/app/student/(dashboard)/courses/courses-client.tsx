@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookOpen, BookMarked, CheckCircle2, Clock, XCircle, Search } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
+import { JoinMcqModal } from "@/components/modals/JoinMcqModal";
 
 type CourseWithStatus = {
   id: string;
@@ -53,6 +54,11 @@ export default function StudentCoursesClient({
   const [searchFocused, setSearchFocused] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // MCQ modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalQuestions, setModalQuestions] = useState<any[]>([]);
+  const [modalCourse, setModalCourse] = useState<any>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -81,13 +87,38 @@ export default function StudentCoursesClient({
   const handleEnrollRequest = async (courseId: string) => {
     setEnrollingCourseId(courseId);
     try {
+      const qRes = await fetch(`/api/courses/join-questions?courseId=${courseId}`);
+      const qData = await qRes.json();
+      const questions = qData.questions || [];
+
+      if (questions.length > 0) {
+        const courseInfo = allCourses.find((c) => c.id === courseId);
+        setModalCourse(courseInfo);
+        setModalQuestions(questions);
+        setModalOpen(true);
+        setEnrollingCourseId(null);
+        return;
+      }
+
+      await submitEnrollment(courseId);
+    } catch (error) {
+      console.error("Failed to check join questions:", error);
+      alert("Failed to submit request");
+      setEnrollingCourseId(null);
+    }
+  };
+
+  const submitEnrollment = async (courseId: string, answers?: Record<string, number>) => {
+    setEnrollingCourseId(courseId);
+    try {
       const res = await fetch("/api/student/enroll", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId }),
+        body: JSON.stringify({ courseId, answers }),
       });
 
       if (res.ok) {
+        setModalOpen(false);
         router.refresh();
       } else {
         const data = await res.json();
@@ -576,6 +607,14 @@ export default function StudentCoursesClient({
           )}
         </div>
       )}
+      <JoinMcqModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        courseTitle={modalCourse?.title || ""}
+        questions={modalQuestions}
+        onSubmit={(answers) => submitEnrollment(modalCourse.id, answers)}
+        submitting={enrollingCourseId === modalCourse?.id}
+      />
     </div>
   );
 }

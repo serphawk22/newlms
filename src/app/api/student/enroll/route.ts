@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { courseId } = await req.json();
+    const { courseId, answers } = await req.json();
     
     if (!courseId) {
       return NextResponse.json({ error: "Course ID is required" }, { status: 400 });
@@ -20,13 +20,13 @@ export async function POST(req: Request) {
     // Verify course exists, is published, and is in the same organization
     const course = await prisma.course.findUnique({
       where: { id: courseId },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-          }
-        }
+      select: {
+        id: true,
+        published: true,
+        organizationId: true,
+        creatorId: true,
+        title: true,
+        joinQuestions: true,
       }
     });
 
@@ -56,6 +56,25 @@ export async function POST(req: Request) {
       }
     });
 
+    // Grade MCQ answers if configured
+    let joinScore: number | null = null;
+    let joinTotalQuestions: number | null = null;
+    let joinAnswersJson: any = null;
+
+    if (course.joinQuestions && Array.isArray(course.joinQuestions) && course.joinQuestions.length > 0) {
+      joinTotalQuestions = course.joinQuestions.length;
+      joinAnswersJson = answers || {};
+      let correct = 0;
+      for (const q of course.joinQuestions as any[]) {
+        const questionId = q.id;
+        const studentAns = joinAnswersJson[questionId];
+        if (studentAns !== undefined && Number(studentAns) === Number(q.correctOption)) {
+          correct++;
+        }
+      }
+      joinScore = correct;
+    }
+
     if (existingEnrollment) {
       if (existingEnrollment.status === "ACTIVE") {
         return NextResponse.json({ error: "Already enrolled" }, { status: 400 });
@@ -68,7 +87,13 @@ export async function POST(req: Request) {
       // If REJECTED, update to PENDING
       await prisma.enrollment.update({
         where: { id: existingEnrollment.id },
-        data: { status: "PENDING", enrolledAt: new Date() }
+        data: { 
+          status: "PENDING", 
+          enrolledAt: new Date(),
+          joinAnswers: joinAnswersJson,
+          joinScore,
+          joinTotalQuestions,
+        }
       });
     } else {
       // Create new enrollment with PENDING status
@@ -77,6 +102,9 @@ export async function POST(req: Request) {
           userId: user.id,
           courseId: courseId,
           status: "PENDING",
+          joinAnswers: joinAnswersJson,
+          joinScore,
+          joinTotalQuestions,
         }
       });
     }

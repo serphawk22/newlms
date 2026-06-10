@@ -27,6 +27,7 @@ import { QuizPdfImporter } from "@/components/QuizPdfImporter";
 import { getCourseBannerUrl } from "@/lib/course-images";
 import { CourseCommentsTab } from "@/components/CourseCommentsTab";
 import { LessonRecordButton } from "@/components/LessonRecordButton";
+import { JoinMcqPdfImporter } from "@/components/JoinMcqPdfImporter";
 
 // --- SERVER ACTIONS ---
 
@@ -514,6 +515,51 @@ async function denyCertificate(formData: FormData) {
   revalidatePath(`/instructor/courses/${courseId}`);
 }
 
+async function addJoinQuestion(formData: FormData) {
+  "use server";
+  const courseId = formData.get("courseId") as string;
+  const text = formData.get("text") as string;
+  const options = [
+    formData.get("opt0") as string,
+    formData.get("opt1") as string,
+    formData.get("opt2") as string,
+    formData.get("opt3") as string,
+  ];
+  const correctOption = parseInt(formData.get("correctOption") as string);
+  
+  if (courseId && text) {
+    const course = await prisma.course.findUnique({ where: { id: courseId }, select: { joinQuestions: true } });
+    const existing = Array.isArray(course?.joinQuestions) ? (course.joinQuestions as any[]) : [];
+    const newQ = {
+      id: "q_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+      text,
+      options,
+      correctOption
+    };
+    await prisma.course.update({
+      where: { id: courseId },
+      data: { joinQuestions: [...existing, newQ] }
+    });
+    revalidatePath(`/instructor/courses/${courseId}`);
+  }
+}
+
+async function deleteJoinQuestion(formData: FormData) {
+  "use server";
+  const courseId = formData.get("courseId") as string;
+  const questionId = formData.get("questionId") as string;
+  if (courseId && questionId) {
+    const course = await prisma.course.findUnique({ where: { id: courseId }, select: { joinQuestions: true } });
+    const existing = Array.isArray(course?.joinQuestions) ? (course.joinQuestions as any[]) : [];
+    const updated = existing.filter((q: any) => q.id !== questionId);
+    await prisma.course.update({
+      where: { id: courseId },
+      data: { joinQuestions: updated }
+    });
+    revalidatePath(`/instructor/courses/${courseId}`);
+  }
+}
+
 // --- PAGE COMPONENT ---
 
 export default async function CourseBuilderPage({ 
@@ -772,6 +818,15 @@ export default async function CourseBuilderPage({
                   className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
                 >
                   <HelpCircle className="w-4 h-4 mr-2" /> Quizzes & Tests
+                </Button>
+              </Link>
+              <Link href={`?tab=joinmcqs`}>
+                <Button
+                  variant="ghost"
+                  style={getTabStyle("joinmcqs")}
+                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
+                >
+                  <Radio className="w-4 h-4 mr-2" /> Join MCQ Questions
                 </Button>
               </Link>
               <Link href={`?tab=comments`}>
@@ -1433,6 +1488,132 @@ export default async function CourseBuilderPage({
             )}
 
 
+            {/* JOIN MCQS TAB */}
+            {tab === "joinmcqs" && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Join Screening MCQs</h2>
+                </div>
+
+                <JoinMcqPdfImporter courseId={course.id} existingQuestions={(course.joinQuestions as any[]) || []} />
+
+                <div className="space-y-4">
+                  {((course.joinQuestions as any[]) || []).map((q, qIdx) => (
+                    <div key={q.id} className="p-4 border rounded-md relative group" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#D9252A" }}>
+                            MCQ Question
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <form action={deleteJoinQuestion}>
+                            <input type="hidden" name="questionId" value={q.id} />
+                            <input type="hidden" name="courseId" value={course.id} />
+                            <Button type="submit" variant="ghost" size="sm" className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </form>
+                        </div>
+                      </div>
+                      <p className="font-medium mt-1" style={{ color: "var(--foreground)" }}>{qIdx + 1}. {q.text}</p>
+                      <div className="grid grid-cols-2 gap-2 mt-3">
+                        {q.options.map((opt: string, oIdx: number) => (
+                          <div
+                            key={oIdx}
+                            style={
+                              q.correctOption === oIdx
+                                ? { background: "rgba(217,37,42,0.12)", borderColor: "rgba(217,37,42,0.25)", color: "#D9252A" }
+                                : { background: "var(--secondary-background)", borderColor: "var(--border)", color: "var(--foreground)" }
+                            }
+                            className="flex items-center gap-2 text-sm p-2 rounded border font-medium"
+                          >
+                            <input
+                              type="radio"
+                              checked={q.correctOption === oIdx}
+                              readOnly
+                              className="accent-[#D9252A]"
+                            />
+                            <span>{opt}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  {(!course.joinQuestions || (course.joinQuestions as any[]).length === 0) && (
+                    <p className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                      No join screening questions added yet. Instructors can configure them here.
+                    </p>
+                  )}
+                </div>
+
+                {/* Add Manual Join Question Form */}
+                <div className="pt-6 border-t" style={{ borderColor: "var(--border)" }}>
+                  <p className="text-sm font-bold mb-4" style={{ color: "var(--foreground)" }}>Add Join MCQ Question</p>
+                  <form action={addJoinQuestion} className="space-y-4">
+                    <input type="hidden" name="courseId" value={course.id} />
+                    
+                    <div className="space-y-2">
+                      <Label style={{ color: "var(--muted-foreground)" }}>Question Text</Label>
+                      <Input
+                        name="text"
+                        required
+                        placeholder="Enter question..."
+                        style={{
+                          background: "var(--secondary-background)",
+                          borderColor: "var(--border)",
+                          color: "var(--foreground)",
+                        }}
+                        className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
+                      />
+                    </div>
+
+                    <div className="p-4 rounded-md space-y-3" style={{ background: "var(--secondary-background)" }}>
+                      <Label className="text-xs font-bold" style={{ color: "var(--muted-foreground)" }}>Answer Options</Label>
+                      {[0, 1, 2, 3].map((i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="correctOption"
+                            value={i}
+                            defaultChecked={i === 0}
+                            className="accent-[#D9252A] shrink-0"
+                          />
+                          <Input
+                            name={`opt${i}`}
+                            required
+                            placeholder={`Option ${String.fromCharCode(65 + i)}`}
+                            style={{
+                              background: "var(--card)",
+                              borderColor: "var(--border)",
+                              color: "var(--foreground)",
+                            }}
+                            className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
+                          />
+                        </div>
+                      ))}
+                      <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                        Select the radio button next to the correct answer
+                      </p>
+                    </div>
+                    
+                    <Button
+                      type="submit"
+                      style={{
+                        background: "var(--secondary-background)",
+                        color: "var(--foreground)",
+                        border: "1px solid var(--border)",
+                      }}
+                      className="w-full hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A]"
+                    >
+                      <HelpCircle className="w-4 h-4 mr-2" /> Save Join Question
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+
 
             {/* STUDENTS INFO TAB */}
             {tab === "students" && (
@@ -1486,6 +1667,11 @@ export default async function CourseBuilderPage({
                               <p className="text-xs mt-0.5" style={{ color: "#D9252A" }}>
                                 Requested {new Date(enr.enrolledAt).toLocaleDateString()}
                               </p>
+                              {enr.joinScore !== null && enr.joinScore !== undefined && (
+                                <p className="text-xs mt-1 font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md inline-block">
+                                  Screening Score: {enr.joinScore} / {enr.joinTotalQuestions} ({Math.round((enr.joinScore / (enr.joinTotalQuestions || 1)) * 100)}%)
+                                </p>
+                              )}
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                               <form action={async (formData: FormData) => {
