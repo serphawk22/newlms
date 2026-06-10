@@ -68,12 +68,7 @@ export default function InstructorSignupPage() {
       }
 
       if (data.pendingApproval) {
-        if (data.loginCode) {
-          setGeneratedCode(data.loginCode);
-        }
         setPendingApproval(true);
-      } else if (data.loginCode) {
-        setGeneratedCode(data.loginCode);
       } else {
         router.push("/instructor/login");
       }
@@ -286,23 +281,9 @@ export default function InstructorSignupPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="instructor-signup-code">Instructor Code</Label>
-                <div className="relative">
-                  <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-                  <Input id="instructor-signup-code" name="code" required className="pl-9 h-11 rounded-lg" placeholder="e.g. INST2024" style={{ background: "var(--input)", borderColor: "var(--border)" }} />
-                </div>
-                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                  Instructor accounts require an invitation code from your institution.
-                </p>
-              </div>
 
-              <div className="flex items-start gap-2 rounded-lg px-3 py-2.5" style={{ background: "rgba(233,236,239,0.06)", border: "1px solid var(--border)" }}>
-                <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
-                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                  A unique <strong>Login Code</strong> will be generated after registration. You&apos;ll need it every time you sign in.
-                </p>
-              </div>
+
+
 
               <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                 <Button

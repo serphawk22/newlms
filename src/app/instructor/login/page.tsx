@@ -200,9 +200,9 @@ export default function InstructorLoginPage() {
         </form>
 
         <motion.p variants={itemVariants} className="mt-6 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Need access?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/instructor/signup" className="font-medium hover:underline" style={{ color: "var(--foreground)" }}>
-            Request access
+            Create account
           </Link>
         </motion.p>
         <motion.p variants={itemVariants} className="mt-3 text-center text-sm">

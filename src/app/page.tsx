@@ -46,7 +46,7 @@ const steps = [
 ];
 
 export default function Home() {
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [loginMenuOpen, setLoginMenuOpen] = useState(false);
 
   return (
     <div className="w-full relative overflow-hidden" style={{ background: "var(--background)" }}>
@@ -54,28 +54,17 @@ export default function Home() {
       <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center z-30 backdrop-blur-lg border-b" style={{ background: "color-mix(in srgb, var(--card) 80%, transparent)", borderColor: "var(--border)" }}>
         <Logo />
         <div className="flex items-center gap-3">
-          <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm" style={{ background: "var(--foreground)", color: "var(--background)" }}>
-            <LogIn className="w-4 h-4 inline mr-1.5" /> Login
-          </Link>
-          <Link href="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hidden sm:inline-flex items-center" style={{ border: "1px solid var(--border)", color: "var(--foreground)" }}>
-            <UserPlus className="w-4 h-4 inline mr-1.5" /> Sign Up
-          </Link>
           <div className="relative">
             <button
-              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm border hover:opacity-80"
-              style={{
-                borderColor: "var(--border)",
-                background: "var(--card)",
-                color: "var(--foreground)"
-              }}
-              aria-label="Profile menu"
+              onClick={() => setLoginMenuOpen(!loginMenuOpen)}
+              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
+              style={{ background: "var(--foreground)", color: "var(--background)" }}
             >
-              <User className="w-5 h-5" />
+              <LogIn className="w-4 h-4" /> Login
             </button>
-            {profileMenuOpen && (
+            {loginMenuOpen && (
               <>
-                <div className="fixed inset-0 z-40 cursor-default" onClick={() => setProfileMenuOpen(false)} />
+                <div className="fixed inset-0 z-40 cursor-default" onClick={() => setLoginMenuOpen(false)} />
                 <div
                   className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg border p-1.5 z-50 transition-all duration-200"
                   style={{
@@ -85,22 +74,31 @@ export default function Home() {
                   }}
                 >
                   <div className="px-3 py-1.5 text-xs font-semibold border-b mb-1" style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}>
-                    Login / Sign Up As
+                    Login As
                   </div>
                   <Link
-                    href="/instructor/signup"
+                    href="/student/login"
                     className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-[color-mix(in srgb,var(--foreground)_5%,transparent)] transition-colors"
                     style={{ color: "var(--foreground)" }}
-                    onClick={() => setProfileMenuOpen(false)}
+                    onClick={() => setLoginMenuOpen(false)}
+                  >
+                    <GraduationCap className="w-4.5 h-4.5" />
+                    <span>Student</span>
+                  </Link>
+                  <Link
+                    href="/instructor/login"
+                    className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-[color-mix(in srgb,var(--foreground)_5%,transparent)] transition-colors"
+                    style={{ color: "var(--foreground)" }}
+                    onClick={() => setLoginMenuOpen(false)}
                   >
                     <UserCog className="w-4.5 h-4.5" />
                     <span>Instructor</span>
                   </Link>
                   <Link
-                    href="/admin/signup"
+                    href="/admin/login"
                     className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-[color-mix(in srgb,var(--foreground)_5%,transparent)] transition-colors"
                     style={{ color: "var(--foreground)" }}
-                    onClick={() => setProfileMenuOpen(false)}
+                    onClick={() => setLoginMenuOpen(false)}
                   >
                     <Shield className="w-4.5 h-4.5" />
                     <span>Admin</span>
@@ -109,6 +107,9 @@ export default function Home() {
               </>
             )}
           </div>
+          <Link href="/student/signup" className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hidden sm:inline-flex items-center" style={{ border: "1px solid var(--border)", color: "var(--foreground)" }}>
+            <UserPlus className="w-4 h-4 inline mr-1.5" /> Sign Up
+          </Link>
         </div>
       </nav>
 

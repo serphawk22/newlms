@@ -23,11 +23,11 @@ type FileCategory =
 const PDF_EXTS         = new Set(["pdf"]);
 const IMAGE_EXTS       = new Set(["jpg","jpeg","png","gif","webp","svg","bmp","avif","ico","tiff"]);
 const OFFICE_EXTS      = new Set(["doc","docx","ppt","pptx"]);
-const SPREADSHEET_EXTS = new Set(["xls","xlsx","csv"]);
+const SPREADSHEET_EXTS = new Set(["xls","xlsx"]);
 const CODE_EXTS        = new Set([
   "py","java","js","ts","jsx","tsx","json","xml","html","css","scss",
   "yml","yaml","toml","ini","sh","bash","php","c","cpp","h","cs","go",
-  "rb","rs","swift","kt","sql","env","graphql","vue","svelte",
+  "rb","rs","swift","kt","sql","env","graphql","vue","svelte","csv",
 ]);
 const TEXT_EXTS        = new Set(["txt","md","markdown","log","readme","rst","text"]);
 const ZIP_EXTS         = new Set(["zip","rar","7z","tar","gz","tgz","bz2","xz","zst"]);
@@ -386,7 +386,7 @@ const CODE_LANG_MAP: Record<string, string> = {
   css: "css", scss: "scss", sh: "bash", bash: "bash", sql: "sql",
   go: "go", rb: "ruby", rs: "rust", php: "php", c: "c", cpp: "cpp",
   cs: "csharp", kt: "kotlin", swift: "swift", yml: "yaml", yaml: "yaml",
-  toml: "toml", graphql: "graphql",
+  toml: "toml", graphql: "graphql", csv: "csv",
 };
 
 function CodeViewer({ url, ext, fileName }: { url: string; ext: string; fileName: string }) {
