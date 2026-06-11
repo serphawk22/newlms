@@ -48,9 +48,9 @@ export async function POST(req: NextRequest) {
   const file = formData.get("file") as File | null;
   const courseId = formData.get("courseId") as string | null;
 
-  if (!file || !courseId) {
+  if (!file) {
     return NextResponse.json(
-      { error: "file and courseId are required" },
+      { error: "file is required" },
       { status: 400 }
     );
   }
@@ -59,17 +59,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Only PDF files are supported" }, { status: 400 });
   }
 
-  // Verify course belongs to instructor
-  const course = await prisma.course.findUnique({
-    where: { id: courseId },
-    select: { creatorId: true },
-  });
+  if (courseId) {
+    // Verify course belongs to instructor
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: { creatorId: true },
+    });
 
-  if (!course) {
-    return NextResponse.json({ error: "Course not found" }, { status: 404 });
-  }
-  if (course.creatorId !== instructorId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+    if (course.creatorId !== instructorId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   // Parse PDF → text

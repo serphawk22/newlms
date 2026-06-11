@@ -820,15 +820,7 @@ export default async function CourseBuilderPage({
                   <HelpCircle className="w-4 h-4 mr-2" /> Quizzes & Tests
                 </Button>
               </Link>
-              <Link href={`?tab=joinmcqs`}>
-                <Button
-                  variant="ghost"
-                  style={getTabStyle("joinmcqs")}
-                  className="w-full justify-start transition-all hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A]"
-                >
-                  <Radio className="w-4 h-4 mr-2" /> Join MCQ Questions
-                </Button>
-              </Link>
+
               <Link href={`?tab=comments`}>
                 <Button
                   variant="ghost"
@@ -1488,130 +1480,7 @@ export default async function CourseBuilderPage({
             )}
 
 
-            {/* JOIN MCQS TAB */}
-            {tab === "joinmcqs" && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                  <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Join Screening MCQs</h2>
-                </div>
 
-                <JoinMcqPdfImporter courseId={course.id} existingQuestions={(course.joinQuestions as any[]) || []} />
-
-                <div className="space-y-4">
-                  {((course.joinQuestions as any[]) || []).map((q, qIdx) => (
-                    <div key={q.id} className="p-4 border rounded-md relative group" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#D9252A" }}>
-                            MCQ Question
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <form action={deleteJoinQuestion}>
-                            <input type="hidden" name="questionId" value={q.id} />
-                            <input type="hidden" name="courseId" value={course.id} />
-                            <Button type="submit" variant="ghost" size="sm" className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </form>
-                        </div>
-                      </div>
-                      <p className="font-medium mt-1" style={{ color: "var(--foreground)" }}>{qIdx + 1}. {q.text}</p>
-                      <div className="grid grid-cols-2 gap-2 mt-3">
-                        {q.options.map((opt: string, oIdx: number) => (
-                          <div
-                            key={oIdx}
-                            style={
-                              q.correctOption === oIdx
-                                ? { background: "rgba(217,37,42,0.12)", borderColor: "rgba(217,37,42,0.25)", color: "#D9252A" }
-                                : { background: "var(--secondary-background)", borderColor: "var(--border)", color: "var(--foreground)" }
-                            }
-                            className="flex items-center gap-2 text-sm p-2 rounded border font-medium"
-                          >
-                            <input
-                              type="radio"
-                              checked={q.correctOption === oIdx}
-                              readOnly
-                              className="accent-[#D9252A]"
-                            />
-                            <span>{opt}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                  {(!course.joinQuestions || (course.joinQuestions as any[]).length === 0) && (
-                    <p className="text-center py-12 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                      No join screening questions added yet. Instructors can configure them here.
-                    </p>
-                  )}
-                </div>
-
-                {/* Add Manual Join Question Form */}
-                <div className="pt-6 border-t" style={{ borderColor: "var(--border)" }}>
-                  <p className="text-sm font-bold mb-4" style={{ color: "var(--foreground)" }}>Add Join MCQ Question</p>
-                  <form action={addJoinQuestion} className="space-y-4">
-                    <input type="hidden" name="courseId" value={course.id} />
-                    
-                    <div className="space-y-2">
-                      <Label style={{ color: "var(--muted-foreground)" }}>Question Text</Label>
-                      <Input
-                        name="text"
-                        required
-                        placeholder="Enter question..."
-                        style={{
-                          background: "var(--secondary-background)",
-                          borderColor: "var(--border)",
-                          color: "var(--foreground)",
-                        }}
-                        className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
-                      />
-                    </div>
-
-                    <div className="p-4 rounded-md space-y-3" style={{ background: "var(--secondary-background)" }}>
-                      <Label className="text-xs font-bold" style={{ color: "var(--muted-foreground)" }}>Answer Options</Label>
-                      {[0, 1, 2, 3].map((i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <input
-                            type="radio"
-                            name="correctOption"
-                            value={i}
-                            defaultChecked={i === 0}
-                            className="accent-[#D9252A] shrink-0"
-                          />
-                          <Input
-                            name={`opt${i}`}
-                            required
-                            placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                            style={{
-                              background: "var(--card)",
-                              borderColor: "var(--border)",
-                              color: "var(--foreground)",
-                            }}
-                            className="focus-visible:ring-1 focus-visible:ring-[#D9252A] focus-visible:border-[#D9252A]"
-                          />
-                        </div>
-                      ))}
-                      <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                        Select the radio button next to the correct answer
-                      </p>
-                    </div>
-                    
-                    <Button
-                      type="submit"
-                      style={{
-                        background: "var(--secondary-background)",
-                        color: "var(--foreground)",
-                        border: "1px solid var(--border)",
-                      }}
-                      className="w-full hover:bg-[rgba(217,37,42,0.08)] hover:text-[#D9252A] hover:border-[#D9252A]"
-                    >
-                      <HelpCircle className="w-4 h-4 mr-2" /> Save Join Question
-                    </Button>
-                  </form>
-                </div>
-              </div>
-            )}
 
 
 
