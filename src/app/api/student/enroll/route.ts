@@ -73,6 +73,11 @@ export async function POST(req: Request) {
         }
       }
       joinScore = correct;
+
+      const passed = correct >= Math.ceil(joinTotalQuestions / 2);
+      if (!passed) {
+        return NextResponse.json({ error: "You must pass the screening quiz (score at least 50%) to request to join." }, { status: 400 });
+      }
     }
 
     if (existingEnrollment) {

@@ -19,6 +19,7 @@ type CourseWithStatus = {
   enrollmentsCount: number;
   enrollmentStatus: "PENDING" | "ACTIVE" | "REJECTED" | null;
   progress: number;
+  hasJoinQuestions?: boolean;
 };
 
 type ActiveCourse = {
@@ -31,6 +32,7 @@ type ActiveCourse = {
 type PendingCourse = {
   id: string;
   title: string;
+  hasJoinQuestions?: boolean;
 };
 
 type StudentCoursesClientProps = {
@@ -192,7 +194,7 @@ export default function StudentCoursesClient({
             }}
             onClick={() => handleEnrollRequest(course.id)}
           >
-            Request Again
+            {course.hasJoinQuestions ? "Attempt Quiz" : "Request Again"}
           </Button>
         );
       default:
@@ -215,7 +217,7 @@ export default function StudentCoursesClient({
             }}
             onClick={() => handleEnrollRequest(course.id)}
           >
-            Request to Join
+            {course.hasJoinQuestions ? "Attempt Quiz" : "Request to Join"}
           </Button>
         );
     }
@@ -598,7 +600,7 @@ export default function StudentCoursesClient({
                       onClick={() => handleEnrollRequest(course.id)}
                       disabled={enrollingCourseId === course.id}
                     >
-                      {enrollingCourseId === course.id ? "Requesting..." : "Request Again"}
+                      {enrollingCourseId === course.id ? "Requesting..." : (course.hasJoinQuestions ? "Attempt Quiz" : "Request Again")}
                     </Button>
                   </div>
                 ))}
@@ -611,6 +613,7 @@ export default function StudentCoursesClient({
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         courseTitle={modalCourse?.title || ""}
+        courseId={modalCourse?.id || ""}
         questions={modalQuestions}
         onSubmit={(answers) => submitEnrollment(modalCourse.id, answers)}
         submitting={enrollingCourseId === modalCourse?.id}

@@ -235,18 +235,9 @@ function TrendingCourseCard({
   const router = useRouter();
   const bannerUrl = getCourseBannerUrl(course.title);
 
-  const handleEnroll = async (e: React.MouseEvent) => {
+  const handleEnroll = (e: React.MouseEvent) => {
     e.preventDefault();
-    setEnrolling(true);
-    try {
-      const res = await fetch("/api/student/enroll", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId: course.id }),
-      });
-      if (res.ok) setLocalStatus("PENDING");
-    } catch { /* silent */ }
-    finally { setEnrolling(false); }
+    router.push("/student/courses");
   };
 
   return (

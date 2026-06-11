@@ -58,6 +58,7 @@ export default async function StudentCoursesPage() {
           title: true,
           description: true,
           published: true,
+          joinQuestions: true,
         }
       }
     }
@@ -78,6 +79,7 @@ export default async function StudentCoursesPage() {
     enrollmentsCount: course._count.enrollments,
     enrollmentStatus: enrollmentMap.get(course.id)?.status || null,
     progress: enrollmentMap.get(course.id)?.progress || 0,
+    hasJoinQuestions: Array.isArray(course.joinQuestions) && (course.joinQuestions as any[]).length > 0,
   }));
 
   // Prepare my courses data (ACTIVE enrollments only)
@@ -95,6 +97,7 @@ export default async function StudentCoursesPage() {
     .map(e => ({
       id: e.course.id,
       title: e.course.title,
+      hasJoinQuestions: Array.isArray(e.course.joinQuestions) && (e.course.joinQuestions as any[]).length > 0,
     }));
 
   const rejectedCourses = enrollments
@@ -102,6 +105,7 @@ export default async function StudentCoursesPage() {
     .map(e => ({
       id: e.course.id,
       title: e.course.title,
+      hasJoinQuestions: Array.isArray(e.course.joinQuestions) && (e.course.joinQuestions as any[]).length > 0,
     }));
 
   return (
